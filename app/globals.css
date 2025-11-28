@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
+/* Pisicopedia Custom Theme - Medical + Cozy */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Background & Text */
+  --background: #fefefe;
+  --foreground: #2d3748;
+
+  /* Custom Pastel Colors */
+  --lavender-50: #faf9fc;
+  --lavender-100: #f3f0f9;
+  --lavender-200: #e8e1f3;
+  --lavender-300: #d4c6e8;
+  --lavender-400: #c1a9dd;
+  --lavender-500: #b19cd9;
+  --lavender-600: #9b82c9;
+  --lavender-700: #7d66a8;
+  --lavender-800: #644f87;
+  --lavender-900: #4a3a6b;
+
+  --rose-50: #fff5f7;
+  --rose-100: #ffe4ea;
+  --rose-200: #ffd0dc;
+  --rose-300: #ffb3c8;
+  --rose-400: #ff8fb1;
+  --rose-500: #f48fb1;
+  --rose-600: #e57397;
+  --rose-700: #c9557a;
+  --rose-800: #a43e5f;
+  --rose-900: #7d3f4f;
+
+  --warmgray-50: #faf9f7;
+  --warmgray-100: #f5f3f0;
+  --warmgray-200: #ebe7e0;
+  --warmgray-300: #d6cfc5;
+  --warmgray-400: #c0b5a8;
+  --warmgray-500: #b0a8a0;
+  --warmgray-600: #948b82;
+  --warmgray-700: #776f66;
+  --warmgray-800: #5c5550;
+  --warmgray-900: #4a4238;
+
+  /* Semantic Colors */
+  --primary: var(--lavender-500);
+  --primary-hover: var(--lavender-600);
+  --secondary: var(--rose-500);
+  --secondary-hover: var(--rose-600);
+  --accent: var(--warmgray-500);
+  --success: #68d391;
+  --warning: #f6ad55;
+  --error: #fc8181;
+  --info: #90cdf4;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Custom Color Tokens */
+  --color-lavender-50: var(--lavender-50);
+  --color-lavender-100: var(--lavender-100);
+  --color-lavender-200: var(--lavender-200);
+  --color-lavender-300: var(--lavender-300);
+  --color-lavender-400: var(--lavender-400);
+  --color-lavender-500: var(--lavender-500);
+  --color-lavender-600: var(--lavender-600);
+  --color-lavender-700: var(--lavender-700);
+  --color-lavender-800: var(--lavender-800);
+  --color-lavender-900: var(--lavender-900);
+
+  --color-rose-50: var(--rose-50);
+  --color-rose-100: var(--rose-100);
+  --color-rose-200: var(--rose-200);
+  --color-rose-300: var(--rose-300);
+  --color-rose-400: var(--rose-400);
+  --color-rose-500: var(--rose-500);
+  --color-rose-600: var(--rose-600);
+  --color-rose-700: var(--rose-700);
+  --color-rose-800: var(--rose-800);
+  --color-rose-900: var(--rose-900);
+
+  --color-warmgray-50: var(--warmgray-50);
+  --color-warmgray-100: var(--warmgray-100);
+  --color-warmgray-200: var(--warmgray-200);
+  --color-warmgray-300: var(--warmgray-300);
+  --color-warmgray-400: var(--warmgray-400);
+  --color-warmgray-500: var(--warmgray-500);
+  --color-warmgray-600: var(--warmgray-600);
+  --color-warmgray-700: var(--warmgray-700);
+  --color-warmgray-800: var(--warmgray-800);
+  --color-warmgray-900: var(--warmgray-900);
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* No dark mode for medical website - keep it clean and bright */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  antialiasing: antialiased;
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-gradient-soft {
+    background: linear-gradient(135deg, var(--lavender-50) 0%, var(--rose-50) 100%);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 4px 20px rgba(177, 156, 217, 0.15);
+  }
 }

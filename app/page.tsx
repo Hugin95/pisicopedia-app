@@ -1,65 +1,217 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Container from '@/components/common/Container';
+import Button from '@/components/common/Button';
+import SearchBar from '@/components/forms/SearchBar';
+import BreedCard from '@/components/breeds/BreedCard';
+import ArticleCard from '@/components/articles/ArticleCard';
+import GuideCard from '@/components/guides/GuideCard';
+import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
+import { getTopBreeds, getLatestArticles, getTopGuides } from '@/lib/data';
 
-export default function Home() {
+export default async function HomePage() {
+  const popularBreeds = await getTopBreeds(6);
+  const recentArticles = await getLatestArticles(3);
+  const topGuides = await getTopGuides(3);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      {/* Hero Section */}
+      <section className="bg-gradient-soft pt-20 pb-16">
+        <Container>
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-warmgray-900 mb-6">
+              Enciclopedia Completă a{' '}
+              <span className="text-lavender-600">Raselor</span> și{' '}
+              <span className="text-rose-500">Sănătății</span> Pisicilor
+            </h1>
+            <p className="text-lg md:text-xl text-warmgray-600 mb-8">
+              Informații medicale verificate și ghiduri complete pentru îngrijirea optimă a pisicii tale.
+              Descoperă peste 150 de rase și sute de articole specializate.
+            </p>
+            <SearchBar className="mb-8" />
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button href="/rase" size="lg">
+                Explorează Rasele
+              </Button>
+              <Button href="/sanatate" variant="outline" size="lg">
+                Articole Sănătate
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Banner Placeholder */}
+      <section className="py-8 bg-white">
+        <Container>
+          <BannerPlaceholder size="970x250" />
+        </Container>
+      </section>
+
+      {/* Popular Breeds Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-warmgray-900 mb-4">
+              Rase Populare de Pisici
+            </h2>
+            <p className="text-lg text-warmgray-600">
+              Descoperă caracteristicile și cerințele de îngrijire ale celor mai populare rase
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {popularBreeds.map((breed) => (
+              <BreedCard key={breed.slug} breed={breed} featured />
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button href="/rase" size="lg" variant="outline">
+              Vezi Toate Rasele (150+)
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* Health Articles Section */}
+      <section className="py-16 bg-lavender-50">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-warmgray-900 mb-4">
+              Articole Recente despre Sănătate
+            </h2>
+            <p className="text-lg text-warmgray-600">
+              Informații medicale verificate de medici veterinari specializați
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {recentArticles.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button href="/sanatate" size="lg">
+              Toate Articolele de Sănătate
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* Medical Guides Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-warmgray-900 mb-4">
+              Ghiduri Medicale Esențiale
+            </h2>
+            <p className="text-lg text-warmgray-600">
+              Pași detaliați pentru proceduri și îngrijiri importante
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {topGuides.map((guide) => (
+              <GuideCard key={guide.slug} guide={guide} />
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button href="/ghiduri" size="lg" variant="outline">
+              Vezi Toate Ghidurile
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      {/* Newsletter CTA Section */}
+      <section className="py-16 bg-rose-50">
+        <Container>
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-bold text-warmgray-900 mb-4">
+              Rămâi Informat cu Sfaturi Veterinare
+            </h2>
+            <p className="text-lg text-warmgray-600 mb-8">
+              Primește săptămânal cele mai noi articole despre sănătatea pisicilor,
+              sfaturi de îngrijire și noutăți din lumea felină.
+            </p>
+            <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Adresa ta de email"
+                className="flex-1 px-4 py-3 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500 focus:border-transparent"
+                required
+              />
+              <Button type="submit" size="lg">
+                Abonează-te Gratuit
+              </Button>
+            </form>
+          </div>
+        </Container>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-warmgray-900 mb-8 text-center">
+              Întrebări Frecvente
+            </h2>
+            <div className="space-y-6">
+              <details className="group bg-warmgray-50 rounded-lg p-6">
+                <summary className="font-semibold text-lg cursor-pointer list-none flex justify-between items-center">
+                  Ce informații găsesc pe Pisicopedia?
+                  <span className="text-lavender-600 group-open:rotate-180 transition-transform">
+                    ▼
+                  </span>
+                </summary>
+                <p className="mt-4 text-warmgray-600">
+                  Pisicopedia oferă informații complete despre peste 150 de rase de pisici,
+                  articole medicale verificate despre boli și simptome, ghiduri de îngrijire,
+                  și sfaturi de prevenție pentru sănătatea pisicii tale.
+                </p>
+              </details>
+
+              <details className="group bg-warmgray-50 rounded-lg p-6">
+                <summary className="font-semibold text-lg cursor-pointer list-none flex justify-between items-center">
+                  Informațiile sunt verificate medical?
+                  <span className="text-lavender-600 group-open:rotate-180 transition-transform">
+                    ▼
+                  </span>
+                </summary>
+                <p className="mt-4 text-warmgray-600">
+                  Da, toate articolele medicale sunt revizuite de medici veterinari.
+                  Totuși, informațiile prezentate nu înlocuiesc consultația veterinară.
+                  Pentru probleme de sănătate, consultați întotdeauna un specialist.
+                </p>
+              </details>
+
+              <details className="group bg-warmgray-50 rounded-lg p-6">
+                <summary className="font-semibold text-lg cursor-pointer list-none flex justify-between items-center">
+                  Cum aleg rasa potrivită pentru mine?
+                  <span className="text-lavender-600 group-open:rotate-180 transition-transform">
+                    ▼
+                  </span>
+                </summary>
+                <p className="mt-4 text-warmgray-600">
+                  Folosiți filtrele noastre pentru a găsi rase după temperament, mărime,
+                  nivel de activitate și cerințe de îngrijire. Fiecare rasă are o secțiune
+                  dedicată „Pentru cine este potrivită această rasă" care vă va ajuta să luați decizia corectă.
+                </p>
+              </details>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Bottom Banner Placeholder */}
+      <section className="py-8 bg-warmgray-50">
+        <Container>
+          <BannerPlaceholder size="728x90" />
+        </Container>
+      </section>
+    </>
   );
 }
