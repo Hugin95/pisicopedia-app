@@ -2,6 +2,13 @@
 
 Aplicație web modernă pentru enciclopedia raselor și sănătății pisicilor, dezvoltată cu Next.js 14 și TypeScript.
 
+## ⚠️ Important: API & Image Management
+
+- **OpenAI API**: Used ONLY for text generation (blog articles, content rewriting)
+- **Leonardo.ai API**: Used for local batch image generation (breeds, articles)
+- **Images**: Static files generated locally, NOT at runtime
+- **No runtime API calls**: All images are pre-generated and stored as static assets
+
 ## 🚀 Quick Start
 
 ```bash
@@ -49,7 +56,11 @@ pisicopedia-app/
 │   └── index.ts        # Type interfaces
 │
 └── public/             # Static assets
-    └── images/         # Images (to be added)
+    └── images/         # Static images
+        ├── breeds/     # Cat breed images
+        ├── sanatate/   # Health article images
+        ├── hero/       # Homepage hero images
+        └── placeholders/ # SVG fallbacks
 ```
 
 ## 🎨 Componente Principale
@@ -105,6 +116,32 @@ pisicopedia-app/
 - `/nume-pisici` - Generator nume
 - `/contact` - Formular contact
 - `/despre` - Despre noi
+
+## 📸 Image Management with Leonardo.ai
+
+Leonardo.ai integration is ready for batch image generation:
+
+### Quick Commands
+```bash
+# Test generation with one breed
+npm run leonardo:test
+
+# Generate all breed images
+npm run leonardo:breeds
+```
+
+### Image Storage
+- Breeds: `/public/images/breeds/[slug].jpg`
+- Articles: `/public/images/sanatate/[slug].jpg`
+- Hero: `/public/images/hero/hero-*.jpg`
+
+### Features
+✅ Automated batch generation
+✅ Medical illustration style optimized
+✅ Pastel color scheme
+✅ No runtime API calls (all pre-generated)
+
+See `scripts/README-images.md` for complete Leonardo.ai documentation.
 
 ## 🌐 Deployment
 

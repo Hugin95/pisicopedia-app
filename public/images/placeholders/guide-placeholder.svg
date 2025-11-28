@@ -1,0 +1,25 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f5f0ff"/>
+  <!-- Book icon -->
+  <g transform="translate(200, 120)">
+    <rect x="-45" y="-40" width="90" height="65" fill="#e0d0ff" rx="4"/>
+    <rect x="-40" y="-35" width="80" height="55" fill="#f0e6ff" rx="2"/>
+    <!-- Book spine -->
+    <rect x="-2" y="-35" width="4" height="55" fill="#d0c0f0"/>
+    <!-- Page lines -->
+    <rect x="-35" y="-25" width="30" height="3" fill="#c0b0e0" rx="1"/>
+    <rect x="-35" y="-17" width="25" height="3" fill="#c0b0e0" rx="1"/>
+    <rect x="-35" y="-9" width="28" height="3" fill="#c0b0e0" rx="1"/>
+    <rect x="9" y="-25" width="30" height="3" fill="#c0b0e0" rx="1"/>
+    <rect x="9" y="-17" width="25" height="3" fill="#c0b0e0" rx="1"/>
+    <rect x="9" y="-9" width="28" height="3" fill="#c0b0e0" rx="1"/>
+  </g>
+  <!-- Text lines -->
+  <rect x="60" y="180" width="280" height="8" fill="#c8a8ff" rx="4"/>
+  <rect x="60" y="195" width="240" height="8" fill="#c8a8ff" rx="4"/>
+  <rect x="60" y="210" width="200" height="8" fill="#c8a8ff" rx="4"/>
+
+  <text x="200" y="260" text-anchor="middle" font-size="14" fill="#a080e0" font-family="Inter, sans-serif">
+    Ghid de îngrijire
+  </text>
+</svg>
