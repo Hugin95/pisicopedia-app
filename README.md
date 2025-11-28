@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐱 Pisicopedia.ro - Next.js Application
 
-## Getting Started
+Aplicație web modernă pentru enciclopedia raselor și sănătății pisicilor, dezvoltată cu Next.js 14 și TypeScript.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Structura Proiectului
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+pisicopedia-app/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Homepage
+│   ├── globals.css        # Global styles
+│   ├── rase/              # Breeds routes
+│   │   ├── page.tsx       # Breeds catalog
+│   │   └── [slug]/        # Individual breed page
+│   └── (future routes)    # sanatate/, ghiduri/, etc.
+│
+├── components/            # React components
+│   ├── layout/           # Header, Footer, Navigation
+│   ├── breeds/           # Breed-specific components
+│   ├── articles/         # Article components
+│   ├── guides/           # Guide components
+│   ├── common/           # Reusable UI components
+│   └── forms/            # Form components
+│
+├── lib/                  # Utilities
+│   ├── constants.ts     # Site configuration
+│   └── data.ts         # Sample data
+│
+├── types/               # TypeScript definitions
+│   └── index.ts        # Type interfaces
+│
+└── public/             # Static assets
+    └── images/         # Images (to be added)
+```
 
-## Learn More
+## 🎨 Componente Principale
 
-To learn more about Next.js, take a look at the following resources:
+### Layout Components
+- `Header` - Navigation bar responsive cu meniu dropdown
+- `Footer` - Footer cu disclaimer medical și link-uri
+- `BannerPlaceholder` - Zone rezervate pentru publicitate
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### UI Components
+- `Button` - Buton customizabil cu variante
+- `Card` - Container pentru conținut
+- `Badge` - Etichete pentru categorii
+- `Container` - Wrapper pentru layout consistent
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Feature Components
+- `BreedCard` - Card pentru afișarea raselor
+- `ArticleCard` - Card pentru articole medicale
+- `GuideCard` - Card pentru ghiduri
+- `SearchBar` - Bară de căutare globală
 
-## Deploy on Vercel
+## 🛠️ Tehnologii
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework:** Next.js 14+ (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS (custom pastel palette)
+- **Optimization:** Static Site Generation
+- **Font:** Inter (Google Fonts)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Scripts Disponibile
+
+```json
+{
+  "dev": "next dev",           // Start development server
+  "build": "next build",        // Build for production
+  "start": "next start",        // Start production server
+  "lint": "next lint"           // Run ESLint
+}
+```
+
+## 🔗 Rute Implementate
+
+| Rută | Descriere |
+|------|-----------|
+| `/` | Homepage cu toate secțiunile |
+| `/rase` | Catalog rase cu filtrare |
+| `/rase/[slug]` | Pagină individuală rasă |
+
+## 🚧 Rute Planificate
+
+- `/sanatate` - Articole medicale
+- `/ghiduri` - Ghiduri de îngrijire
+- `/nume-pisici` - Generator nume
+- `/contact` - Formular contact
+- `/despre` - Despre noi
+
+## 🌐 Deployment
+
+Aplicația este pregătită pentru deployment pe:
+- [Vercel](https://vercel.com) (recomandat)
+- Netlify
+- Self-hosted cu Node.js
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 📄 Licență
+
+© 2024 Pisicopedia.ro. Toate drepturile rezervate.
