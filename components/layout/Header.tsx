@@ -126,14 +126,16 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <nav className="lg:hidden py-4 border-t border-warmgray-200">
+        {/* Mobile Navigation - Improved with animation and better spacing */}
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${
+          mobileMenuOpen ? 'max-h-96' : 'max-h-0'
+        }`}>
+          <nav className="py-4 border-t border-warmgray-200 bg-white">
             {mainNavigation.map((item) => (
               <div key={item.label} className="mb-2">
                 <Link
                   href={item.href}
-                  className="block py-2 text-warmgray-700 hover:text-lavender-600 font-medium transition-colors duration-200"
+                  className="block py-3 px-4 text-warmgray-700 hover:bg-lavender-50 hover:text-lavender-600 font-medium transition-all duration-200 rounded-lg"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
@@ -144,7 +146,7 @@ export default function Header() {
                       <Link
                         key={child.label}
                         href={child.href}
-                        className="block py-1.5 text-sm text-warmgray-600 hover:text-lavender-600 transition-colors duration-200"
+                        className="block py-2 px-4 text-sm text-warmgray-600 hover:bg-lavender-50 hover:text-lavender-600 transition-all duration-200 rounded-lg"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {child.label}
@@ -155,7 +157,7 @@ export default function Header() {
               </div>
             ))}
           </nav>
-        )}
+        </div>
       </Container>
     </header>
   );

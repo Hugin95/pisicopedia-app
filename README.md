@@ -188,22 +188,111 @@ pisicopedia-app/
 
 ## 🚀 Deployment
 
-### Vercel (Recomandat)
+### 📋 Cum fac un Release Nou (Prod Deploy) - Pași 1-2-3
+
+#### Pasul 1: Pregătire Pre-Deploy
+```bash
+# 1.1 - Verifică că ești pe branch-ul corect
+git status
+
+# 1.2 - Pull ultimele modificări
+git pull origin main
+
+# 1.3 - Rulează testele locale
+npm run build
+# Trebuie să se termine fără erori!
+
+# 1.4 - Verifică checklist-ul
+# Deschide docs/launch-checklist.md și verifică toate punctele
+```
+
+#### Pasul 2: Deploy to Production
+```bash
+# 2.1 - Creează un tag pentru versiune
+git tag -a v1.0.x -m "Release: [descriere scurtă]"
+git push origin v1.0.x
+
+# 2.2 - Deploy cu Vercel (RECOMANDAT)
+vercel --prod
+
+# SAU pentru deploy automat:
+git push origin main
+# (dacă ai conectat repo-ul cu Vercel)
+```
+
+#### Pasul 3: Verificare Post-Deploy
+```bash
+# 3.1 - Verifică site-ul live
+open https://pisicopedia.ro
+
+# 3.2 - Testează funcționalitățile critice:
+# ✓ Homepage se încarcă
+# ✓ Navigație funcțională
+# ✓ Paginile de rase se încarcă
+# ✓ Articolele se încarcă
+# ✓ Mobile responsive OK
+
+# 3.3 - Monitorizează pentru erori (primele 30 min)
+# Check: Google Analytics Real-Time
+# Check: Vercel Dashboard pentru erori
+```
+
+### 🔧 Vercel Setup Inițial (o singură dată)
 ```bash
 # Instalează Vercel CLI
 npm i -g vercel
 
-# Deploy
-vercel
+# Login
+vercel login
 
-# Setează variabilele de mediu în dashboard
+# Link project
+vercel link
+
+# Set environment variables
+vercel env add OPENAI_API_KEY
+vercel env add LEONARDO_API_KEY
+vercel env add NEXT_PUBLIC_GA_MEASUREMENT_ID
 ```
 
-### Netlify
+### 🔄 Deploy Automat cu GitHub
+1. Conectează repo-ul în Vercel Dashboard
+2. Setează Production Branch: `main`
+3. Orice push pe `main` = deploy automat
+
+### 📱 Preview Deployments
+```bash
+# Pentru a testa modificări înainte de production
+vercel
+# Creează un preview URL temporar
+
+# Sau creează un PR pe GitHub
+# Vercel va crea automat un preview pentru PR
+```
+
+### 🚨 Rollback în Caz de Probleme
+```bash
+# Opțiunea 1: Rollback instant în Vercel Dashboard
+# Deployments → Select previous deployment → Promote to Production
+
+# Opțiunea 2: Git revert
+git revert HEAD
+git push origin main
+
+# Opțiunea 3: Deploy tag anterior
+vercel --prod --force
+```
+
+### 📊 Monitorizare Post-Deploy
+- **Primele 5 minute**: Verifică manual funcționalitățile
+- **Prima oră**: Monitorizează Analytics pentru erori
+- **Primele 24h**: Check Search Console pentru erori de crawling
+- **După 48h**: Analizează metrici de performanță
+
+### ⚙️ Alternative: Netlify
 ```bash
 # Build command: npm run build
 # Publish directory: out
-# Adaugă variabilele de mediu în dashboard
+# Environment variables: Set în dashboard
 ```
 
 ## 🔄 Actualizare Conținut
@@ -260,6 +349,90 @@ npm run lint            # Check code quality
 - [OpenAI API](https://platform.openai.com/docs)
 - [Leonardo.ai API](https://docs.leonardo.ai/)
 - [Tailwind CSS](https://tailwindcss.com/docs)
+
+## 🚀 Primii pași după lansare
+
+### Conținut inițial implementat
+✅ **10 rase complete** cu profile detaliate MDX
+✅ **10 articole medicale** cu informații complete
+✅ **30 rase** în total planificate (lista completă în `lib/content-lists.ts`)
+✅ **30 articole** în total planificate
+
+### Ritm recomandat de publicare
+Pentru a construi autoritate și trafic organic:
+
+#### Săptămâna 1-2
+- **+3 articole noi/zi** din lista existentă
+- Focus pe urgențe și probleme comune
+- Promovare pe social media
+
+#### Săptămâna 3-4
+- **+2 rase noi/zi** din lista rămasă
+- Articole de sezon (deparazitare primăvara, etc.)
+- Începe colectare email-uri
+
+#### Luna 2+
+- **Ritm sustenabil**: 2-3 conținut nou/săptămână
+- Actualizare conținut existent
+- Guest posts și colaborări
+
+### Workflow simplu pentru conținut nou
+
+#### 1️⃣ Pentru articol nou:
+```bash
+# Opțiunea A: Generator automat cu AI
+npm run generate:article
+
+# Opțiunea B: Creare manuală
+# Copiază un template din content/articles/
+# Modifică frontmatter și conținut
+```
+
+#### 2️⃣ Pentru rasă nouă:
+```bash
+# Opțiunea A: Generator automat
+npm run generate:breed
+
+# Opțiunea B: Manual
+# Copiază template din content/breeds/
+```
+
+#### 3️⃣ Generare imagine (opțional):
+```bash
+# Pentru rase
+npm run leonardo:breeds
+
+# Pentru articole - manual pe leonardo.ai
+```
+
+#### 4️⃣ Verificare locală:
+```bash
+npm run dev
+# Verifică pe http://localhost:3000
+```
+
+#### 5️⃣ Deploy:
+```bash
+git add .
+git commit -m "Add: [nume conținut]"
+git push
+# Vercel face deploy automat
+```
+
+### Metrici de urmărit
+
+#### Primele 30 zile:
+- [ ] 30 articole publicate
+- [ ] 20 rase complete
+- [ ] Google Search Console configurat
+- [ ] 100+ pagini indexate
+- [ ] Prima poziție pentru "pisici România"
+
+#### Primele 90 zile:
+- [ ] 1000+ vizitatori unici/lună
+- [ ] 50+ keywords pe prima pagină
+- [ ] Newsletter cu 100+ abonați
+- [ ] Parteneriate cu 2-3 clinici veterinare
 
 ## 🤝 Contribuții
 

@@ -14,6 +14,7 @@
     "generate:breed": "tsx scripts/generate-breed-content.ts"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "dotenv": "^17.2.3",
     "next": "16.0.5",
     "openai": "^6.9.1",
