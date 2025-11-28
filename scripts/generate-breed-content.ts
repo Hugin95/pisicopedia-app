@@ -19,7 +19,7 @@ import {
   cleanAIContent,
   generateSlug,
 } from '../lib/ai-config';
-import { breeds } from '../lib/data';
+import { sampleBreeds } from '../lib/data';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -136,7 +136,7 @@ async function main() {
 
     // Show existing breeds
     console.log('\n📋 Rase existente în sistem:');
-    breeds.forEach((breed, index) => {
+    sampleBreeds.forEach((breed, index) => {
       console.log(`  ${index + 1}. ${breed.title} (${breed.slug})`);
     });
 
@@ -148,13 +148,13 @@ async function main() {
 
     // Check if input is a number
     const breedNumber = parseInt(input);
-    if (!isNaN(breedNumber) && breedNumber > 0 && breedNumber <= breeds.length) {
-      const selectedBreed = breeds[breedNumber - 1];
+    if (!isNaN(breedNumber) && breedNumber > 0 && breedNumber <= sampleBreeds.length) {
+      const selectedBreed = sampleBreeds[breedNumber - 1];
       breedName = selectedBreed.title;
       breedSlug = selectedBreed.slug;
     } else {
       // Check if it matches an existing breed name
-      const existingBreed = breeds.find(b =>
+      const existingBreed = sampleBreeds.find(b =>
         b.title.toLowerCase() === input.toLowerCase() ||
         b.slug === input.toLowerCase()
       );

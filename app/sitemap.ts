@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { breeds, healthArticles } from '@/lib/data';
+import { sampleBreeds, sampleArticles } from '@/lib/data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://pisicopedia.ro';
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Breed pages
-  const breedPages: MetadataRoute.Sitemap = breeds.map((breed) => ({
+  const breedPages: MetadataRoute.Sitemap = sampleBreeds.map((breed) => ({
     url: `${baseUrl}/rase/${breed.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
@@ -59,7 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Health article pages
-  const articlePages: MetadataRoute.Sitemap = healthArticles.map((article) => ({
+  const articlePages: MetadataRoute.Sitemap = sampleArticles.map((article) => ({
     url: `${baseUrl}/sanatate/${article.slug}`,
     lastModified: new Date(article.date),
     changeFrequency: 'monthly',
