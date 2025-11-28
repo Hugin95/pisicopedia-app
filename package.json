@@ -9,7 +9,9 @@
     "lint": "eslint",
     "leonardo:test": "tsx scripts/test-leonardo.ts",
     "leonardo:breeds": "tsx scripts/generate-leonardo-breeds.ts",
-    "leonardo:maine": "tsx scripts/generate-maine.ts"
+    "leonardo:maine": "tsx scripts/generate-maine.ts",
+    "generate:article": "tsx scripts/generate-article.ts",
+    "generate:breed": "tsx scripts/generate-breed-content.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
