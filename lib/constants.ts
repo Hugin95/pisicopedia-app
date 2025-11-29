@@ -62,8 +62,8 @@ export const footerNavigation = {
   legal: [
     { label: 'Contact', href: '/contact' },
     { label: 'Despre Noi', href: '/despre' },
-    { label: 'Politică Confidențialitate', href: '/privacy' },
-    { label: 'Termeni și Condiții', href: '/terms' },
+    { label: 'Politică Confidențialitate', href: '/politica-confidentialitate' },
+    { label: 'Termeni și Condiții', href: '/termeni-si-conditii' },
     { label: 'Disclaimer Medical', href: '/disclaimer' },
   ],
 };

@@ -605,7 +605,7 @@ export const sampleArticles: Article[] = [
     tags: ["simptome","digestive"],
   },
   {
-    slug: 'pisica-stranutaa',
+    slug: 'pisica-stranuta',
     title: 'Pisica strănută des: cauze și tratament',
     description: 'Pisica strănută des: cauze și tratament - ghid complet pentru proprietarii de pisici.',
     excerpt: 'Ghid complet despre pisica strănută des: cauze și tratament. Află tot ce trebuie să știi pentru sănătatea pisicii tale.',

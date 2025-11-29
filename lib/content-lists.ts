@@ -73,7 +73,7 @@ export const allArticles: ArticleInfo[] = [
     related: ['pisica-nu-mananca', 'boala-inflamatorie-intestinala', 'intoxicatii-pisici']
   },
   {
-    slug: 'pisica-stranutaa',
+    slug: 'pisica-stranuta',
     title: 'Pisica strănută des: cauze și tratament',
     category: 'simptome',
     subcategory: 'respiratorii',

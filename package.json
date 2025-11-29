@@ -15,7 +15,11 @@
     "generate:article": "tsx scripts/generate-article.ts",
     "generate:breed": "tsx scripts/generate-breed-content.ts",
     "generate:auto-post": "tsx scripts/auto-generate-post.ts",
-    "validate:content": "tsx scripts/validate-content.ts"
+    "validate:content": "tsx scripts/validate-content.ts",
+    "audit:breeds": "tsx scripts/audit-breeds.ts",
+    "audit:articles": "tsx scripts/audit-articles.ts",
+    "health:pages": "tsx scripts/health-check-pages.ts",
+    "audit:all": "npm run validate:content && npm run audit:breeds && npm run audit:articles"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
