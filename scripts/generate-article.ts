@@ -65,7 +65,14 @@ async function generateArticle(topic: string, category: string) {
         },
         {
           role: 'user',
-          content: ARTICLE_PROMPTS.generateArticle(topic, CATEGORIES[category as keyof typeof CATEGORIES]),
+          content: ARTICLE_PROMPTS.generateArticle({
+            title: topic,
+            category: CATEGORIES[category as keyof typeof CATEGORIES],
+            subcategory: category,
+            keywords: [topic.toLowerCase()],
+            description: `Articol despre ${topic}`,
+            slug: generateSlug(topic),
+          }),
         },
       ],
     });

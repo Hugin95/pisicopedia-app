@@ -186,6 +186,52 @@ pisicopedia-app/
 - JSON-LD în <head>
 ```
 
+## 🤖 Auto-Blog cu OpenAI + Leonardo
+
+### Generare Automată de Articole Complete
+Pisicopedia poate genera articole complete automat folosind:
+- **OpenAI**: Pentru generare text profesional în română
+- **Leonardo.ai**: Pentru generare imagine dedicată pentru fiecare articol
+
+### Comandă Auto-Blog:
+```bash
+# Generează automat un articol nou (text + imagine)
+npm run generate:auto-post
+```
+
+**Ce face această comandă:**
+1. ✅ Selectează automat următorul subiect prioritar din lista de topics
+2. ✅ Generează articol complet cu OpenAI (800-1200 cuvinte)
+3. ✅ Generează imagine dedicată cu Leonardo.ai
+4. ✅ Validează conținutul (structură, FAQ, disclaimer medical)
+5. ✅ Salvează în `content/articles/[slug].mdx`
+
+### Topics Disponibili pentru Auto-Generare:
+- **High Priority**: Simptome comune, comportament problematic
+- **Medium Priority**: Boli specifice, nutriție, îngrijire senior
+- **Low Priority**: Ghiduri educaționale, echipament, adaptare
+
+### Automatizare cu Cron:
+```bash
+# Exemplu cron job pentru 1 articol/zi la 10:00 AM
+0 10 * * * cd /path/to/pisicopedia-app && npm run generate:auto-post
+```
+
+### Validare Auto-Blog:
+```bash
+# Verifică articolele generate
+npm run validate:content
+
+# Verifică build-ul
+npm run build
+```
+
+**Note Importante:**
+- Articolele generate sunt marcate cu `source: "auto"` în frontmatter
+- Toate includ disclaimer medical obligatoriu
+- Imaginile sunt generate specific pentru context
+- Sistemul se oprește automat când nu mai sunt topics disponibili
+
 ## 🖼️ Generare Imagini cu Leonardo.ai
 
 Pisicopedia folosește Leonardo.ai pentru generarea profesională a imaginilor:

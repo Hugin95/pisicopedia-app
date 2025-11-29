@@ -30,6 +30,7 @@ export default function SearchBar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
+          aria-label="Caută în Pisicopedia"
           className="w-full px-5 py-3 pl-12 pr-4 text-warmgray-900 bg-white border border-warmgray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-lavender-500 focus:border-transparent"
         />
         <svg
@@ -47,6 +48,7 @@ export default function SearchBar({
         </svg>
         <button
           type="submit"
+          aria-label="Execută căutarea"
           className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-lavender-500 text-white text-sm font-medium rounded-full hover:bg-lavender-600 transition-colors duration-200"
         >
           Caută
