@@ -186,6 +186,59 @@ pisicopedia-app/
 - JSON-LD în <head>
 ```
 
+## 🖼️ Generare Imagini cu Leonardo.ai
+
+Pisicopedia folosește Leonardo.ai pentru generarea profesională a imaginilor:
+
+### Comenzi Disponibile:
+```bash
+# Generare imagini pentru toate cele 30 de rase
+npm run leonardo:breeds
+
+# Generare imagini pentru categorii articole
+npm run leonardo:articles
+
+# Generare imagini de brand (hero, despre, etc.)
+npm run leonardo:brand
+
+# Generare TOATE imaginile (rase + articole + brand)
+npm run leonardo:all
+```
+
+### Structura Imaginilor:
+- **Rase**: `public/images/breeds/[slug].jpg` - 30 imagini unice
+- **Articole**: `public/images/articles/[categorie].jpg` - 8 imagini pe categorii
+- **Brand**: `public/images/brand/` - imagini hero și de identitate
+
+### Configurare API:
+```env
+LEONARDO_API_KEY=your_api_key_here
+```
+
+## 🔍 Content Validation
+
+Scriptul de validare verifică integritatea conținutului înainte de deploy:
+
+```bash
+npm run validate:content
+```
+
+Ce verifică:
+- ✅ Existența câmpurilor obligatorii (title, slug) în toate datele
+- ✅ Verifică dacă imaginile referențiate există în `public/`
+- ⚠️  Avertizează pentru imagini lipsă (site-ul va folosi fallback automat)
+- ❌ Erori critice pentru date invalide (împiedică deploy-ul)
+
+**Target pentru lansare oficială:**
+- 0 warnings, 0 erori = Site 100% complet vizual
+- Toate cele 30 de rase cu imagini proprii
+- Toate articolele cu imagini reprezentative
+
+**Fallback automat pentru dezvoltare:**
+- Rase fără imagine → `/images/default-breed.svg`
+- Articole fără imagine → `/images/default-article.svg`
+- Componente actualizate să folosească mereu o imagine
+
 ## 🚀 Deployment
 
 ### 📋 Cum fac un Release Nou (Prod Deploy) - Pași 1-2-3
@@ -198,11 +251,17 @@ git status
 # 1.2 - Pull ultimele modificări
 git pull origin main
 
-# 1.3 - Rulează testele locale
+# 1.3 - Validează conținutul (verifică imagini și date)
+npm run validate:content
+# Verifică că toate imaginile și câmpurile obligatorii sunt prezente
+# Warning-urile (⚠️) sunt OK - imaginile lipsă vor folosi fallback
+# Erorile (❌) trebuie rezolvate înainte de deploy!
+
+# 1.4 - Rulează build-ul
 npm run build
 # Trebuie să se termine fără erori!
 
-# 1.4 - Verifică checklist-ul
+# 1.5 - Verifică checklist-ul
 # Deschide docs/launch-checklist.md și verifică toate punctele
 ```
 

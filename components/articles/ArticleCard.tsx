@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Card from '@/components/common/Card';
 import Badge from '@/components/common/Badge';
 import { Article } from '@/types';
+import { getImageSource } from '@/lib/image-utils';
 
 interface ArticleCardProps {
   article: Article;
@@ -32,15 +33,13 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     <Link href={`/sanatate/${article.slug}`}>
       <Card hover className="h-full flex flex-col">
         <div className="relative aspect-[16/9] -m-6 mb-4 overflow-hidden rounded-t-xl">
-          {article.image && (
-            <Image
-              src={article.image}
-              alt={article.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          )}
+          <Image
+            src={getImageSource(article.image, 'article')}
+            alt={article.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
           <div className="absolute top-2 left-2">
             <Badge variant={categoryColors[article.category]}>
               {categoryLabels[article.category]}

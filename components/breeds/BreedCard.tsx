@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Card from '@/components/common/Card';
 import Badge from '@/components/common/Badge';
 import { Breed } from '@/types';
+import { getImageSource } from '@/lib/image-utils';
 
 interface BreedCardProps {
   breed: Breed;
@@ -15,15 +16,13 @@ export default function BreedCard({ breed, featured = false }: BreedCardProps) {
     <Link href={`/rase/${breed.slug}`}>
       <Card hover className="h-full">
         <div className="relative aspect-[4/3] -m-6 mb-4 overflow-hidden rounded-t-xl">
-          {breed.image && (
-            <Image
-              src={breed.image}
-              alt={breed.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          )}
+          <Image
+            src={getImageSource(breed.image, 'breed')}
+            alt={breed.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
           {featured && (
             <div className="absolute top-2 left-2">
               <Badge variant="secondary">Popular</Badge>

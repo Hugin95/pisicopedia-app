@@ -8,10 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "leonardo:test": "tsx scripts/test-leonardo.ts",
-    "leonardo:breeds": "tsx scripts/generate-leonardo-breeds.ts",
-    "leonardo:maine": "tsx scripts/generate-maine.ts",
+    "leonardo:breeds": "tsx scripts/generate-all-breed-images.ts",
+    "leonardo:articles": "tsx scripts/generate-article-category-images.ts",
+    "leonardo:brand": "tsx scripts/generate-brand-images.ts",
+    "leonardo:all": "npm run leonardo:breeds && npm run leonardo:articles && npm run leonardo:brand",
     "generate:article": "tsx scripts/generate-article.ts",
-    "generate:breed": "tsx scripts/generate-breed-content.ts"
+    "generate:breed": "tsx scripts/generate-breed-content.ts",
+    "validate:content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

@@ -3,6 +3,15 @@
 ## ✅ Pre-Deploy Checklist
 
 ### 🔧 Verificări Tehnice
+- [ ] **Validare conținut**
+  ```bash
+  npm run validate:content
+  ```
+  - Verifică toate imaginile și câmpurile obligatorii
+  - Pentru lansare oficială: 0 warnings și 0 erori (✅ 100% complet)
+  - Pentru dezvoltare: warning-urile (⚠️) sunt acceptabile
+  - Generare imagini complete: `npm run leonardo:all`
+
 - [ ] **Build fără erori**
   ```bash
   npm run build

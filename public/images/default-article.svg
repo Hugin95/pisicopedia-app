@@ -1,0 +1,16 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fff5f7"/>
+  <!-- Medical cross -->
+  <g transform="translate(200, 120)">
+    <rect x="-40" y="-10" width="80" height="20" fill="#ffd0dc" rx="2"/>
+    <rect x="-10" y="-40" width="20" height="80" fill="#ffd0dc" rx="2"/>
+  </g>
+  <!-- Text lines -->
+  <rect x="60" y="180" width="280" height="8" fill="#ffb3c8" rx="4"/>
+  <rect x="60" y="195" width="240" height="8" fill="#ffb3c8" rx="4"/>
+  <rect x="60" y="210" width="200" height="8" fill="#ffb3c8" rx="4"/>
+
+  <text x="200" y="260" text-anchor="middle" font-size="14" fill="#f48fb1" font-family="Inter, sans-serif">
+    Imagine articol medical
+  </text>
+</svg>

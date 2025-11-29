@@ -8,6 +8,7 @@ import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
 import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getBreedBySlug, getAllBreeds } from '@/lib/data';
+import { getImageSource } from '@/lib/image-utils';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -58,15 +59,13 @@ export default async function BreedPage({ params }: PageProps) {
     <>
       {/* Hero Section with Breed Image */}
       <section className="relative h-[400px] bg-gradient-to-br from-lavender-100 to-rose-100">
-        {breed.image && (
-          <Image
-            src={breed.image}
-            alt={breed.title}
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
-        )}
+        <Image
+          src={getImageSource(breed.image, 'breed')}
+          alt={breed.title}
+          fill
+          className="object-cover opacity-20"
+          priority
+        />
         <Container>
           <div className="relative pt-20">
             <nav className="text-sm mb-4">
