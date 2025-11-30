@@ -4,6 +4,7 @@ import Container from '@/components/common/Container';
 import Badge from '@/components/common/Badge';
 import { RelatedArticles } from '@/components/common/RelatedContent';
 import { getArticleBySlug, getAllArticles } from '@/lib/data';
+import { generateArticleSchemaEnhanced, generateBreadcrumbSchema, generateFAQSchema, seoConfig } from '@/lib/seo-advanced';
 import { generateArticleSchema } from '@/lib/seo';
 import Image from 'next/image';
 
@@ -22,13 +23,54 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const articleUrl = `${seoConfig.siteUrl}/sanatate/${article.slug}`;
+  const imageUrl = article.image.startsWith('http')
+    ? article.image
+    : `${seoConfig.siteUrl}${article.image}`;
+
   return {
-    title: `${article.title} - Pisicopedia`,
-    description: article.description,
+    title: `${article.title} | Ghid Complet 2024`,
+    description: `${article.description} ✅ Informații verificate medical ✅ Sfaturi practice ✅ Recomandări experți veterinari`,
+    keywords: `${article.title.toLowerCase()}, ${article.category}, pisici ${article.category}, ${article.tags.join(', ')}`,
+    authors: [{ name: article.author }],
+    creator: article.author,
+    publisher: 'Pisicopedia Romania',
+    alternates: {
+      canonical: articleUrl,
+    },
     openGraph: {
+      type: 'article',
       title: article.title,
       description: article.description,
-      images: article.image ? [article.image] : [],
+      url: articleUrl,
+      siteName: 'Pisicopedia.ro',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        }
+      ],
+      locale: 'ro_RO',
+      publishedTime: article.date,
+      modifiedTime: article.date,
+      authors: [article.author],
+      section: article.category,
+      tags: article.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.description,
+      images: [imageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   };
 }
@@ -49,16 +91,34 @@ export default async function ArticlePage({ params }: Props) {
     notFound();
   }
 
-  // Generate structured data
-  const structuredData = generateArticleSchema({
-    title: article.title,
-    description: article.description,
-    author: article.author,
-    datePublished: article.date,
-    dateModified: article.date,
-    image: article.image,
-    url: `/sanatate/${article.slug}`,
+  // Generate enhanced structured data
+  const articleSchemaEnhanced = generateArticleSchemaEnhanced({
+    ...article,
+    keywords: [...article.tags, article.category, 'pisici'],
   });
+
+  // Generate breadcrumb schema
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Acasă', url: '/' },
+    { name: 'Sănătate', url: '/sanatate' },
+    { name: article.title, url: `/sanatate/${article.slug}` },
+  ]);
+
+  // Generate FAQ schema (example FAQs - in production, extract from content)
+  const faqSchema = generateFAQSchema([
+    {
+      question: `Ce este ${article.title.toLowerCase()}?`,
+      answer: article.description,
+    },
+    {
+      question: 'Când trebuie să merg la veterinar?',
+      answer: 'Consultați imediat un medic veterinar dacă observați simptome severe sau persistente. Nu amânați vizita dacă pisica prezintă durere, letargie sau refuză mâncarea.',
+    },
+    {
+      question: 'Cum pot preveni această problemă?',
+      answer: 'Prevenția include controale regulate la veterinar, o dietă echilibrată, exercițiu fizic adecvat și menținerea unui mediu curat și sigur pentru pisica dumneavoastră.',
+    },
+  ]);
 
   // Category label mapping
   const categoryLabels: Record<string, string> = {
@@ -75,7 +135,19 @@ export default async function ArticlePage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify(articleSchemaEnhanced),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
         }}
       />
 

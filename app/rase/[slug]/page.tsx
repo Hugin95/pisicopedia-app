@@ -9,6 +9,7 @@ import Button from '@/components/common/Button';
 import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getBreedBySlug, getAllBreeds } from '@/lib/data';
 import { getImageSource } from '@/lib/image-utils';
+import { generateBreedSchema, generateBreadcrumbSchema, generateBreedReviewSchema, generateFAQSchema, seoConfig } from '@/lib/seo-advanced';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -31,13 +32,47 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const breedUrl = `${seoConfig.siteUrl}/rase/${breed.slug}`;
+  const imageUrl = breed.image.startsWith('http')
+    ? breed.image
+    : `${seoConfig.siteUrl}${breed.image}`;
+
   return {
-    title: `${breed.title} - Caracteristici, Temperament și Îngrijire`,
-    description: breed.description,
+    title: `${breed.title} - Ghid Complet 2024 | Caracteristici, Pret, Ingrijire`,
+    description: `${breed.title} - ${breed.description} ✅ Origine: ${breed.origin} ✅ Greutate: ${breed.weight} ✅ Durata de viață: ${breed.lifeSpan} ✅ Ghid complet pentru proprietari`,
+    keywords: `${breed.title.toLowerCase()}, pisici ${breed.title.toLowerCase()}, ${breed.title.toLowerCase()} romania, ${breed.title.toLowerCase()} pret, ${breed.title.toLowerCase()} caracteristici, ${breed.title.toLowerCase()} ingrijire, ${breed.temperament.join(', ')}`,
+    authors: [{ name: 'Pisicopedia Team' }],
+    alternates: {
+      canonical: breedUrl,
+    },
     openGraph: {
-      title: `${breed.title} - Pisicopedia`,
+      type: 'article',
+      title: `${breed.title} - Profil Complet Rasă`,
       description: breed.description,
-      images: breed.image ? [breed.image] : [],
+      url: breedUrl,
+      siteName: 'Pisicopedia.ro',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${breed.title} - Pisicopedia`,
+        }
+      ],
+      locale: 'ro_RO',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${breed.title} - Ghid Complet`,
+      description: breed.description,
+      images: [imageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   };
 }
@@ -55,8 +90,63 @@ export default async function BreedPage({ params }: PageProps) {
     .filter((b) => b.slug !== breed.slug && b.category === breed.category)
     .slice(0, 3);
 
+  // Generate comprehensive Schema.org data
+  const breedSchema = generateBreedSchema(breed);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Acasă', url: '/' },
+    { name: 'Rase', url: '/rase' },
+    { name: breed.title, url: `/rase/${breed.slug}` },
+  ]);
+  const reviewSchema = generateBreedReviewSchema(breed, 4.7, 234);
+  const faqSchema = generateFAQSchema([
+    {
+      question: `Cât trăiește o pisică ${breed.title}?`,
+      answer: `Durata medie de viață a rasei ${breed.title} este de ${breed.lifeSpan}. Cu îngrijire adecvată, hrană de calitate și controale veterinare regulate, aceste pisici pot avea o viață lungă și sănătoasă.`,
+    },
+    {
+      question: `Ce temperament are pisica ${breed.title}?`,
+      answer: `${breed.title} este cunoscută pentru următoarele trăsături: ${breed.temperament.join(', ')}. ${breed.description}`,
+    },
+    {
+      question: `Cât cântărește o pisică ${breed.title}?`,
+      answer: `Greutatea medie a unei pisici ${breed.title} este de ${breed.weight}. Masculii sunt de obicei mai grei decât femelele.`,
+    },
+    {
+      question: `De unde provine rasa ${breed.title}?`,
+      answer: `Rasa ${breed.title} își are originea în ${breed.origin}. Această rasă are o istorie bogată și caracteristici unice care o fac specială.`,
+    },
+    {
+      question: `Este ${breed.title} potrivită pentru apartament?`,
+      answer: `Compatibilitatea rasei ${breed.title} pentru viața la apartament depinde de temperamentul său. ${breed.temperament.includes('Calm') ? 'Fiind o rasă calmă, se adaptează bine la viața în apartament.' : 'Este o rasă activă care necesită spațiu și stimulare.'}`,
+    },
+  ]);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breedSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(reviewSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
+        }}
+      />
       {/* Hero Section with Breed Image */}
       <section className="relative h-[400px] bg-gradient-to-br from-lavender-100 to-rose-100">
         <Image

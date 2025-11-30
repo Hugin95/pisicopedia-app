@@ -1,0 +1,158 @@
+# Pisicopedia.ro - Robots.txt
+# Optimized for maximum SEO crawling efficiency
+# Last updated: 2024
+
+# Google
+User-agent: Googlebot
+Crawl-delay: 0
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Sitemap: https://pisicopedia.ro/sitemap.xml
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+Disallow: /api/
+Disallow: /_next/
+
+# Bing
+User-agent: Bingbot
+Crawl-delay: 1
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Sitemap: https://pisicopedia.ro/sitemap.xml
+
+# Yandex
+User-agent: Yandex
+Crawl-delay: 2
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&fb_action_ids&fb_action_types&fb_source&fbclid
+
+# Facebook
+User-agent: facebookexternalhit
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Twitter
+User-agent: Twitterbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# WhatsApp
+User-agent: WhatsApp
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# Pinterest
+User-agent: Pinterest
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# SEO Tools - Allow full access
+User-agent: AhrefsBot
+Allow: /
+
+User-agent: SEMrushBot
+Allow: /
+
+User-agent: DotBot
+Allow: /
+
+User-agent: MJ12bot
+Crawl-delay: 10
+Allow: /
+
+# Bad bots - Block
+User-agent: SemrushBot-SA
+Disallow: /
+
+User-agent: MegaIndex.ru
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: AhrefsBot/5.2
+Crawl-delay: 10
+
+# AI Crawlers - Control access
+User-agent: GPTBot
+Allow: /rase/
+Allow: /sanatate/
+Allow: /ghiduri/
+Disallow: /api/
+Disallow: /admin/
+Crawl-delay: 5
+
+User-agent: ChatGPT-User
+Allow: /rase/
+Allow: /sanatate/
+Allow: /ghiduri/
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: ClaudeBot
+Allow: /rase/
+Allow: /sanatate/
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /
+
+# Default - All other bots
+User-agent: *
+Crawl-delay: 3
+Allow: /
+Disallow: /api/
+Disallow: /_next/static/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /cdn-cgi/
+Disallow: /*?replytocom=
+Disallow: /*?p=
+Disallow: /*?preview=
+Disallow: /*?debug=
+Disallow: /*?test=
+Disallow: /*?sessionid=
+Disallow: /*?token=
+
+# Sitemap location
+Sitemap: https://pisicopedia.ro/sitemap.xml
+Sitemap: https://pisicopedia.ro/sitemap-breeds.xml
+Sitemap: https://pisicopedia.ro/sitemap-articles.xml
+Sitemap: https://pisicopedia.ro/sitemap-images.xml
+
+# Host preference (for Yandex)
+Host: pisicopedia.ro
+
+# End of robots.txt
