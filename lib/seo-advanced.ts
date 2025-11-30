@@ -78,10 +78,13 @@ export function generateArticleSchemaEnhanced(article: Article & { keywords?: st
       : `${seoConfig.siteUrl}${article.image}`,
     datePublished: article.date,
     dateModified: article.date,
-    author: {
+    author: article.author ? {
       '@type': 'Person',
       name: article.author,
       url: `${seoConfig.siteUrl}/autor/${article.author.toLowerCase().replace(/\s+/g, '-')}`
+    } : {
+      '@type': 'Person',
+      name: seoConfig.organization.name
     },
     publisher: {
       '@type': 'Organization',
@@ -96,7 +99,7 @@ export function generateArticleSchemaEnhanced(article: Article & { keywords?: st
       '@id': `${seoConfig.siteUrl}/sanatate/${article.slug}`
     },
     wordCount: article.readingTime * 200, // Approximate
-    keywords: article.keywords?.join(', ') || article.tags.join(', '),
+    keywords: article.keywords?.join(', ') || article.tags?.join(', ') || article.category,
     articleSection: article.category,
     inLanguage: 'ro-RO',
     isAccessibleForFree: true,

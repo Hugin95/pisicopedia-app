@@ -99,7 +99,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     return {
       url: `${baseUrl}/sanatate/${article.slug}`,
-      lastModified: existingArticle ? new Date(existingArticle.date) : lastMonth,
+      lastModified: existingArticle?.date ? new Date(existingArticle.date) : lastMonth,
       changeFrequency: isImportant ? 'weekly' : 'monthly',
       priority: isImportant ? 0.75 : hasContent ? 0.7 : 0.55,
     };

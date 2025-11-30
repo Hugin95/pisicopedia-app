@@ -40,7 +40,7 @@ export default function SanateatePage() {
         (article) =>
           article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          article.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+          (article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
       );
     }
 
@@ -54,7 +54,9 @@ export default function SanateatePage() {
     // Sort
     filtered.sort((a, b) => {
       if (sortBy === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA;
       } else {
         return a.title.localeCompare(b.title, 'ro');
       }

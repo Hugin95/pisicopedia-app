@@ -33,14 +33,14 @@ export interface Breed {
 export interface Article {
   slug: string;
   title: string;
-  category: 'symptoms' | 'diseases' | 'prevention' | 'procedures' | 'nutrition' | 'behavior';
+  category: 'symptoms' | 'diseases' | 'prevention' | 'procedures' | 'nutrition' | 'behavior' | 'simptome' | 'boli' | 'preventie' | 'proceduri' | 'nutritie' | 'comportament' | 'ingrijire' | 'ghiduri';
   description: string;
-  excerpt: string;
+  excerpt?: string;
   image: string;
-  author: string;
-  date: string;
+  author?: string;
+  date?: string;
   readingTime: number; // in minutes
-  tags: string[];
+  tags?: string[];
   content?: string;
   featured?: boolean;
 
@@ -56,13 +56,13 @@ export interface Guide {
   slug: string;
   title: string;
   description: string;
-  category: 'medical' | 'care' | 'lifecycle';
+  category: 'medical' | 'care' | 'lifecycle' | 'ghid-cumparare' | 'ghid-ingrijire';
   image: string;
   icon?: string;
   readingTime: number;
   steps?: GuideStep[];
   checkpoints?: string[];
-  tags: string[];
+  tags?: string[];
   content?: string;
 }
 

@@ -31,9 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${article.title} | Ghid Complet 2024`,
     description: `${article.description} ✅ Informații verificate medical ✅ Sfaturi practice ✅ Recomandări experți veterinari`,
-    keywords: `${article.title.toLowerCase()}, ${article.category}, pisici ${article.category}, ${article.tags.join(', ')}`,
-    authors: [{ name: article.author }],
-    creator: article.author,
+    keywords: `${article.title.toLowerCase()}, ${article.category}, pisici ${article.category}${article.tags ? ', ' + article.tags.join(', ') : ''}`,
+    authors: article.author ? [{ name: article.author }] : [],
+    creator: article.author || 'Dr. Veterinar Pisicopedia',
     publisher: 'Pisicopedia Romania',
     alternates: {
       canonical: articleUrl,
@@ -53,11 +53,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         }
       ],
       locale: 'ro_RO',
-      publishedTime: article.date,
-      modifiedTime: article.date,
-      authors: [article.author],
+      publishedTime: article.date || undefined,
+      modifiedTime: article.date || undefined,
+      authors: article.author ? [article.author] : undefined,
       section: article.category,
-      tags: article.tags,
+      tags: article.tags || undefined,
     },
     twitter: {
       card: 'summary_large_image',
@@ -94,7 +94,7 @@ export default async function ArticlePage({ params }: Props) {
   // Generate enhanced structured data
   const articleSchemaEnhanced = generateArticleSchemaEnhanced({
     ...article,
-    keywords: [...article.tags, article.category, 'pisici'],
+    keywords: [...(article.tags || []), article.category, 'pisici'],
   });
 
   // Generate breadcrumb schema
@@ -183,14 +183,22 @@ export default async function ArticlePage({ params }: Props) {
                   {article.title}
                 </h1>
                 <div className="flex items-center justify-center space-x-4 text-warmgray-600">
-                  <span>{article.author}</span>
-                  <span>•</span>
-                  <time>{new Date(article.date).toLocaleDateString('ro-RO', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}</time>
-                  <span>•</span>
+                  {article.author && (
+                    <>
+                      <span>{article.author}</span>
+                      <span>•</span>
+                    </>
+                  )}
+                  {article.date && (
+                    <>
+                      <time>{new Date(article.date).toLocaleDateString('ro-RO', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}</time>
+                      <span>•</span>
+                    </>
+                  )}
                   <span>{article.readingTime} min citire</span>
                 </div>
               </div>
