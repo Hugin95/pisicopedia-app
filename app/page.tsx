@@ -5,6 +5,7 @@ import SearchBar from '@/components/forms/SearchBar';
 import BreedCard from '@/components/breeds/BreedCard';
 import ArticleCard from '@/components/articles/ArticleCard';
 import GuideCard from '@/components/guides/GuideCard';
+import WhyPisicopedia from '@/components/common/WhyPisicopedia';
 import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getTopBreeds, getLatestArticles, getTopGuides } from '@/lib/data';
 
@@ -41,12 +42,8 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* Banner Placeholder */}
-      <section className="py-8 bg-white">
-        <Container>
-          <BannerPlaceholder size="970x250" />
-        </Container>
-      </section>
+      {/* Why Pisicopedia Section */}
+      <WhyPisicopedia />
 
       {/* Popular Breeds Section */}
       <section className="py-16 bg-white">

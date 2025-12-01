@@ -21,7 +21,7 @@ export default function Card({
   };
 
   const hoverClass = hover
-    ? 'hover:shadow-lg hover:-translate-y-1 transition-all duration-300'
+    ? 'hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-in-out'
     : '';
 
   return (

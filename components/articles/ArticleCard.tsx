@@ -48,14 +48,14 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   } as const;
 
   return (
-    <Link href={`/sanatate/${article.slug}`}>
+    <Link href={`/sanatate/${article.slug}`} className="group">
       <Card hover className="h-full flex flex-col">
         <div className="relative aspect-[16/9] -m-6 mb-4 overflow-hidden rounded-t-xl">
           <Image
             src={getImageSource(article.image, 'article')}
             alt={article.title}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute top-2 left-2">

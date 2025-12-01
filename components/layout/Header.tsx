@@ -16,11 +16,37 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <svg
-              className="w-8 h-8 text-lavender-500"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+              className="w-8 h-8"
+              viewBox="0 0 32 32"
+              fill="none"
             >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              {/* Cat head shape - lavender */}
+              <path
+                d="M16 6c-4.5 0-8 2.5-8 7v7c0 3.5 3.5 6 8 6s8-2.5 8-6v-7c0-4.5-3.5-7-8-7z"
+                fill="#9b82c9"
+              />
+              {/* Left ear */}
+              <path
+                d="M9 6L6 11l3-1.5V6z"
+                fill="#9b82c9"
+              />
+              {/* Right ear */}
+              <path
+                d="M23 6l3 5-3-1.5V6z"
+                fill="#9b82c9"
+              />
+              {/* Eyes */}
+              <circle cx="12" cy="14" r="1.5" fill="white" opacity="0.7" />
+              <circle cx="20" cy="14" r="1.5" fill="white" opacity="0.7" />
+              {/* Checkmark badge - emerald */}
+              <circle cx="24" cy="24" r="5.5" fill="#10b981" />
+              <path
+                d="M21.5 24l1.5 1.5 3-3"
+                stroke="white"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <span className="text-xl font-bold text-warmgray-900">
               Pisicopedia

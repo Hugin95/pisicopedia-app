@@ -38,7 +38,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
   };
 
   return (
-    <Link href={`/ghiduri/${guide.slug}`}>
+    <Link href={`/ghiduri/${guide.slug}`} className="group">
       <Card hover className="h-full flex flex-col">
         <div className="relative aspect-[16/9] -m-6 mb-4 overflow-hidden rounded-t-xl bg-gradient-to-br from-lavender-100 to-rose-100">
           {guide.image ? (
@@ -46,7 +46,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
               src={guide.image}
               alt={guide.title}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
