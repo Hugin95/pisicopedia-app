@@ -13,44 +13,78 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-warmgray-200">
       <Container>
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <svg
-              className="w-8 h-8"
-              viewBox="0 0 32 32"
-              fill="none"
-            >
-              {/* Cat head shape - lavender */}
-              <path
-                d="M16 6c-4.5 0-8 2.5-8 7v7c0 3.5 3.5 6 8 6s8-2.5 8-6v-7c0-4.5-3.5-7-8-7z"
-                fill="#9b82c9"
-              />
-              {/* Left ear */}
-              <path
-                d="M9 6L6 11l3-1.5V6z"
-                fill="#9b82c9"
-              />
-              {/* Right ear */}
-              <path
-                d="M23 6l3 5-3-1.5V6z"
-                fill="#9b82c9"
-              />
-              {/* Eyes */}
-              <circle cx="12" cy="14" r="1.5" fill="white" opacity="0.7" />
-              <circle cx="20" cy="14" r="1.5" fill="white" opacity="0.7" />
-              {/* Checkmark badge - emerald */}
-              <circle cx="24" cy="24" r="5.5" fill="#10b981" />
-              <path
-                d="M21.5 24l1.5 1.5 3-3"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="text-xl font-bold text-warmgray-900">
-              Pisicopedia
-            </span>
+          {/* Logo - Premium Badge Design */}
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <svg
+                className="w-10 h-10 transition-transform duration-200 group-hover:scale-105"
+                viewBox="0 0 48 48"
+                fill="none"
+              >
+                <defs>
+                  <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#b794d9" />
+                    <stop offset="100%" stopColor="#9b82c9" />
+                  </linearGradient>
+                  <linearGradient id="checkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#059669" />
+                  </linearGradient>
+                </defs>
+
+                {/* Background circle badge */}
+                <circle cx="24" cy="24" r="22" fill="url(#badgeGradient)" opacity="0.15" />
+                <circle cx="24" cy="24" r="22" stroke="url(#badgeGradient)" strokeWidth="1.5" fill="none" />
+
+                {/* Elegant cat silhouette */}
+                <g transform="translate(24, 24)">
+                  {/* Head */}
+                  <ellipse cx="0" cy="-2" rx="7" ry="8" fill="#9b82c9" />
+
+                  {/* Ears */}
+                  <path d="M-6 -9 L-9 -14 L-4 -10 Z" fill="#9b82c9" />
+                  <path d="M6 -9 L9 -14 L4 -10 Z" fill="#9b82c9" />
+                  <path d="M-6 -9 L-7.5 -12 L-5 -10 Z" fill="#d8b4e2" opacity="0.6" />
+                  <path d="M6 -9 L7.5 -12 L5 -10 Z" fill="#d8b4e2" opacity="0.6" />
+
+                  {/* Eyes */}
+                  <ellipse cx="-3" cy="-3" rx="1.2" ry="2" fill="white" opacity="0.9" />
+                  <ellipse cx="3" cy="-3" rx="1.2" ry="2" fill="white" opacity="0.9" />
+                  <ellipse cx="-3" cy="-2.5" rx="0.6" ry="1.2" fill="#5a4a6a" />
+                  <ellipse cx="3" cy="-2.5" rx="0.6" ry="1.2" fill="#5a4a6a" />
+
+                  {/* Nose */}
+                  <path d="M0 1 L-1 2.5 L1 2.5 Z" fill="#e89ba3" />
+
+                  {/* Whisker hints */}
+                  <circle cx="-6" cy="0" r="0.5" fill="#8a72b9" opacity="0.4" />
+                  <circle cx="6" cy="0" r="0.5" fill="#8a72b9" opacity="0.4" />
+
+                  {/* Body curve */}
+                  <path d="M-6 6 Q0 8 6 6" stroke="#9b82c9" strokeWidth="3" fill="none" opacity="0.6" />
+                </g>
+
+                {/* Medical trust checkmark */}
+                <circle cx="37" cy="37" r="8" fill="url(#checkGradient)" />
+                <circle cx="37" cy="37" r="8" fill="white" opacity="0.1" />
+                <path
+                  d="M33 37 L35.5 39.5 L41 34"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-warmgray-900 leading-none">
+                Pisicopedia
+              </span>
+              <span className="text-[10px] text-emerald-600 font-medium leading-none mt-0.5 tracking-wide">
+                VERIFICAT MEDICAL
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
