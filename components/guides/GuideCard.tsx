@@ -70,11 +70,11 @@ export default function GuideCard({ guide }: GuideCardProps) {
             </span>
           </div>
 
-          <h3 className="text-lg font-semibold text-warmgray-900 mb-2">
+          <h3 className="text-lg font-semibold text-warmgray-900 mb-2 line-clamp-2">
             {guide.title}
           </h3>
 
-          <p className="text-sm text-warmgray-600 mb-3 flex-1">
+          <p className="text-sm text-warmgray-600 mb-3 flex-1 line-clamp-3">
             {guide.description}
           </p>
 
