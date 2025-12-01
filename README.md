@@ -186,51 +186,612 @@ pisicopedia-app/
 - JSON-LD în <head>
 ```
 
-## 🤖 Auto-Blog cu OpenAI + Leonardo
+## 🤖 Sistem AUTO-POST cu Coadă (Queue-based)
 
-### Generare Automată de Articole Complete
-Pisicopedia poate genera articole complete automat folosind:
-- **OpenAI**: Pentru generare text profesional în română
-- **Leonardo.ai**: Pentru generare imagine dedicată pentru fiecare articol
+### Ce este Auto-Post?
+Sistem complet automatizat pentru generarea de articole noi folosind:
+- **Coadă JSON** (`content/auto-queue.json`) - 40 topicuri pre-definite
+- **OpenAI GPT-4** - Generare text profesional în română (1400-1800 cuvinte)
+- **Leonardo.ai** - Generare imagini dedicate pentru fiecare articol
+- **Actualizare automată** - Adaugă articolele noi în `lib/content-lists.ts`
 
-### Comandă Auto-Blog:
+### Comenzi Disponibile
+
+#### Generare 1 Articol:
 ```bash
-# Generează automat un articol nou (text + imagine)
-npm run generate:auto-post
+npm run auto:post
 ```
 
-**Ce face această comandă:**
-1. ✅ Selectează automat următorul subiect prioritar din lista de topics
-2. ✅ Generează articol complet cu OpenAI (800-1200 cuvinte)
-3. ✅ Generează imagine dedicată cu Leonardo.ai
-4. ✅ Validează conținutul (structură, FAQ, disclaimer medical)
-5. ✅ Salvează în `content/articles/[slug].mdx`
+**Ce face:**
+1. ✅ Citește `content/auto-queue.json`
+2. ✅ Selectează primul topic cu `status: "pending"`
+3. ✅ Generează conținut complet cu OpenAI (1400-1800 cuvinte)
+4. ✅ Generează imagine cu Leonardo.ai
+5. ✅ Salvează MDX în `content/articles/` sau `content/guides/`
+6. ✅ Salvează imagine în `public/images/articles/` sau `public/images/guides/`
+7. ✅ Actualizează `lib/content-lists.ts` automat
+8. ✅ Marchează topic-ul ca `status: "done"` în queue
 
-### Topics Disponibili pentru Auto-Generare:
-- **High Priority**: Simptome comune, comportament problematic
-- **Medium Priority**: Boli specifice, nutriție, îngrijire senior
-- **Low Priority**: Ghiduri educaționale, echipament, adaptare
-
-### Automatizare cu Cron:
+#### Generare în Lot (Batch):
 ```bash
-# Exemplu cron job pentru 1 articol/zi la 10:00 AM
-0 10 * * * cd /path/to/pisicopedia-app && npm run generate:auto-post
+npm run auto:batch
+# Generează 3 articole automat (configurabil în package.json)
+
+# Sau cu argument custom:
+npx tsx scripts/auto-post.ts --batch=5
+# Generează 5 articole
 ```
 
-### Validare Auto-Blog:
+### Configurare Chei API
+
+Adaugă în `.env.local`:
+```env
+# OpenAI - Pentru generare text
+OPENAI_API_KEY=sk-...
+
+# Leonardo.ai - Pentru generare imagini (OPȚIONAL)
+LEONARDO_API_KEY=...
+```
+
+**Notă:** Dacă `LEONARDO_API_KEY` lipsește, sistemul va folosi imagini placeholder automat.
+
+### Cum Funcționează Coada (Queue)?
+
+#### 1. Editare Topics
+Deschide `content/auto-queue.json` și adaugă/modifică topicuri:
+
+```json
+[
+  {
+    "id": "T001",
+    "title": "Pisica vomită spumă albă dimineața",
+    "slug": "pisica-vomita-spuma-alba-dimineata",
+    "category": "sanatate",
+    "focusKeyword": "pisica vomita spuma alba dimineata",
+    "status": "pending",
+    "createdAt": null,
+    "publishedAt": null
+  }
+]
+```
+
+**Categorii disponibile:**
+- `sanatate` - Articole medicale (salvate în `content/articles/`)
+- `ghid` - Ghiduri practice (salvate în `content/guides/`)
+
+#### 2. Rulare Auto-Post
 ```bash
-# Verifică articolele generate
+npm run auto:post
+```
+
+Sistemul va:
+- ✅ Găsi primul topic cu `"status": "pending"`
+- ✅ Genera articolul complet
+- ✅ Marca topic-ul ca `"status": "done"`
+- ✅ Adăuga timestamp-uri: `createdAt`, `publishedAt`
+
+#### 3. Verificare Rezultat
+```bash
+# Verifică conținutul generat
 npm run validate:content
 
 # Verifică build-ul
 npm run build
 ```
 
-**Note Importante:**
-- Articolele generate sunt marcate cu `source: "auto"` în frontmatter
-- Toate includ disclaimer medical obligatoriu
-- Imaginile sunt generate specific pentru context
-- Sistemul se oprește automat când nu mai sunt topics disponibili
+### Structură Articole Generate
+
+#### Pentru categoria "sanatate":
+```markdown
+---
+title: "Pisica vomită spumă albă dimineața"
+slug: "pisica-vomita-spuma-alba-dimineata"
+category: "sanatate"
+focusKeyword: "pisica vomita spuma alba dimineata"
+image: "/images/articles/pisica-vomita-spuma-alba-dimineata.jpg"
+---
+
+## Introducere (răspuns direct)
+
+## Cauze posibile
+
+## Ce poți observa acasă
+
+## Ce poți face în siguranță acasă
+
+## Când trebuie mers de urgență la veterinar
+
+## Prevenție
+
+## Întrebări frecvente
+
+## Concluzie
+
+**Notă:** Disclaimer medical obligatoriu
+```
+
+#### Pentru categoria "ghid":
+```markdown
+---
+title: "Cum să socializezi o pisică adoptată adult"
+category: "ghid"
+---
+
+## Introducere
+
+## Înțelegerea pisicii adulte
+
+## Pregătirea casei
+
+## Etapele socializării (pas cu pas)
+
+## Greșeli de evitat
+
+## Întrebări frecvente
+
+## Concluzie
+```
+
+### Automatizare cu Cron Job
+
+Pentru generare automată 1 articol/zi:
+
+```bash
+# Linux/Mac - Editează crontab
+crontab -e
+
+# Adaugă linia:
+0 10 * * * cd /path/to/pisicopedia-app && npm run auto:post && npm run build
+# Rulează zilnic la 10:00 AM
+
+# Windows - Task Scheduler
+# Creează task cu acțiunea: npm run auto:post
+```
+
+### Monitorizare Queue
+
+Verifică status-ul queue-ului:
+```bash
+# Citește auto-queue.json
+cat content/auto-queue.json | grep "pending" | wc -l
+# Afișează numărul de articole rămase
+```
+
+### Resetare Queue (dacă e nevoie)
+
+Pentru a reseta toate topic-urile la `pending`:
+```bash
+# Editează manual auto-queue.json
+# SAU rulează un script custom pentru reset
+```
+
+### Note Importante
+- ✅ **Queue-ul este editabil** - Adaugă noi topicuri oricând în `auto-queue.json`
+- ✅ **Failsafe** - Dacă Leonardo.ai eșuează, folosește placeholder automat
+- ✅ **Validare automată** - Toate articolele includ disclaimer medical
+- ✅ **SEO-ready** - Focus keyword, meta description, structured FAQ
+- ⚠️ **Cost OpenAI** - Fiecare articol costă ~$0.10-0.20 (GPT-4)
+- ⚠️ **Cost Leonardo** - Fiecare imagine costă ~$0.01-0.05
+
+---
+
+## 🔁 Auto-Post AUTOPILOT (Vercel Cron)
+
+### Ce este Autopilot?
+
+Sistem **complet automat** care rulează pe Vercel fără nicio intervenție manuală. Site-ul generează singur articole noi la interval regulat folosind **Vercel Cron Jobs**.
+
+**Zero comenzi în terminal** - tot ce trebuie e să configurezi variabilele de mediu și să dai push pe Vercel!
+
+### Arhitectură
+
+```
+Vercel Cron (la fiecare 2 ore)
+    ↓
+POST /api/auto-post?secret=CRON_SECRET
+    ↓
+lib/auto-post.ts → runAutoPostOnce()
+    ↓
+1. Verifică limita zilnică (MAX_AUTO_POSTS_PER_DAY)
+2. Citește content/auto-queue.json
+3. Generează articol cu OpenAI
+4. Generează imagine cu Leonardo.ai
+5. Salvează MDX + imagine
+6. Actualizează lib/content-lists.ts
+7. Marchează topic ca "done"
+8. Loghează în logs/auto-post-[YYYY-MM-DD].json
+```
+
+### Setup Pas cu Pas
+
+#### 1. Configurare Environment Variables în Vercel
+
+Du-te în **Vercel Dashboard** → Settings → Environment Variables și adaugă:
+
+```env
+# OBLIGATORII
+OPENAI_API_KEY=sk-...
+CRON_SECRET=your-strong-random-secret-here
+
+# OPȚIONALE
+LEONARDO_API_KEY=...
+MAX_AUTO_POSTS_PER_DAY=5
+```
+
+**⚠️ Important:** `CRON_SECRET` trebuie să fie un string aleatoriu puternic (min 32 caractere). Folosește un generator de parole sau:
+
+```bash
+# Generează un secret puternic
+openssl rand -hex 32
+```
+
+#### 2. Verifică vercel.json
+
+Fișierul `vercel.json` este deja configurat:
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/auto-post?secret=$CRON_SECRET",
+      "schedule": "0 */2 * * *"
+    }
+  ]
+}
+```
+
+**Schedule-uri disponibile:**
+- `0 */2 * * *` - La fiecare 2 ore (12 articole/zi maxim)
+- `0 */3 * * *` - La fiecare 3 ore (8 articole/zi maxim)
+- `0 */4 * * *` - La fiecare 4 ore (6 articole/zi maxim)
+- `0 9,15,21 * * *` - La 9 AM, 3 PM, 9 PM (3 articole/zi)
+- `0 10 * * *` - Zilnic la 10 AM (1 articol/zi)
+
+**Notă:** Schedule-ul folosește format cron standard. Vercel înlocuiește automat `$CRON_SECRET` cu valoarea din env vars.
+
+#### 3. Deploy pe Vercel
+
+```bash
+# Commit changes
+git add .
+git commit -m "Add auto-post autopilot with Vercel Cron"
+
+# Push to GitHub (sau GitLab/Bitbucket)
+git push origin main
+
+# Vercel va face deploy automat dacă ai conectat repo-ul
+```
+
+După deploy, cronul se activează automat!
+
+#### 4. Verificare Cron Status
+
+Du-te în **Vercel Dashboard** → Deployments → Cron Jobs pentru a vedea:
+- ✅ Status: Active/Paused
+- 📊 Ultima rulare
+- 📝 Logs pentru fiecare execuție
+- ⏰ Următoarea rulare programată
+
+### API Endpoints
+
+#### POST /api/auto-post
+
+Generează 1 articol automat.
+
+**Request:**
+```bash
+# Trigger manual cu cURL
+curl -X POST 'https://pisicopedia.ro/api/auto-post?secret=YOUR_CRON_SECRET'
+
+# Sau cu fetch în JavaScript
+fetch('/api/auto-post?secret=YOUR_CRON_SECRET', {
+  method: 'POST'
+})
+```
+
+**Responses:**
+
+✅ **Succes (status: created):**
+```json
+{
+  "status": "created",
+  "slug": "pisica-vomita-spuma-alba-dimineata",
+  "title": "Pisica vomită spumă albă dimineața",
+  "category": "sanatate",
+  "duration": 45320,
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+⚠️ **Limită atinsă (status: limit-reached):**
+```json
+{
+  "status": "limit-reached",
+  "message": "Daily limit of 5 articles reached",
+  "limit": 5,
+  "current": 5,
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+ℹ️ **Queue gol (status: empty):**
+```json
+{
+  "status": "empty",
+  "message": "No pending topics in queue",
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+❌ **Eroare (status: error):**
+```json
+{
+  "status": "error",
+  "error": "OPENAI_API_KEY is not set",
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+🚫 **Unauthorized (401):**
+```json
+{
+  "status": "error",
+  "error": "Unauthorized. Invalid or missing secret."
+}
+```
+
+#### GET /api/auto-post
+
+Verifică status-ul sistemului fără a genera articol.
+
+**Request:**
+```bash
+curl 'https://pisicopedia.ro/api/auto-post?secret=YOUR_CRON_SECRET'
+```
+
+**Response:**
+```json
+{
+  "status": "ready",
+  "queue": {
+    "pending": 35,
+    "done": 5,
+    "total": 40
+  },
+  "config": {
+    "maxPerDay": 5,
+    "openaiConfigured": true,
+    "leonardoConfigured": true
+  },
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+### Admin Dashboard (Manual Trigger)
+
+Pentru a declanșa manual generarea de articole fără terminal:
+
+1. Accesează: **https://pisicopedia.ro/admin/auto-post**
+2. Introdu `CRON_SECRET` în form
+3. Click pe "Generate 1 Article" sau "Get Status"
+4. Vezi rezultatul în real-time
+
+**Features:**
+- 📊 Status queue (pending/done/total)
+- ✅ Verificare configurare (OpenAI, Leonardo)
+- 🚀 Trigger manual instant
+- 📈 Vizualizare limite zilnice
+- 🔍 JSON raw response pentru debugging
+
+### Logging și Monitorizare
+
+#### Daily Logs
+
+Fiecare articol generat este logat în `logs/auto-post-[YYYY-MM-DD].json`:
+
+```json
+{
+  "date": "2025-01-15",
+  "articles": [
+    {
+      "slug": "pisica-vomita-spuma-alba-dimineata",
+      "timestamp": "2025-01-15T10:00:00.000Z",
+      "title": "Pisica vomită spumă albă dimineața"
+    },
+    {
+      "slug": "pisica-nu-mananca",
+      "timestamp": "2025-01-15T12:00:00.000Z",
+      "title": "Pisica nu mănâncă - Cauze și Soluții"
+    }
+  ]
+}
+```
+
+**Utilizare:**
+- Tracking: Vezi exact câte articole au fost generate și când
+- Debugging: Identifică probleme în cronul zilnic
+- Limite: Sistemul verifică automat acest log pentru MAX_AUTO_POSTS_PER_DAY
+
+#### Vercel Logs
+
+Vezi logs în timp real în **Vercel Dashboard**:
+- Du-te la **Deployments** → Latest deployment → **Runtime Logs**
+- Filtrează după `/api/auto-post`
+- Vezi output complet: OpenAI calls, Leonardo status, erori
+
+### Limitare și Siguranță
+
+#### Limite Zilnice
+
+Sistemul previne spam și costuri excesive prin:
+
+```typescript
+// În lib/auto-post.ts
+function checkDailyLimit() {
+  const maxPerDay = parseInt(process.env.MAX_AUTO_POSTS_PER_DAY || '5', 10);
+  const todayLog = getTodayLog();
+  const current = todayLog.articles.length;
+
+  return {
+    allowed: current < maxPerDay,
+    current,
+    limit: maxPerDay,
+  };
+}
+```
+
+**Exemple de configurare:**
+
+| MAX_AUTO_POSTS_PER_DAY | Cron Schedule     | Articole/Zi | Uz                          |
+|------------------------|-------------------|-------------|-----------------------------|
+| 5                      | `0 */2 * * *`     | 5           | Default (moderat)           |
+| 10                     | `0 */2 * * *`     | 10          | Creștere rapidă             |
+| 3                      | `0 9,15,21 * * *` | 3           | Controlat, fix hours        |
+| 1                      | `0 10 * * *`      | 1           | Minim, 1 pe zi la 10 AM     |
+
+#### Autentificare Secret
+
+API-ul este protejat cu `CRON_SECRET`:
+
+```typescript
+// Verificare în app/api/auto-post/route.ts
+const cronSecret = process.env.CRON_SECRET;
+const providedSecret = request.nextUrl.searchParams.get('secret');
+
+if (!providedSecret || providedSecret !== cronSecret) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+```
+
+**Best practices:**
+- ✅ Folosește un secret de min 32 caractere
+- ✅ NU expune secretul în cod sau frontend
+- ✅ Setează-l doar în Vercel env vars
+- ✅ Rotește-l periodic (o dată la 6 luni)
+
+#### Error Handling
+
+Sistemul nu modifică queue-ul dacă apar erori:
+
+```typescript
+if (result.status === 'error') {
+  // Topic rămâne "pending"
+  // Nu se marchează ca "done"
+  // Log eroarea pentru debugging
+  console.error('[Auto-Post] Error:', result.error);
+}
+```
+
+Astfel, cronul următor va reîncerca același topic până reușește.
+
+### Testare Locală
+
+Înainte de deploy, testează local:
+
+```bash
+# 1. Setează env vars în .env.local
+OPENAI_API_KEY=sk-...
+LEONARDO_API_KEY=...
+CRON_SECRET=test-secret-local
+MAX_AUTO_POSTS_PER_DAY=5
+
+# 2. Pornește dev server
+npm run dev
+
+# 3. Test API endpoint
+curl -X POST 'http://localhost:3000/api/auto-post?secret=test-secret-local'
+
+# 4. Verifică logs/auto-post-[DATE].json
+cat logs/auto-post-$(date +%Y-%m-%d).json
+
+# 5. Verifică content/auto-queue.json (topic marcat ca "done")
+```
+
+### Troubleshooting
+
+#### Cronul nu rulează
+
+**1. Verifică Cron Status în Vercel:**
+- Dashboard → Cron Jobs → verifică dacă e "Active"
+- Dacă e "Paused", activează-l manual
+
+**2. Verifică vercel.json:**
+```json
+{
+  "crons": [
+    {
+      "path": "/api/auto-post?secret=$CRON_SECRET",
+      "schedule": "0 */2 * * *"
+    }
+  ]
+}
+```
+
+**3. Redeploy:**
+```bash
+git commit --allow-empty -m "Trigger redeploy for cron"
+git push origin main
+```
+
+#### Eroare "Unauthorized"
+
+- Verifică că `CRON_SECRET` e setat în Vercel env vars
+- Verifică că `vercel.json` folosește `$CRON_SECRET` (NU valoarea hardcoded)
+
+#### Eroare "OPENAI_API_KEY not set"
+
+- Setează `OPENAI_API_KEY` în Vercel env vars (Dashboard → Settings → Environment Variables)
+- Redeploy după setare
+
+#### Limită atinsă constant
+
+- Verifică `MAX_AUTO_POSTS_PER_DAY` în env vars
+- Mărește limita sau ajustează cron schedule-ul
+- Verifică `logs/auto-post-[DATE].json` pentru a vedea câte au fost generate
+
+#### Queue gol
+
+- Verifică `content/auto-queue.json`
+- Adaugă noi topicuri cu `"status": "pending"`
+- Commit și push:
+```bash
+git add content/auto-queue.json
+git commit -m "Add new topics to queue"
+git push origin main
+```
+
+### Cost Estimare
+
+Cu configurația default (`MAX_AUTO_POSTS_PER_DAY=5`):
+
+**Lunar (30 zile × 5 articole/zi = 150 articole):**
+- OpenAI GPT-4: 150 × $0.15 = **$22.50**
+- Leonardo.ai: 150 × $0.03 = **$4.50**
+- **Total: ~$27/lună**
+
+**Anual (12 luni):**
+- **~$324/an** pentru 1,800 articole complete
+
+**Optimizare costuri:**
+- Reduce `MAX_AUTO_POSTS_PER_DAY` la 3 → ~$16/lună
+- Sau 1 articol/zi → ~$5/lună
+- Skip Leonardo (folosește placeholder) → -$4.50/lună
+
+### Recap: Sistemul Complet Automat
+
+După setup inițial, sistemul funcționează 100% autonom:
+
+✅ **Zero intervenție manuală** - cronul rulează singur
+✅ **Limite automate** - previne spam și costuri excesive
+✅ **Logging complet** - tracking detaliat în logs/
+✅ **Error recovery** - reîncearcă topics failed
+✅ **Queue management** - marchează automat topics ca done
+✅ **Admin dashboard** - trigger manual când e nevoie
+✅ **Vercel native** - folosește infrastructura Vercel Cron
+
+**Rezultat:** Site-ul tău generează singur 3-5 articole noi pe zi, fără să faci nimic! 🚀
+
+---
 
 ## 🖼️ Generare Imagini cu Leonardo.ai
 
@@ -432,13 +993,25 @@ vercel --prod --force
 # Development
 npm run dev              # Start development server
 
+# Auto-Post System (NEW!)
+npm run auto:post        # Generate 1 article from queue
+npm run auto:batch       # Generate 3 articles from queue
+
 # Content Generation
-npm run generate:article # Generate new article
-npm run generate:breed   # Generate breed content
+npm run generate:article # Generate new article (interactive)
+npm run generate:breed   # Generate breed content (interactive)
+npm run generate:guides  # Generate guides
 
 # Image Generation
 npm run leonardo:test    # Test image generation
 npm run leonardo:breeds  # Generate all breed images
+
+# Content Validation
+npm run validate:content # Validate all content
+npm run audit:breeds     # Audit breed files
+npm run audit:articles   # Audit article files
+npm run audit:404        # Check for 404 errors
+npm run audit:all        # Run all audits
 
 # Production
 npm run build           # Create production build

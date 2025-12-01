@@ -20,6 +20,8 @@
     "generate:remaining-articles": "tsx scripts/generate-remaining-articles.ts --only-missing",
     "generate:guides": "tsx scripts/generate-guides.ts",
     "generate:batch-old": "tsx scripts/batch-generate-all-content.ts",
+    "auto:post": "tsx scripts/auto-post.ts",
+    "auto:batch": "tsx scripts/auto-post.ts --batch=3",
     "validate:content": "tsx scripts/validate-content.ts",
     "audit:breeds": "tsx scripts/audit-breeds.ts",
     "audit:articles": "tsx scripts/audit-articles.ts",
