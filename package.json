@@ -18,13 +18,15 @@
     "generate:all-content": "npm run generate:remaining-breeds && npm run generate:remaining-articles && npm run audit:all",
     "generate:remaining-breeds": "tsx scripts/generate-remaining-breeds.ts --only-missing",
     "generate:remaining-articles": "tsx scripts/generate-remaining-articles.ts --only-missing",
+    "generate:guides": "tsx scripts/generate-guides.ts",
     "generate:batch-old": "tsx scripts/batch-generate-all-content.ts",
     "validate:content": "tsx scripts/validate-content.ts",
     "audit:breeds": "tsx scripts/audit-breeds.ts",
     "audit:articles": "tsx scripts/audit-articles.ts",
     "audit:seo": "tsx scripts/seo-audit.ts",
+    "audit:404": "tsx scripts/audit-404.ts",
     "health:pages": "tsx scripts/health-check-pages.ts",
-    "audit:all": "npm run validate:content && npm run audit:breeds && npm run audit:articles && npm run audit:seo"
+    "audit:all": "npm run validate:content && npm run audit:breeds && npm run audit:articles && npm run audit:404"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

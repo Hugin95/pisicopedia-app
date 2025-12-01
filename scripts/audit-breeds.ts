@@ -128,6 +128,44 @@ async function auditBreeds() {
 
   console.log('-'.repeat(80));
 
+  // Check for duplicate images
+  console.log(`\n${colors.bright}${colors.cyan}🔍 CHECKING FOR DUPLICATE IMAGES${colors.reset}`);
+  console.log('-'.repeat(80));
+
+  const imageMap = new Map<string, string[]>();
+
+  for (const result of results) {
+    if (result.hasImage && result.imagePath) {
+      const imagePath = result.imagePath;
+      if (!imageMap.has(imagePath)) {
+        imageMap.set(imagePath, []);
+      }
+      imageMap.get(imagePath)!.push(result.slug);
+    }
+  }
+
+  const duplicateImages = Array.from(imageMap.entries())
+    .filter(([_, slugs]) => slugs.length > 1)
+    .sort((a, b) => b[1].length - a[1].length);
+
+  if (duplicateImages.length > 0) {
+    console.log(`${colors.red}⚠️  Found ${duplicateImages.length} duplicate image(s):${colors.reset}\n`);
+
+    for (const [imagePath, slugs] of duplicateImages) {
+      console.log(`${colors.yellow}Image:${colors.reset} ${imagePath}`);
+      console.log(`${colors.yellow}Used by ${slugs.length} breeds:${colors.reset}`);
+      slugs.forEach(slug => {
+        const breed = results.find(r => r.slug === slug);
+        console.log(`   - ${slug} (${breed?.name})`);
+      });
+      console.log('');
+    }
+  } else {
+    console.log(`${colors.green}✅ No duplicate images found${colors.reset}`);
+  }
+
+  console.log('-'.repeat(80));
+
   // Summary statistics
   console.log(`\n${colors.bright}📊 SUMMARY:${colors.reset}`);
   console.log(`Total breeds: ${allBreeds.length}`);

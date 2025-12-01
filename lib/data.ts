@@ -876,6 +876,14 @@ export function getAllGuides() {
   return guides;
 }
 
+export function getGuideBySlug(slug: string) {
+  return guides.find(guide => guide.slug === slug);
+}
+
 export function getTopGuides(count: number = 3) {
   return guides.slice(0, count);
+}
+
+export function getGuidesByCategory(category: string) {
+  return guides.filter(guide => guide.category === category);
 }

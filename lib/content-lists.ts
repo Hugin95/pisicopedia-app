@@ -18,6 +18,12 @@ export interface ArticleInfo {
   related?: string[]; // Related articles for internal linking
 }
 
+export interface GuideInfo {
+  slug: string;
+  title: string;
+  category: string;
+}
+
 // Complete list of 30 cat breeds important for Romania/Europe
 export const allBreeds: BreedInfo[] = [
   // First 10 - to be implemented immediately
@@ -150,6 +156,45 @@ export const allArticles: ArticleInfo[] = [
   { slug: 'introducere-pisica-noua', title: 'Cum să introduci o pisică nouă în casă', category: 'comportament', subcategory: 'socializare' },
   { slug: 'agresivitate-pisici', title: 'Agresivitatea la pisici: cauze și soluții', category: 'comportament', subcategory: 'probleme' },
   { slug: 'marcaj-urina', title: 'Marcajul cu urină: cauze și prevenire', category: 'comportament', subcategory: 'probleme' }
+];
+
+// Complete list of 24 practical guides
+export const allGuides: GuideInfo[] = [
+  // Îngrijire de bază (4 ghiduri)
+  { slug: 'pregatire-casa-pisica', title: 'Pregătirea casei pentru noua pisică', category: 'ghid-ingrijire' },
+  { slug: 'alegere-litiera', title: 'Cum să alegi litiera perfectă pentru pisică', category: 'ghid-ingrijire' },
+  { slug: 'amenajare-spatiu', title: 'Amenajarea spațiului pentru pisici', category: 'ghid-ingrijire' },
+  { slug: 'igiena-zilnica', title: 'Rutina zilnică de îngrijire a pisicii', category: 'ghid-ingrijire' },
+
+  // Sănătate preventivă (4 ghiduri)
+  { slug: 'calendar-vaccinare', title: 'Calendar complet de vaccinare pentru pisici', category: 'ghid-sanatate' },
+  { slug: 'ghid-deparazitare', title: 'Ghid complet de deparazitare internă și externă', category: 'ghid-sanatate' },
+  { slug: 'sterilizare-pro-contra', title: 'Sterilizarea pisicilor: pro și contra', category: 'ghid-sanatate' },
+  { slug: 'controale-veterinare', title: 'Controale veterinare regulate: când și de ce', category: 'ghid-sanatate' },
+
+  // Nutriție (4 ghiduri)
+  { slug: 'hrana-uscata-vs-umeda', title: 'Hrană uscată vs. hrană umedă: ce să alegi', category: 'ghid-nutritie' },
+  { slug: 'calculare-portii', title: 'Cum să calculezi porțiile corecte pentru pisică', category: 'ghid-nutritie' },
+  { slug: 'alimente-periculoase', title: 'Alimente periculoase pentru pisici: lista completă', category: 'ghid-nutritie' },
+  { slug: 'diete-speciale', title: 'Diete speciale pentru pisici: când sunt necesare', category: 'ghid-nutritie' },
+
+  // Comportament (4 ghiduri)
+  { slug: 'limbaj-pisica', title: 'Limbajul corporal al pisicilor: ghid complet', category: 'ghid-comportament' },
+  { slug: 'dresaj-pisica', title: 'Dresajul pisicilor: tehnici eficiente', category: 'ghid-comportament' },
+  { slug: 'probleme-comportament', title: 'Probleme comune de comportament și soluții', category: 'ghid-comportament' },
+  { slug: 'jucarii-imbogatire', title: 'Jucării și îmbogățirea mediului pentru pisici', category: 'ghid-comportament' },
+
+  // Creștere pui (4 ghiduri)
+  { slug: 'pui-nou-nascuti', title: 'Îngrijirea puilor de pisică nou-născuți', category: 'ghid-pui' },
+  { slug: 'intarcare-pui', title: 'Înțărcarea puilor: ghid pas cu pas', category: 'ghid-pui' },
+  { slug: 'socializare-pui', title: 'Socializarea puilor de pisică', category: 'ghid-pui' },
+  { slug: 'prima-vizita-veterinar', title: 'Prima vizită la veterinar cu puiul', category: 'ghid-pui' },
+
+  // Îngrijire senior (4 ghiduri)
+  { slug: 'ingrijire-senior', title: 'Îngrijirea pisicilor senior: ghid complet', category: 'ghid-senior' },
+  { slug: 'probleme-senior', title: 'Probleme comune la pisicile senior', category: 'ghid-senior' },
+  { slug: 'adaptare-casa-senior', title: 'Adaptarea casei pentru pisici în vârstă', category: 'ghid-senior' },
+  { slug: 'nutritie-senior', title: 'Nutriția pisicilor senior: ce să știi', category: 'ghid-senior' }
 ];
 
 // Helper function to get similar breeds

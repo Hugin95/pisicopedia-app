@@ -7,6 +7,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import matter from 'gray-matter';
 import { allArticles } from '../lib/content-lists';
 import { sampleArticles } from '../lib/data';
 
@@ -29,6 +30,7 @@ interface ArticleAuditResult {
   hasImage: boolean;
   inDataFile: boolean;
   imagePath?: string;
+  frontmatterIssues: string[];
   issues: string[];
 }
 
@@ -76,6 +78,55 @@ function checkInDataFile(slug: string): boolean {
   return sampleArticles.some(article => article.slug === slug);
 }
 
+function checkFrontmatter(slug: string): string[] {
+  const issues: string[] = [];
+  const mdxPath = path.join(process.cwd(), 'content', 'articles', `${slug}.mdx`);
+
+  if (!fs.existsSync(mdxPath)) {
+    return issues; // Skip if file doesn't exist
+  }
+
+  try {
+    const fileContent = fs.readFileSync(mdxPath, 'utf-8');
+    const { data: frontmatter } = matter(fileContent);
+
+    // Required fields
+    const requiredFields = [
+      'title',
+      'description',
+      'slug',
+      'category',
+      'subcategory',
+      'image',
+      'date',
+      'author',
+      'readingTime',
+      'tags'
+    ];
+
+    for (const field of requiredFields) {
+      if (!frontmatter[field]) {
+        issues.push(`Missing ${field}`);
+      }
+    }
+
+    // Validate tags is an array
+    if (frontmatter.tags && !Array.isArray(frontmatter.tags)) {
+      issues.push('tags must be array');
+    }
+
+    // Validate slug matches filename
+    if (frontmatter.slug && frontmatter.slug !== slug) {
+      issues.push(`slug mismatch (${frontmatter.slug} !== ${slug})`);
+    }
+
+  } catch (error) {
+    issues.push('Frontmatter parse error');
+  }
+
+  return issues;
+}
+
 async function auditArticles() {
   console.log(`\n${colors.bright}${colors.cyan}📝 ARTICLE CONTENT AUDIT${colors.reset}`);
   console.log('='.repeat(100));
@@ -91,6 +142,7 @@ async function auditArticles() {
       hasMDX: false,
       hasImage: false,
       inDataFile: false,
+      frontmatterIssues: [],
       issues: [],
     };
 
@@ -98,6 +150,14 @@ async function auditArticles() {
     result.hasMDX = checkMDXExists(article.slug);
     if (!result.hasMDX) {
       result.issues.push('Missing MDX');
+    }
+
+    // Check frontmatter consistency
+    if (result.hasMDX) {
+      result.frontmatterIssues = checkFrontmatter(article.slug);
+      if (result.frontmatterIssues.length > 0) {
+        result.issues.push(`Frontmatter: ${result.frontmatterIssues.length} issue(s)`);
+      }
     }
 
     // Check image (article-specific or category)
@@ -203,6 +263,26 @@ async function auditArticles() {
   // Progress bar for MDX
   const mdxBar = '█'.repeat(Math.floor(mdxPercentage / 5)) + '░'.repeat(20 - Math.floor(mdxPercentage / 5));
   console.log(`   MDX Progress:  [${mdxBar}] ${mdxPercentage}%`);
+
+  // Frontmatter consistency check
+  const frontmatterIssues = results.filter(r => r.frontmatterIssues.length > 0);
+
+  if (frontmatterIssues.length > 0) {
+    console.log(`\n${colors.bright}${colors.yellow}🔍 FRONTMATTER CONSISTENCY ISSUES${colors.reset}`);
+    console.log('-'.repeat(100));
+    console.log(`Found ${frontmatterIssues.length} article(s) with frontmatter issues:\n`);
+
+    for (const result of frontmatterIssues) {
+      console.log(`${colors.yellow}${result.slug}${colors.reset} (${result.title.substring(0, 50)}${result.title.length > 50 ? '...' : ''})`);
+      result.frontmatterIssues.forEach(issue => {
+        console.log(`   ${colors.red}✗${colors.reset} ${issue}`);
+      });
+      console.log('');
+    }
+    console.log('-'.repeat(100));
+  } else {
+    console.log(`\n${colors.green}✅ All articles have consistent frontmatter${colors.reset}`);
+  }
 
   // Recommendations
   if (missingMDX.length > 0) {
