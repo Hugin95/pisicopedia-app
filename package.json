@@ -29,6 +29,7 @@
     "fix:breed-images": "tsx scripts/fix-breed-images.ts",
     "extend:articles": "tsx scripts/extend-articles.ts",
     "extend:breed-health": "tsx scripts/extend-breed-health.ts",
+    "complete:maine-coon": "tsx scripts/complete-maine-coon.ts",
     "audit:seo": "tsx scripts/seo-audit.ts",
     "audit:404": "tsx scripts/audit-404.ts",
     "health:pages": "tsx scripts/health-check-pages.ts",

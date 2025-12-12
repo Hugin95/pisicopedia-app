@@ -43,6 +43,59 @@ interface Topic {
   publishedAt: string | null;
 }
 
+// Lock file management
+const LOCK_FILE = path.join(process.cwd(), 'content', '.auto-post.lock');
+
+function acquireLock(): boolean {
+  try {
+    if (fs.existsSync(LOCK_FILE)) {
+      const lockData = JSON.parse(fs.readFileSync(LOCK_FILE, 'utf-8'));
+      const lockAge = Date.now() - lockData.timestamp;
+
+      // If lock is older than 30 minutes, consider it stale
+      if (lockAge > 30 * 60 * 1000) {
+        console.log(`${colors.yellow}⚠️  Stale lock detected (${Math.round(lockAge / 60000)} min old) - removing${colors.reset}`);
+        fs.unlinkSync(LOCK_FILE);
+      } else {
+        console.log(`${colors.red}❌ Another auto-post process is running (PID: ${lockData.pid})${colors.reset}`);
+        return false;
+      }
+    }
+
+    fs.writeFileSync(LOCK_FILE, JSON.stringify({
+      pid: process.pid,
+      timestamp: Date.now(),
+    }), 'utf-8');
+
+    return true;
+  } catch (error: any) {
+    console.error(`${colors.red}❌ Failed to acquire lock: ${error.message}${colors.reset}`);
+    return false;
+  }
+}
+
+function releaseLock() {
+  try {
+    if (fs.existsSync(LOCK_FILE)) {
+      fs.unlinkSync(LOCK_FILE);
+    }
+  } catch (error: any) {
+    console.error(`${colors.yellow}⚠️  Failed to release lock: ${error.message}${colors.reset}`);
+  }
+}
+
+// Validate topic structure
+function validateTopic(topic: any): topic is Topic {
+  if (!topic || typeof topic !== 'object') return false;
+  if (typeof topic.id !== 'string' || !topic.id) return false;
+  if (typeof topic.title !== 'string' || !topic.title) return false;
+  if (typeof topic.slug !== 'string' || !topic.slug) return false;
+  if (topic.category !== 'sanatate' && topic.category !== 'ghid') return false;
+  if (typeof topic.focusKeyword !== 'string' || !topic.focusKeyword) return false;
+  if (topic.status !== 'pending' && topic.status !== 'done') return false;
+  return true;
+}
+
 interface ArticleInfo {
   slug: string;
   title: string;
@@ -81,7 +134,22 @@ function loadQueue(): Topic[] {
     process.exit(1);
   }
   const queueData = fs.readFileSync(queuePath, 'utf-8');
-  return JSON.parse(queueData);
+  const queue = JSON.parse(queueData);
+
+  // Validate all topics
+  if (!Array.isArray(queue)) {
+    console.error(`${colors.red}Error: auto-queue.json must contain an array${colors.reset}`);
+    process.exit(1);
+  }
+
+  const invalidTopics = queue.filter((topic: any) => !validateTopic(topic));
+  if (invalidTopics.length > 0) {
+    console.error(`${colors.red}Error: Found ${invalidTopics.length} invalid topics in queue${colors.reset}`);
+    console.error('Invalid topics:', invalidTopics);
+    process.exit(1);
+  }
+
+  return queue;
 }
 
 // Save queue
@@ -293,8 +361,8 @@ tags:
 OUTPUT: Direct în format MDX de mai sus, gata de salvat în fișier.`;
 }
 
-// Generate image with Leonardo.ai
-async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
+// Generate image with Leonardo.ai (with retry mechanism)
+async function generateImageWithLeonardo(topic: Topic, maxRetries = 3): Promise<string | null> {
   const apiKey = process.env.LEONARDO_API_KEY;
 
   if (!apiKey) {
@@ -302,11 +370,16 @@ async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
     return null;
   }
 
-  console.log(`${colors.cyan}🎨 Generating image with Leonardo.ai...${colors.reset}`);
-
   const prompt = `Professional veterinary medical illustration of a domestic cat, related to: ${topic.title}. Soft studio lighting, neutral background, realistic, high quality, 4k, for a Romanian website about cat health. Medical illustration style.`;
 
-  try {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    if (attempt > 1) {
+      console.log(`${colors.yellow}🔄 Retry attempt ${attempt}/${maxRetries}${colors.reset}`);
+    } else {
+      console.log(`${colors.cyan}🎨 Generating image with Leonardo.ai...${colors.reset}`);
+    }
+
+    try {
     // Step 1: Create generation
     const generateResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
@@ -374,15 +447,24 @@ async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
       ? path.join(process.cwd(), 'public', 'images', 'articles', `${topic.slug}.jpg`)
       : path.join(process.cwd(), 'public', 'images', 'guides', `${topic.slug}.jpg`);
 
-    fs.writeFileSync(imagePath, imageBuffer);
-    console.log(`${colors.green}✅ Image saved: ${imagePath}${colors.reset}`);
+      fs.writeFileSync(imagePath, imageBuffer);
+      console.log(`${colors.green}✅ Image saved: ${imagePath}${colors.reset}`);
 
-    return `/images/${topic.category === 'sanatate' ? 'articles' : 'guides'}/${topic.slug}.jpg`;
-  } catch (error: any) {
-    console.error(`${colors.red}❌ Leonardo Error: ${error.message}${colors.reset}`);
-    console.log(`${colors.yellow}⚠️  Using fallback image${colors.reset}`);
-    return null;
+      return `/images/${topic.category === 'sanatate' ? 'articles' : 'guides'}/${topic.slug}.jpg`;
+    } catch (error: any) {
+      console.error(`${colors.red}❌ Leonardo Error (attempt ${attempt}/${maxRetries}): ${error.message}${colors.reset}`);
+
+      if (attempt < maxRetries) {
+        console.log(`${colors.yellow}⏳ Waiting 5 seconds before retry...${colors.reset}`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      } else {
+        console.log(`${colors.yellow}⚠️  All ${maxRetries} attempts failed - using fallback image${colors.reset}`);
+        return null;
+      }
+    }
   }
+
+  return null;
 }
 
 // Save MDX file
@@ -394,10 +476,11 @@ function saveMDXFile(topic: Topic, content: string) {
   console.log(`${colors.green}✅ MDX saved: ${mdxPath}${colors.reset}`);
 }
 
-// Update content-lists.ts
+// Update content-lists.ts with verification
 function updateContentLists(topic: Topic) {
   const listsPath = path.join(process.cwd(), 'lib', 'content-lists.ts');
   let listsContent = fs.readFileSync(listsPath, 'utf-8');
+  const originalContent = listsContent;
 
   if (topic.category === 'sanatate') {
     // Add to articles list
@@ -410,14 +493,21 @@ function updateContentLists(topic: Topic) {
 
     // Find the allArticles array and add at the beginning
     const articleMatch = listsContent.match(/export const allArticles: ArticleInfo\[\] = \[([\s\S]*?)\];/);
-    if (articleMatch) {
-      const currentArticles = articleMatch[1];
-      const newArticleStr = `  { slug: '${newArticle.slug}', title: '${newArticle.title}', category: '${newArticle.category}', subcategory: '${newArticle.subcategory}' },`;
-      const updatedArticles = `\n${newArticleStr}${currentArticles}`;
-      listsContent = listsContent.replace(
-        /export const allArticles: ArticleInfo\[\] = \[([\s\S]*?)\];/,
-        `export const allArticles: ArticleInfo[] = [${updatedArticles}];`
-      );
+    if (!articleMatch) {
+      throw new Error('Failed to find allArticles array in content-lists.ts');
+    }
+
+    const currentArticles = articleMatch[1];
+    const newArticleStr = `  { slug: '${newArticle.slug}', title: '${newArticle.title}', category: '${newArticle.category}', subcategory: '${newArticle.subcategory}' },`;
+    const updatedArticles = `\n${newArticleStr}${currentArticles}`;
+    listsContent = listsContent.replace(
+      /export const allArticles: ArticleInfo\[\] = \[([\s\S]*?)\];/,
+      `export const allArticles: ArticleInfo[] = [${updatedArticles}];`
+    );
+
+    // Verify the change was applied
+    if (!listsContent.includes(`slug: '${newArticle.slug}'`)) {
+      throw new Error('Failed to update allArticles array - slug not found after update');
     }
   } else {
     // Add to guides list
@@ -429,19 +519,31 @@ function updateContentLists(topic: Topic) {
 
     // Find the allGuides array and add at the beginning
     const guideMatch = listsContent.match(/export const allGuides: GuideInfo\[\] = \[([\s\S]*?)\];/);
-    if (guideMatch) {
-      const currentGuides = guideMatch[1];
-      const newGuideStr = `  { slug: '${newGuide.slug}', title: '${newGuide.title}', category: '${newGuide.category}' },`;
-      const updatedGuides = `\n${newGuideStr}${currentGuides}`;
-      listsContent = listsContent.replace(
-        /export const allGuides: GuideInfo\[\] = \[([\s\S]*?)\];/,
-        `export const allGuides: GuideInfo[] = [${updatedGuides}];`
-      );
+    if (!guideMatch) {
+      throw new Error('Failed to find allGuides array in content-lists.ts');
+    }
+
+    const currentGuides = guideMatch[1];
+    const newGuideStr = `  { slug: '${newGuide.slug}', title: '${newGuide.title}', category: '${newGuide.category}' },`;
+    const updatedGuides = `\n${newGuideStr}${currentGuides}`;
+    listsContent = listsContent.replace(
+      /export const allGuides: GuideInfo\[\] = \[([\s\S]*?)\];/,
+      `export const allGuides: GuideInfo[] = [${updatedGuides}];`
+    );
+
+    // Verify the change was applied
+    if (!listsContent.includes(`slug: '${newGuide.slug}'`)) {
+      throw new Error('Failed to update allGuides array - slug not found after update');
     }
   }
 
+  // Verify content actually changed
+  if (listsContent === originalContent) {
+    throw new Error('content-lists.ts was not modified - regex may have failed');
+  }
+
   fs.writeFileSync(listsPath, listsContent, 'utf-8');
-  console.log(`${colors.green}✅ Updated content-lists.ts${colors.reset}`);
+  console.log(`${colors.green}✅ Updated content-lists.ts (verified)${colors.reset}`);
 }
 
 // Process one topic
@@ -510,6 +612,12 @@ async function main() {
   console.log(`${colors.bright}${colors.cyan}🚀 AUTO-POST SYSTEM${colors.reset}`);
   console.log(`${colors.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}\n`);
 
+  // Acquire lock to prevent concurrent executions
+  if (!acquireLock()) {
+    console.log(`${colors.yellow}ℹ️  Exiting - another instance is running${colors.reset}`);
+    process.exit(0);
+  }
+
   const { batchSize } = parseArgs();
   console.log(`${colors.blue}Batch size:${colors.reset} ${batchSize} article(s)\n`);
 
@@ -554,11 +662,15 @@ async function main() {
   console.log(`${colors.red}❌ Failed:${colors.reset} ${failureCount}`);
   console.log(`${colors.cyan}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}\n`);
 
+  // Release lock before exit
+  releaseLock();
+
   process.exit(failureCount > 0 ? 1 : 0);
 }
 
 // Run
 main().catch(error => {
   console.error(`${colors.red}Fatal error: ${error.message}${colors.reset}`);
+  releaseLock(); // Ensure lock is released on fatal error
   process.exit(1);
 });
