@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { siteConfig } from "@/lib/constants";
 import { generateWebsiteSchema, seoConfig } from "@/lib/seo-advanced";
 import { generateOrganizationSchema } from "@/lib/seo";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -231,6 +232,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
