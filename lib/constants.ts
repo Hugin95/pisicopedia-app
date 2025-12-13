@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
   title: 'Pisicopedia - Enciclopedia Raselor și Sănătății Pisicilor',
   description: 'Prima enciclopedie românească dedicată exclusiv raselor de pisici și informațiilor medicale verificate. Ghiduri complete pentru îngrijirea pisicii tale.',
   url: 'https://pisicopedia.ro',
-  ogImage: 'https://pisicopedia.ro/og-image.png',
+  ogImage: 'https://pisicopedia.ro/og-image.svg',
   links: {
     facebook: 'https://facebook.com/pisicopedia',
     instagram: 'https://instagram.com/pisicopedia',
@@ -54,10 +54,10 @@ export const footerNavigation = {
     { label: 'Nume pentru Pisici', href: '/nume-pisici' },
   ],
   retea: [
-    { label: 'DogoDog.ro', href: '#' },
-    { label: 'PetsDaily.ro', href: '#' },
-    { label: 'PetsCare.ro', href: '#' },
-    { label: 'AquaGuide.ro', href: '#' },
+    { label: 'DogoDog.ro', href: 'https://dogodog.ro' },
+    { label: 'PetsDaily.ro', href: 'https://petsdaily.ro' },
+    { label: 'PetsCare.ro', href: 'https://petscare.ro' },
+    { label: 'AquaGuide.ro', href: 'https://aquaguide.ro' },
   ],
   legal: [
     { label: 'Contact', href: '/contact' },

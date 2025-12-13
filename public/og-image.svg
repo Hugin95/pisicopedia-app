@@ -1,0 +1,46 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FAF5FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFF1F2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F3FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9333EA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F43F5E;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="80" fill="#E9D5FF" opacity="0.3"/>
+  <circle cx="1100" cy="530" r="100" fill="#FECDD3" opacity="0.3"/>
+  <circle cx="950" cy="80" r="60" fill="#DDD6FE" opacity="0.3"/>
+
+  <!-- Logo circle with checkmark -->
+  <circle cx="600" cy="200" r="60" fill="#A855F7"/>
+  <path d="M600 170C583.43 170 570 183.43 570 200C570 216.57 583.43 230 600 230C616.57 230 630 216.57 630 200C630 183.43 616.57 170 600 170ZM595 220L580 205L584.14 200.86L595 211.72L615.86 190.86L620 195L595 220Z" fill="white"/>
+
+  <!-- Main Title -->
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="#1C1917" text-anchor="middle">
+    Pisicopedia
+  </text>
+
+  <!-- Subtitle with gradient -->
+  <text x="600" y="390" font-family="Arial, sans-serif" font-size="36" font-weight="600" fill="url(#textGradient)" text-anchor="middle">
+    Enciclopedia Raselor și Sănătății Pisicilor
+  </text>
+
+  <!-- Description -->
+  <text x="600" y="460" font-family="Arial, sans-serif" font-size="24" fill="#78716C" text-anchor="middle">
+    Informații medicale verificate · 150+ rase · Ghiduri complete
+  </text>
+
+  <!-- Website URL -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#9333EA" text-anchor="middle">
+    pisicopedia.ro
+  </text>
+</svg>
