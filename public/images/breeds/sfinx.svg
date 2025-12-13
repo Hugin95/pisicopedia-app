@@ -1,0 +1,52 @@
+<svg width="768" height="768" viewBox="0 0 768 768" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sfinxBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffe3ed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="768" height="768" fill="url(#sfinxBg)"/>
+
+  <!-- Sfinx cat silhouette - hairless, wrinkled skin -->
+  <g transform="translate(384, 400)">
+    <!-- Body -->
+    <ellipse cx="0" cy="20" rx="100" ry="130" fill="#e8d4d8" opacity="0.9"/>
+
+    <!-- Head - larger ears, wrinkled appearance -->
+    <ellipse cx="0" cy="-80" rx="70" ry="75" fill="#ead8dc"/>
+
+    <!-- Large Ears -->
+    <path d="M-50 -120 L-80 -180 L-30 -110 Z" fill="#f0e0e4"/>
+    <path d="M50 -120 L80 -180 L30 -110 Z" fill="#f0e0e4"/>
+
+    <!-- Eyes - large, almond shaped -->
+    <ellipse cx="-25" cy="-85" rx="12" ry="18" fill="#88c0d0"/>
+    <ellipse cx="25" cy="-85" rx="12" ry="18" fill="#88c0d0"/>
+    <ellipse cx="-25" cy="-82" rx="6" ry="10" fill="#2e3440"/>
+    <ellipse cx="25" cy="-82" rx="6" ry="10" fill="#2e3440"/>
+
+    <!-- Nose -->
+    <path d="M0 -55 L-8 -45 L8 -45 Z" fill="#d8a8a8"/>
+
+    <!-- Wrinkles on skin -->
+    <path d="M-40 -70 Q-30 -65 -20 -70" stroke="#d8c0c4" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M20 -70 Q30 -65 40 -70" stroke="#d8c0c4" stroke-width="2" fill="none" opacity="0.6"/>
+
+    <!-- Legs -->
+    <rect x="-70" y="100" width="30" height="80" rx="15" fill="#e0c8cc"/>
+    <rect x="40" y="100" width="30" height="80" rx="15" fill="#e0c8cc"/>
+
+    <!-- Tail -->
+    <path d="M80 50 Q120 30 140 60" stroke="#e8d4d8" stroke-width="25" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Breed name label -->
+  <text x="384" y="680" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#9333EA" text-anchor="middle">
+    Sfinx
+  </text>
+  <text x="384" y="720" font-family="Arial, sans-serif" font-size="24" fill="#78716C" text-anchor="middle">
+    Ras fără păr
+  </text>
+</svg>
