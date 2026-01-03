@@ -40,6 +40,14 @@ if (!fs.existsSync(IMAGES_DIR)) {
   fs.mkdirSync(IMAGES_DIR, { recursive: true });
 }
 
+function getValidCategory(category: string): string {
+  const mapping: Record<string, string> = {
+    'ghid': 'ghiduri',
+    'sanatate': 'ingrijire',
+  };
+  return mapping[category] || category;
+}
+
 async function generateBlogImage(topic: QueueItem): Promise<string> {
   console.log(`[AI Images] Generez imaginea de copertă pentru: "${topic.title}"...`);
 
@@ -127,7 +135,7 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
   return matter.stringify(cleanContent, {
     title: topic.title,
     date: today,
-    category: topic.category,
+    category: getValidCategory(topic.category),
     focusKeyword: topic.focusKeyword,
     image: imageUrl,
     status: 'published',
@@ -150,12 +158,12 @@ async function updateDataFile(topic: QueueItem, imageUrl: string) {
     slug: '${topic.slug}',
     title: '${topic.title.replace(/'/g, "\\'")}',
     description: 'Ghid complet despre ${topic.title}. Află totul despre ${topic.focusKeyword} de la experți.',
-    category: '${topic.category}',
+    category: '${getValidCategory(topic.category)}',
     image: '${imageUrl}',
     readingTime: 5,
     date: '${today}',
     author: 'Dr. Veterinar Pisicopedia',
-    tags: ['${topic.category}', 'blog'],
+    tags: ['${getValidCategory(topic.category)}', 'blog'],
   },`;
 
   // Regex care găsește începutul listei de articole, indiferent dacă are tipul specificat sau nu
