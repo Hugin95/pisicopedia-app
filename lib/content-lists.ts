@@ -62,7 +62,8 @@ export const allBreeds: BreedInfo[] = [
 ];
 
 // Complete list of health articles - will be populated automatically by auto-post system
-export const allArticles: ArticleInfo[] = [];
+export const allArticles: ArticleInfo[] = [
+  { slug: 'pisica-nu-a-mancat-24-ore', title: 'Pisica nu a mâncat de 24 de ore - când devine urgență', category: 'sanatate', subcategory: 'simptome' },];
 
 // Complete list of 24 practical guides
 export const allGuides: GuideInfo[] = [
