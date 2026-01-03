@@ -94,18 +94,19 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
     - NU include frontmatter (liniile cu ---).
     - NU include titlul H1 la început (îl adaug eu).
     - NU include texte de conversație ("Sigur, iată articolul...").
-    - Scrie minim 1000 de cuvinte.
+    - Scrie un articol LUNG și DETALIAT (minim 1000 de cuvinte). Nu te opri la introducere.
   `;
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
     model: "gpt-4o",
     temperature: 0.7,
+    max_tokens: 4000, // Asigurăm spațiu suficient pentru un articol lung
   });
 
   let content = completion.choices[0].message.content || "";
   
-  // Curățare agresivă a textului
+  // Curățare text
   content = content
     .replace(/^```markdown\s*/, '')
     .replace(/^```\s*/, '')
@@ -121,7 +122,7 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
   content = content.replace(/^(Sigur|Iată|Here is|Desigur).*?(\n|$)/i, '').trim();
 
   if (content.length < 500) {
-    throw new Error(`Eroare: Conținutul generat este prea scurt (${content.length} caractere).`);
+    throw new Error(`Eroare: Conținutul generat este prea scurt (${content.length} caractere). AI-ul nu a generat tot articolul.`);
   }
 
   console.log(`📝 Preview text generat:\n${content.substring(0, 150)}...\n`);
@@ -175,11 +176,15 @@ async function updateDataFile(topic: QueueItem, imageUrl: string) {
     tags: ['${category}', 'blog'],
   },`;
 
+  // Căutăm array-ul de articole (suportă și tipul explicit Article[])
   const articlesRegex = /(export const articles(?:\s*:\s*[^=]+)?\s*=\s*\[)/;
+  
   if (articlesRegex.test(content)) {
     content = content.replace(articlesRegex, `$1${newEntry}`);
     fs.writeFileSync(dataPath, content, 'utf-8');
     console.log('✅ lib/data.ts actualizat.');
+  } else {
+    console.warn("⚠️ Nu am putut găsi 'export const articles' în lib/data.ts");
   }
 }
 
