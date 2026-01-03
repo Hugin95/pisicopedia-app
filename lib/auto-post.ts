@@ -54,21 +54,50 @@ function getQueuePath(): string {
   return path.join(process.cwd(), 'content', 'auto-queue.json');
 }
 
-export function loadQueue(): Topic[] {
-  const queuePath = getQueuePath();
-  if (!fs.existsSync(queuePath)) {
-    console.error(`[Auto-Post] auto-queue.json not found at ${queuePath}`);
-    console.error(`[Auto-Post] Current directory: ${process.cwd()}`);
-    console.error(`[Auto-Post] Directory contents:`, fs.readdirSync(process.cwd()));
-    throw new Error(`auto-queue.json not found at ${queuePath}`);
+export async function loadQueue(): Promise<Topic[]> {
+  // Check if we're in Vercel (read-only filesystem)
+  const isVercel = process.env.VERCEL === '1';
+  
+  if (isVercel) {
+    // Fetch from GitHub
+    console.log('[Auto-Post] Loading queue from GitHub (Vercel environment)');
+    const response = await fetch('https://raw.githubusercontent.com/Hugin95/pisicopedia-app/master/content/auto-queue.json');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch auto-queue.json from GitHub: ${response.statusText}`);
+    }
+    const queueData = await response.text();
+    return JSON.parse(queueData);
+  } else {
+    // Use local filesystem (development)
+    const queuePath = getQueuePath();
+    if (!fs.existsSync(queuePath)) {
+      console.error(`[Auto-Post] auto-queue.json not found at ${queuePath}`);
+      throw new Error(`auto-queue.json not found at ${queuePath}`);
+    }
+    const queueData = fs.readFileSync(queuePath, 'utf-8');
+    return JSON.parse(queueData);
   }
-  const queueData = fs.readFileSync(queuePath, 'utf-8');
-  return JSON.parse(queueData);
 }
 
-export function saveQueue(queue: Topic[]): void {
-  const queuePath = getQueuePath();
-  fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2), 'utf-8');
+export async function saveQueue(queue: Topic[]): Promise<void> {
+  // Check if we're in Vercel (read-only filesystem)
+  const isVercel = process.env.VERCEL === '1';
+  
+  if (isVercel && process.env.GITHUB_TOKEN) {
+    // Save via GitHub API
+    console.log('[Auto-Post] Saving queue to GitHub (Vercel environment)');
+    await createGitHubFile({
+      owner: 'Hugin95',
+      repo: 'pisicopedia-app',
+      path: 'content/auto-queue.json',
+      content: JSON.stringify(queue, null, 2),
+      message: 'Auto-post: Update queue status',
+    });
+  } else {
+    // Use local filesystem (development)
+    const queuePath = getQueuePath();
+    fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2), 'utf-8');
+  }
 }
 
 export function getNextPendingTopic(queue: Topic[]): Topic | null {
@@ -652,7 +681,7 @@ export async function runAutoPostOnce(): Promise<AutoPostResult> {
     }
 
     // Load queue and find next topic
-    const queue = loadQueue();
+    const queue = await loadQueue();
     const topic = getNextPendingTopic(queue);
 
     if (!topic) {
@@ -689,7 +718,7 @@ export async function runAutoPostOnce(): Promise<AutoPostResult> {
     topic.status = 'done';
     topic.createdAt = new Date().toISOString();
     topic.publishedAt = new Date().toISOString();
-    saveQueue(queue);
+    await saveQueue(queue);
 
     // Log generation
     logArticleGeneration(topic.slug, topic.title);
