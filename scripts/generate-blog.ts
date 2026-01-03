@@ -29,8 +29,8 @@ interface QueueItem {
 }
 
 const QUEUE_PATH = path.join(process.cwd(), 'content/auto-queue.json');
-const POSTS_DIR = path.join(process.cwd(), 'content/posts');
-const IMAGES_DIR = path.join(process.cwd(), 'public/images/posts');
+const POSTS_DIR = path.join(process.cwd(), 'content/articles');
+const IMAGES_DIR = path.join(process.cwd(), 'public/images/articles');
 
 // Asigura existenta folderului de postari
 if (!fs.existsSync(POSTS_DIR)) {
@@ -164,7 +164,7 @@ async function main() {
     const fileContent = await generateArticleContent(topic, imageUrl);
 
     // 5. Salvare Fisier
-    const fileName = `${topic.slug}.md`;
+    const fileName = `${topic.slug}.mdx`;
     const filePath = path.join(POSTS_DIR, fileName);
     
     fs.writeFileSync(filePath, fileContent, 'utf-8');
