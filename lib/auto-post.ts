@@ -185,9 +185,9 @@ tags:
 **Notă:** Acest articol are scop informativ și nu înlocuiește consultația veterinară. Pentru orice problemă de sănătate a pisicii tale, consultă întotdeauna medicul veterinar.
 
 IMPORTANT: 
-- Frontmatter TREBUIE să folosească "---" (triple dash), NU "```yaml"
+- Frontmatter TREBUIE să folosească "---" (triple dash), NU code blocks cu yaml
 - Format EXACT: --- la început, apoi YAML, apoi --- la sfârșit
-- INTERZIS să folosești ```yaml sau orice alte delimitatori
+- INTERZIS să folosești delimitatori de tip code block
 
 OUTPUT: Direct în format MDX de mai sus, gata de salvat în fișier.`;
 }
@@ -269,9 +269,9 @@ tags:
 **Notă:** Pentru sfaturi personalizate despre pisica ta, consultă medicul veterinar.
 
 IMPORTANT: 
-- Frontmatter TREBUIE să folosească "---" (triple dash), NU "```yaml"
+- Frontmatter TREBUIE să folosească "---" (triple dash), NU code blocks cu yaml
 - Format EXACT: --- la început, apoi YAML, apoi --- la sfârșit
-- INTERZIS să folosești ```yaml sau orice alte delimitatori
+- INTERZIS să folosești delimitatori de tip code block
 
 OUTPUT: Direct în format MDX de mai sus, gata de salvat în fișier.`;
 }
