@@ -18,6 +18,8 @@ interface QueueItem {
   category: string;
   focusKeyword: string;
   status: 'pending' | 'published' | 'failed';
+  createdAt?: string | null;
+  publishedAt?: string | null;
 }
 
 const QUEUE_PATH = path.join(process.cwd(), 'content/auto-queue.json');
