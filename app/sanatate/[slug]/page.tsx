@@ -7,6 +7,7 @@ import { getArticleBySlug, getAllArticles } from '@/lib/data';
 import { generateArticleSchemaEnhanced, generateBreadcrumbSchema, generateFAQSchema, seoConfig } from '@/lib/seo-advanced';
 import { generateArticleSchema } from '@/lib/seo';
 import Image from 'next/image';
+import { getArticleMDXContent } from '@/lib/mdx';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -90,6 +91,9 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) {
     notFound();
   }
+
+  // Try to load MDX content
+  const mdxData = await getArticleMDXContent(slug);
 
   // Generate enhanced structured data
   const articleSchemaEnhanced = generateArticleSchemaEnhanced({
@@ -225,28 +229,35 @@ export default async function ArticlePage({ params }: Props) {
 
                 {/* Main Content */}
                 <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-                  {/* Since we don't have MDX content loaded, show a placeholder */}
-                  <div className="space-y-6">
-                    <section>
-                      <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
-                        Informații principale
-                      </h2>
-                      <p className="text-warmgray-700 leading-relaxed">
-                        {article.description}
-                      </p>
-                    </section>
-
-                    {/* Medical Disclaimer */}
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mt-8">
-                      <h3 className="text-lg font-semibold text-amber-900 mb-2">
-                        ⚠️ Disclaimer Medical
-                      </h3>
-                      <p className="text-amber-800">
-                        Acest articol are scop informativ și nu înlocuiește consultația veterinară.
-                        Pentru orice problemă de sănătate a pisicii tale, consultă întotdeauna medicul veterinar.
-                      </p>
+                  {mdxData ? (
+                    // Render actual MDX content
+                    <div className="prose prose-lg max-w-none prose-headings:text-warmgray-900 prose-p:text-warmgray-700 prose-a:text-lavender-600 prose-strong:text-warmgray-900 prose-ul:text-warmgray-700 prose-ol:text-warmgray-700">
+                      {mdxData.content}
                     </div>
-                  </div>
+                  ) : (
+                    // Fallback if MDX file doesn't exist
+                    <div className="space-y-6">
+                      <section>
+                        <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
+                          Informații principale
+                        </h2>
+                        <p className="text-warmgray-700 leading-relaxed">
+                          {article.description}
+                        </p>
+                      </section>
+
+                      {/* Medical Disclaimer */}
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mt-8">
+                        <h3 className="text-lg font-semibold text-amber-900 mb-2">
+                          ⚠️ Disclaimer Medical
+                        </h3>
+                        <p className="text-amber-800">
+                          Acest articol are scop informativ și nu înlocuiește consultația veterinară.
+                          Pentru orice problemă de sănătate a pisicii tale, consultă întotdeauna medicul veterinar.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tags */}
