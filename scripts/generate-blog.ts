@@ -4,10 +4,6 @@ import path from 'path';
 // @ts-ignore
 import matter from 'gray-matter';
 import OpenAI from 'openai';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 // Initializare OpenAI cu cheia din .env
 // Fix: Asiguram ca apiKey este string (chiar daca e gol, pentru a multumi TypeScript)
@@ -218,17 +214,6 @@ async function main() {
     
     fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2), 'utf-8');
     console.log(`✅ Coada actualizată.`);
-
-    // 7. Git Commit & Push automat
-    console.log("☁️  Sincronizez automat cu GitHub...");
-    try {
-      await execAsync('git add .');
-      await execAsync(`git commit -m "Bot: Published article ${topic.slug}"`);
-      await execAsync('git push');
-      console.log("🎉 Modificările au fost urcate pe GitHub cu succes! Site-ul se va actualiza în câteva minute.");
-    } catch (error) {
-      console.error("⚠️  Nu am putut face push automat (verifică dacă ești logat în git):", error);
-    }
 
   } catch (error) {
     console.error("❌ Eroare:", error);
