@@ -579,28 +579,6 @@ export const breeds: Breed[] = [
 // All articles
 export const articles: Article[] = [
   {
-    slug: 'pisica-sforaie-cand-doarme',
-    title: 'Pisica sforăie când doarme - cauze și soluții',
-    description: 'Ghid complet despre Pisica sforăie când doarme - cauze și soluții. Află totul despre pisica sforaie cand doarme de la experți.',
-    category: 'ingrijire',
-    image: '/images/articles/pisica-sforaie-cand-doarme.jpg',
-    readingTime: 5,
-    date: '2026-01-03',
-    author: 'Dr. Veterinar Pisicopedia',
-    tags: ['ingrijire', 'blog'],
-  },
-  {
-    slug: 'pisica-vomita-spuma-alba-dimineata',
-    title: 'Pisica vomită spumă albă dimineața',
-    description: 'Ghid complet despre Pisica vomită spumă albă dimineața. Află totul despre pisica vomita spuma alba dimineata de la experți.',
-    category: 'ingrijire',
-    image: '/images/articles/pisica-vomita-spuma-alba-dimineata.jpg',
-    readingTime: 5,
-    date: '2026-01-03',
-    author: 'Dr. Veterinar Pisicopedia',
-    tags: ['ingrijire', 'blog'],
-  },
-  {
     slug: 'pisica-mananca-iarba-si-vomita',
     title: 'Pisica mănâncă iarbă și apoi vomită',
     description: 'Ghid complet despre Pisica mănâncă iarbă și apoi vomită. Află totul despre pisica mananca iarba si vomita de la experți.',
@@ -610,17 +588,6 @@ export const articles: Article[] = [
     date: '2026-01-03',
     author: 'Dr. Veterinar Pisicopedia',
     tags: ['ingrijire', 'blog'],
-  },
-  {
-    slug: 'ghid-pisici-interior',
-    title: 'Ghid complet pentru pisicile de interior',
-    description: 'Ghid complet despre Ghid complet pentru pisicile de interior. Află totul despre pisici de interior ghid de la experți.',
-    category: 'ghiduri',
-    image: '/images/posts/ghid-pisici-interior.jpg',
-    readingTime: 5,
-    date: '2026-01-03',
-    author: 'Dr. Veterinar Pisicopedia',
-    tags: ['ghid', 'blog'],
   },
   {
     slug: "agresivitate-pisici",

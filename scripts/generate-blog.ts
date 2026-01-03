@@ -1,21 +1,15 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
-// @ts-ignore
-import matter from 'gray-matter';
 import OpenAI from 'openai';
 
-// Initializare OpenAI cu cheia din .env
-// Fix: Asiguram ca apiKey este string (chiar daca e gol, pentru a multumi TypeScript)
+// Initializare OpenAI
 const apiKey = process.env.OPENAI_API_KEY || "";
-
 if (!apiKey) {
-  console.warn("⚠️  ATENTIE: OPENAI_API_KEY nu este setat in .env. Scriptul va esua la apelurile AI.");
+  console.warn("⚠️  ATENTIE: OPENAI_API_KEY nu este setat in .env.");
 }
 
-const openai = new OpenAI({
-  apiKey: apiKey,
-});
+const openai = new OpenAI({ apiKey: apiKey });
 
 interface QueueItem {
   id: string;
@@ -24,32 +18,26 @@ interface QueueItem {
   category: string;
   focusKeyword: string;
   status: 'pending' | 'published' | 'failed';
-  createdAt: string | null;
-  publishedAt: string | null;
 }
 
 const QUEUE_PATH = path.join(process.cwd(), 'content/auto-queue.json');
-const POSTS_DIR = path.join(process.cwd(), 'content/articles');
+const ARTICLES_DIR = path.join(process.cwd(), 'content/articles');
 const IMAGES_DIR = path.join(process.cwd(), 'public/images/articles');
 
-// Asigura existenta folderului de postari
-if (!fs.existsSync(POSTS_DIR)) {
-  fs.mkdirSync(POSTS_DIR, { recursive: true });
-}
-if (!fs.existsSync(IMAGES_DIR)) {
-  fs.mkdirSync(IMAGES_DIR, { recursive: true });
-}
+// Asigura existenta folderelor
+if (!fs.existsSync(ARTICLES_DIR)) fs.mkdirSync(ARTICLES_DIR, { recursive: true });
+if (!fs.existsSync(IMAGES_DIR)) fs.mkdirSync(IMAGES_DIR, { recursive: true });
 
 function getValidCategory(category: string): string {
   const mapping: Record<string, string> = {
     'ghid': 'ghiduri',
-    'sanatate': 'ingrijire',
+    'sanatate': 'ingrijire', // Mapam sanatate la ingrijire pentru siguranta
   };
   return mapping[category] || category;
 }
 
 async function generateBlogImage(topic: QueueItem): Promise<string> {
-  console.log(`[AI Images] Generez imaginea de copertă pentru: "${topic.title}"...`);
+  console.log(`[AI Images] Generez imaginea pentru: "${topic.title}"...`);
 
   try {
     const response = await openai.images.generate({
@@ -60,14 +48,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
       quality: "standard",
     });
 
-    // Fix: Accesare sigura a datelor cu optional chaining
-    const imageObject = response.data?.[0];
-    const imageUrl = imageObject?.url;
-    
+    const imageUrl = response.data?.[0]?.url;
     if (!imageUrl) throw new Error("Nu s-a generat URL-ul imaginii.");
 
-    // Descarcam imaginea
-    // @ts-ignore - fetch este disponibil global in Node 18+ dar TS s-ar putea sa nu stie
     const imgRes = await fetch(imageUrl);
     const buffer = Buffer.from(await imgRes.arrayBuffer());
     
@@ -80,18 +63,13 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     return `/images/articles/${filename}`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
-    return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
+    return "/images/placeholder-cat.jpg";
   }
 }
 
 async function generateArticleContent(topic: QueueItem, imageUrl: string): Promise<string> {
-  console.log(`[AI Research] Încep generarea avansată pentru: "${topic.title}"...`);
+  console.log(`[AI Research] Scriu articolul: "${topic.title}"...`);
 
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("Lipseste OPENAI_API_KEY din .env!");
-  }
-
-  // Prompt optimizat pentru "Research Puternic" si SEO
   const prompt = `
     Ești un medic veterinar expert și un specialist în comportamentul felin pentru site-ul Pisicopedia.ro.
     Sarcina ta este să scrii un articol de blog complet, foarte detaliat și optimizat SEO.
@@ -99,110 +77,121 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
     Detalii Articol:
     - Titlu: "${topic.title}"
     - Cuvânt cheie principal: "${topic.focusKeyword}"
-    - Categorie: ${topic.category}
-    - Ton: Empatic, autoritar (medical), dar accesibil proprietarilor de pisici.
-    - Format: Markdown.
+    - Ton: Empatic, autoritar (medical), dar accesibil.
     
-    Structura Obligatorie:
-    1. **Introducere**: Captivantă, să răspundă rapid la intenția utilizatorului și să includă cuvântul cheie "${topic.focusKeyword}".
-    2. **Cuprins Detaliat**: Folosește H2 și H3. Acoperă cauze, simptome, soluții.
-    3. **Elemente Vizuale (Text)**: Include liste cu puncte (bullet points) sau tabele markdown unde este relevant (ex: alimente permise vs interzise, simptome ușoare vs grave).
-    4. **Secțiune Critică**: "Când să mergi urgent la veterinar" (obligatoriu pentru subiecte de sănătate).
-    5. **Concluzie**: Un rezumat scurt.
-    6. **FAQ**: Secțiune de Întrebări Frecvente la final (folosește H2 pentru titlu "Întrebări Frecvente" și H3 pentru fiecare întrebare). Include 3-5 întrebări relevante.
+    STRUCTURA OBLIGATORIE (Markdown):
+    1. **Introducere**: 2-3 paragrafe captivante care răspund la întrebarea principală.
+    2. **Cuprins**: Folosește titluri H2 (##) și H3 (###).
+    3. **Conținut**: Detaliază cauze, simptome, soluții. Folosește liste cu puncte.
+    4. **Când să mergi la veterinar**: Secțiune obligatorie.
+    5. **FAQ**: 3-5 întrebări frecvente la final.
+    6. **Concluzie**: Rezumat scurt.
 
-    Reguli de scriere:
-    - Nu include titlul H1 la început (îl adaug eu din cod).
-    - Scrie conținut lung, informativ (minim 1000 cuvinte dacă subiectul permite).
-    - Folosește bold pentru ideile principale.
-    - Nu te repeta.
+    REGULI CRITICE:
+    - Returnează DOAR conținutul articolului (corpul textului).
+    - NU include frontmatter (liniile cu ---).
+    - NU include titlul H1 la început (îl adaug eu).
+    - NU include texte de conversație ("Sigur, iată articolul...").
+    - Scrie minim 1000 de cuvinte.
   `;
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
-    model: "gpt-4o", // Folosim modelul cel mai capabil pentru calitate maxima
+    model: "gpt-4o",
     temperature: 0.7,
   });
 
-  const aiContent = completion.choices[0].message.content || "";
+  let content = completion.choices[0].message.content || "";
   
-  // Curatam eventualele markere markdown de la inceput/sfarsit daca AI-ul le pune
-  let cleanContent = aiContent
+  // Curățare agresivă a textului
+  content = content
     .replace(/^```markdown\s*/, '')
     .replace(/^```\s*/, '')
     .replace(/\s*```$/, '')
     .trim();
 
-  // Fix critic: Dacă AI-ul a pus deja frontmatter (--- ... ---), îl scoatem pentru a nu-l dubla
-  if (cleanContent.startsWith('---')) {
-    cleanContent = cleanContent.replace(/^---[\s\S]*?---\s*/, '').trim();
+  // Eliminăm frontmatter dacă AI-ul l-a pus totuși
+  if (content.startsWith('---')) {
+    content = content.replace(/^---[\s\S]*?---\s*/, '').trim();
   }
 
-  if (cleanContent.length < 200) {
-    throw new Error(`Eroare: Conținutul generat este prea scurt sau gol (${cleanContent.length} caractere).`);
+  // Eliminăm introduceri conversaționale
+  content = content.replace(/^(Sigur|Iată|Here is|Desigur).*?(\n|$)/i, '').trim();
+
+  if (content.length < 500) {
+    throw new Error(`Eroare: Conținutul generat este prea scurt (${content.length} caractere).`);
   }
 
-  const today = new Date().toISOString();
+  console.log(`📝 Preview text generat:\n${content.substring(0, 150)}...\n`);
 
-  // Construim fisierul final cu Frontmatter
-  return matter.stringify(cleanContent, {
-    title: topic.title,
-    date: today,
-    category: getValidCategory(topic.category),
-    focusKeyword: topic.focusKeyword,
-    image: imageUrl,
-    status: 'published',
-    excerpt: `Ghid complet despre ${topic.title}. Află totul despre ${topic.focusKeyword} de la experți.`
-  });
+  const today = new Date().toISOString().split('T')[0];
+  const category = getValidCategory(topic.category);
+
+  // Construim manual fișierul MDX pentru a fi siguri de format
+  const fileContent = `---
+title: "${topic.title}"
+date: "${today}"
+category: "${category}"
+focusKeyword: "${topic.focusKeyword}"
+image: "${imageUrl}"
+status: "published"
+excerpt: "Ghid complet despre ${topic.title}. Află totul despre ${topic.focusKeyword} de la experți."
+tags: ["${category}", "blog", "pisici"]
+author: "Dr. Veterinar Pisicopedia"
+readingTime: 5
+---
+
+${content}`;
+
+  return fileContent;
 }
 
 async function updateDataFile(topic: QueueItem, imageUrl: string) {
   const dataPath = path.join(process.cwd(), 'lib', 'data.ts');
-  if (!fs.existsSync(dataPath)) {
-    console.warn("⚠️ Nu am găsit lib/data.ts, articolul nu va apărea în liste automat.");
-    return;
-  }
+  if (!fs.existsSync(dataPath)) return;
 
   let content = fs.readFileSync(dataPath, 'utf-8');
   const today = new Date().toISOString().split('T')[0];
+  const category = getValidCategory(topic.category);
+
+  // Verificăm dacă există deja
+  if (content.includes(`slug: '${topic.slug}'`) || content.includes(`slug: "${topic.slug}"`)) {
+    console.log('ℹ️  Articolul există deja în data.ts, nu îl mai adaug.');
+    return;
+  }
 
   const newEntry = `
   {
     slug: '${topic.slug}',
     title: '${topic.title.replace(/'/g, "\\'")}',
-    description: 'Ghid complet despre ${topic.title}. Află totul despre ${topic.focusKeyword} de la experți.',
-    category: '${getValidCategory(topic.category)}',
+    description: 'Ghid complet despre ${topic.title}.',
+    category: '${category}',
     image: '${imageUrl}',
     readingTime: 5,
     date: '${today}',
     author: 'Dr. Veterinar Pisicopedia',
-    tags: ['${getValidCategory(topic.category)}', 'blog'],
+    tags: ['${category}', 'blog'],
   },`;
 
-  // Regex care găsește începutul listei de articole, indiferent dacă are tipul specificat sau nu
   const articlesRegex = /(export const articles(?:\s*:\s*[^=]+)?\s*=\s*\[)/;
-  
   if (articlesRegex.test(content)) {
     content = content.replace(articlesRegex, `$1${newEntry}`);
     fs.writeFileSync(dataPath, content, 'utf-8');
-    console.log('✅ lib/data.ts actualizat cu noul articol.');
-  } else {
-    console.error("❌ Nu am putut găsi 'export const articles' în lib/data.ts pentru a adăuga articolul.");
+    console.log('✅ lib/data.ts actualizat.');
   }
 }
 
 async function main() {
   try {
-    // 1. Citire Coada
     if (!fs.existsSync(QUEUE_PATH)) {
-      console.error("Eroare: Nu am gasit fisierul auto-queue.json");
+      console.error("Eroare: Nu am gasit auto-queue.json");
       return;
     }
 
     const rawData = fs.readFileSync(QUEUE_PATH, 'utf-8');
     const queue: QueueItem[] = JSON.parse(rawData);
 
-    // 2. Gasire articol pending
+    // Găsim primul articol pending
     const index = queue.findIndex((item) => item.status === 'pending');
 
     if (index === -1) {
@@ -211,28 +200,24 @@ async function main() {
     }
 
     const topic = queue[index];
-    console.log(`🚀 Procesez subiectul: [${topic.id}] ${topic.title}`);
+    console.log(`🚀 Procesez: [${topic.id}] ${topic.title}`);
 
-    // 3. Generare Imagine (DALL-E 3)
+    // Generare
     const imageUrl = await generateBlogImage(topic);
-
-    // 4. Generare Text (GPT-4o)
     const fileContent = await generateArticleContent(topic, imageUrl);
 
-    // 5. Salvare Fisier
+    // Salvare
     const fileName = `${topic.slug}.mdx`;
-    const filePath = path.join(POSTS_DIR, fileName);
+    const filePath = path.join(ARTICLES_DIR, fileName);
     
     fs.writeFileSync(filePath, fileContent, 'utf-8');
     console.log(`✅ Articol salvat: content/articles/${fileName}`);
 
-    // 6. Actualizare data.ts pentru a apărea pe site
     await updateDataFile(topic, imageUrl);
 
-    // 5. Actualizare JSON
+    // Actualizare coadă
     queue[index].status = 'published';
     queue[index].publishedAt = new Date().toISOString();
-    
     fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2), 'utf-8');
     console.log(`✅ Coada actualizată.`);
 
