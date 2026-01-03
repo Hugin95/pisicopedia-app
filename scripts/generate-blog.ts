@@ -75,9 +75,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/posts/${filename}`);
+    console.log(`✅ Imagine salvată: public/images/articles/${filename}`);
     
-    return `/images/posts/${filename}`;
+    return `/images/articles/${filename}`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
     return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
@@ -127,7 +127,15 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
   const aiContent = completion.choices[0].message.content || "";
   
   // Curatam eventualele markere markdown de la inceput/sfarsit daca AI-ul le pune
-  const cleanContent = aiContent.replace(/^```markdown\n/, '').replace(/^```\n/, '').replace(/\n```$/, '');
+  const cleanContent = aiContent
+    .replace(/^```markdown\s*/, '')
+    .replace(/^```\s*/, '')
+    .replace(/\s*```$/, '')
+    .trim();
+
+  if (cleanContent.length < 200) {
+    throw new Error(`Eroare: Conținutul generat este prea scurt sau gol (${cleanContent.length} caractere).`);
+  }
 
   const today = new Date().toISOString();
 
