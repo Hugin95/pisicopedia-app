@@ -10,8 +10,15 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 
 // Initializare OpenAI cu cheia din .env
+// Fix: Asiguram ca apiKey este string (chiar daca e gol, pentru a multumi TypeScript)
+const apiKey = process.env.OPENAI_API_KEY || "";
+
+if (!apiKey) {
+  console.warn("⚠️  ATENTIE: OPENAI_API_KEY nu este setat in .env. Scriptul va esua la apelurile AI.");
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: apiKey,
 });
 
 interface QueueItem {
@@ -49,10 +56,14 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
       quality: "standard",
     });
 
-    const imageUrl = response.data[0].url;
+    // Fix: Accesare sigura a datelor cu optional chaining
+    const imageObject = response.data?.[0];
+    const imageUrl = imageObject?.url;
+    
     if (!imageUrl) throw new Error("Nu s-a generat URL-ul imaginii.");
 
     // Descarcam imaginea
+    // @ts-ignore - fetch este disponibil global in Node 18+ dar TS s-ar putea sa nu stie
     const imgRes = await fetch(imageUrl);
     const buffer = Buffer.from(await imgRes.arrayBuffer());
     
@@ -60,9 +71,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/posts/${filename}`);
+    console.log(`✅ Imagine salvată: public/images/posts/`);
     
-    return `/images/posts/${filename}`;
+    return `/images/posts/`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
     return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
@@ -161,7 +172,7 @@ async function main() {
     const filePath = path.join(POSTS_DIR, fileName);
     
     fs.writeFileSync(filePath, fileContent, 'utf-8');
-    console.log(`✅ Articol salvat: content/posts/${fileName}`);
+    console.log(`✅ Articol salvat: content/posts/`);
 
     // 5. Actualizare JSON
     queue[index].status = 'published';
@@ -187,25 +198,3 @@ async function main() {
 }
 
 main();
-```
-
-### Ce trebuie să faci acum:
-
-1.  **Asigură-te că ai deschis folderul corect în VS Code:** `C:\Users\const\Documents\GitHub\pisicopedia-app`.
-2.  **Instalează dependențele** (dacă nu ai făcut-o deja în acest folder):
-   ```bash
-   npm install
-   ```
-3.  **Adaugă comanda în `package.json`** (dacă nu există):
-   *   Deschide `package.json`.
-   *   La secțiunea `"scripts"`, adaugă: `"generate:blog": "tsx scripts/generate-blog.ts"`.
-4.  **Rulează scriptul:**
-   ```bash
-   npm run generate:blog
-   ```
-
-Acum, modificările vor fi făcute în folderul Git corect și vor fi trimise automat pe GitHub!
-
-<!--
-[PROMPT_SUGGESTION]Vreau să modific scriptul să genereze 3 articole la rând (batch), nu doar unul singur.[/PROMPT_SUGGESTION]
-[PROMPT_SUGGESTION]Cum pot programa acest script să ruleze automat în fiecare dimineață la ora 9?[/PROMPT_SUGGESTION]
