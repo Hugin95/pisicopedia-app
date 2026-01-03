@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const articleUrl = `${seoConfig.siteUrl}/sanatate/${article.slug}`;
-  const imageUrl = article.image.startsWith('http')
+  const imageUrl = article.image && article.image.startsWith('http')
     ? article.image
-    : `${seoConfig.siteUrl}${article.image}`;
+    : `${seoConfig.siteUrl}${article.image || '/images/articles/default-article.svg'}`;
 
   return {
     title: `${article.title} | Ghid Complet 2024`,

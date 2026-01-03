@@ -881,22 +881,56 @@ export function getTopBreeds(count: number = 6) {
 export function getAllArticles() {
   // Use content-lists.ts which is updated automatically by auto-post
   const { allArticles } = require('./content-lists');
-  return allArticles;
+  // Convert ArticleInfo to Article format with default values
+  return allArticles.map((article: any) => ({
+    ...article,
+    description: article.title, // Use title as description if not provided
+    image: `/images/articles/${article.slug}.jpg`,
+    readingTime: 5,
+    date: new Date().toISOString().split('T')[0],
+    author: 'Dr. Veterinar Pisicopedia',
+  }));
 }
 
 export function getArticleBySlug(slug: string) {
   const { allArticles } = require('./content-lists');
-  return allArticles.find((article: any) => article.slug === slug);
+  const article = allArticles.find((a: any) => a.slug === slug);
+  if (!article) return undefined;
+  // Convert ArticleInfo to Article format with default values
+  return {
+    ...article,
+    description: article.title,
+    image: `/images/articles/${article.slug}.jpg`,
+    readingTime: 5,
+    date: new Date().toISOString().split('T')[0],
+    author: 'Dr. Veterinar Pisicopedia',
+  };
 }
 
 export function getLatestArticles(count: number = 6) {
   const { allArticles } = require('./content-lists');
-  return allArticles.slice(0, count);
+  return allArticles.slice(0, count).map((article: any) => ({
+    ...article,
+    description: article.title,
+    image: `/images/articles/${article.slug}.jpg`,
+    readingTime: 5,
+    date: new Date().toISOString().split('T')[0],
+    author: 'Dr. Veterinar Pisicopedia',
+  }));
 }
 
 export function getArticlesByCategory(category: string) {
   const { allArticles } = require('./content-lists');
-  return allArticles.filter((article: any) => article.category === category);
+  return allArticles
+    .filter((article: any) => article.category === category)
+    .map((article: any) => ({
+      ...article,
+      description: article.title,
+      image: `/images/articles/${article.slug}.jpg`,
+      readingTime: 5,
+      date: new Date().toISOString().split('T')[0],
+      author: 'Dr. Veterinar Pisicopedia',
+    }));
 }
 
 export function getAllGuides() {
