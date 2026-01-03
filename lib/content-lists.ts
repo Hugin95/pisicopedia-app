@@ -62,9 +62,7 @@ export const allBreeds: BreedInfo[] = [
 ];
 
 // Complete list of health articles - will be populated automatically by auto-post system
-export const allArticles: ArticleInfo[] = [
-  { slug: 'pisica-scuipa-par', title: 'De ce pisica mea scuipă păr? Ghid despre bile de păr', category: 'sanatate', subcategory: 'simptome' },
-];
+export const allArticles: ArticleInfo[] = [];
 
 // Complete list of 24 practical guides
 export const allGuides: GuideInfo[] = [
