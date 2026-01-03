@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
 
     // Import lazily to avoid bundling issues
     const { loadQueue } = await import('@/lib/auto-post');
-    const queue = loadQueue();
+    const queue = await loadQueue();
 
     const pending = queue.filter(t => t.status === 'pending').length;
     const done = queue.filter(t => t.status === 'done').length;
