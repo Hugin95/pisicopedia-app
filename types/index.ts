@@ -15,10 +15,10 @@ export interface Breed {
   temperament: string[];
   activityLevel: number; // 1-5
   healthConcerns: string[];
-  shedding: 'low' | 'medium' | 'high' | 'very-high';
-  grooming: 'low' | 'medium' | 'high';
+  shedding: 'none' | 'very-low' | 'low' | 'low-medium' | 'medium' | 'high' | 'very-high';
+  grooming: 'low' | 'medium' | 'high' | 'special';
   category: 'shorthaired' | 'longhaired' | 'hairless';
-  size: 'small' | 'medium' | 'large';
+  size: 'small' | 'small-medium' | 'medium' | 'medium-large' | 'large' | 'large-xlarge';
   tags: string[];
 
   // Content sections
