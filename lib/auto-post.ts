@@ -412,6 +412,12 @@ async function updateContentLists(topic: Topic): Promise<void> {
   }
 
   if (topic.category === 'sanatate') {
+    // CHECK IF ARTICLE ALREADY EXISTS (prevent duplicates)
+    if (listsContent.includes(`slug: '${topic.slug}'`)) {
+      console.log(`[Auto-Post] Article ${topic.slug} already exists in content-lists, skipping...`);
+      return;
+    }
+
     const newArticle: ArticleInfo = {
       slug: topic.slug,
       title: topic.title,
