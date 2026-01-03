@@ -63,6 +63,7 @@ export const allBreeds: BreedInfo[] = [
 
 // Complete list of 30 health articles
 export const allArticles: ArticleInfo[] = [
+  { slug: 'pisica-sforaie-cand-doarme', title: 'Pisica sforăie când doarme - cauze și soluții', category: 'sanatate', subcategory: 'simptome' },
   // First 10 - to be implemented immediately
   {
     slug: 'pisica-nu-mananca',
