@@ -579,6 +579,17 @@ export const breeds: Breed[] = [
 // All articles
 export const articles: Article[] = [
   {
+    slug: 'ghid-pisici-interior',
+    title: 'Ghid complet pentru pisicile de interior',
+    description: 'Ghid complet despre Ghid complet pentru pisicile de interior. Află totul despre pisici de interior ghid de la experți.',
+    category: 'ghid',
+    image: '/images/posts/ghid-pisici-interior.jpg',
+    readingTime: 5,
+    date: '2026-01-03',
+    author: 'Dr. Veterinar Pisicopedia',
+    tags: ['ghid', 'blog'],
+  },
+  {
     slug: "agresivitate-pisici",
     title: "Agresivitatea la pisici: cauze și soluții",
     description: "Ghid complet despre agresivitatea la pisici: cauze și soluții pentru proprietarii de pisici",
