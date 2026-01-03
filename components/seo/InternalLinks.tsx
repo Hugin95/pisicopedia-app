@@ -215,7 +215,7 @@ export function RelatedContent({
         {type === 'breed' ? 'Rase Similare' : 'Articole Similare'}
       </h2>
       <div className="grid md:grid-cols-3 gap-6">
-        {related.map((item) => (
+        {related.map((item: any) => (
           <Link
             key={item.slug}
             href={`${basePath}/${item.slug}`}
