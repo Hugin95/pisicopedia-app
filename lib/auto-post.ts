@@ -56,6 +56,9 @@ function getQueuePath(): string {
 export function loadQueue(): Topic[] {
   const queuePath = getQueuePath();
   if (!fs.existsSync(queuePath)) {
+    console.error(`[Auto-Post] auto-queue.json not found at ${queuePath}`);
+    console.error(`[Auto-Post] Current directory: ${process.cwd()}`);
+    console.error(`[Auto-Post] Directory contents:`, fs.readdirSync(process.cwd()));
     throw new Error(`auto-queue.json not found at ${queuePath}`);
   }
   const queueData = fs.readFileSync(queuePath, 'utf-8');
