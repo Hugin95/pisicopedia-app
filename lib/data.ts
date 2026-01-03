@@ -579,6 +579,17 @@ export const breeds: Breed[] = [
 // All articles
 export const articles: Article[] = [
   {
+    slug: 'pisica-sforaie-cand-doarme',
+    title: 'Pisica sforăie când doarme - cauze și soluții',
+    description: 'Ghid complet despre Pisica sforăie când doarme - cauze și soluții. Află totul despre pisica sforaie cand doarme de la experți.',
+    category: 'ingrijire',
+    image: '/images/articles/pisica-sforaie-cand-doarme.jpg',
+    readingTime: 5,
+    date: '2026-01-03',
+    author: 'Dr. Veterinar Pisicopedia',
+    tags: ['ingrijire', 'blog'],
+  },
+  {
     slug: 'pisica-vomita-spuma-alba-dimineata',
     title: 'Pisica vomită spumă albă dimineața',
     description: 'Ghid complet despre Pisica vomită spumă albă dimineața. Află totul despre pisica vomita spuma alba dimineata de la experți.',
