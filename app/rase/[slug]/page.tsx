@@ -321,14 +321,20 @@ export default async function BreedPage({ params }: PageProps) {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-lg text-warmgray-900 mb-2">
-                    Periere și Toaletare
+                    {breed.slug === 'sfinx' || breed.slug === 'peterbald' 
+                      ? 'Îngrijirea Pielii' 
+                      : 'Periere și Toaletare'}
                   </h3>
                   <p className="text-warmgray-600">
-                    {breed.grooming === 'high'
-                      ? 'Necesită periere zilnică pentru a preveni încâlcirea părului și formarea ghemotoacelor.'
+                    {breed.slug === 'sfinx' || breed.slug === 'peterbald'
+                      ? 'Necesită băi săptămânale cu șampon special și curățare zilnică cu cârpă umedă. Pielea produce uleiuri și necesită îngrijire constantă. Protecție solară obligatorie.'
+                      : breed.slug === 'devon-rex' || breed.slug === 'cornish-rex'
+                      ? 'Periere foarte delicată și rară cu perie moale pentru a nu deteriora părul fin și special. Curățare blândă recomandată.'
+                      : breed.grooming === 'high'
+                      ? 'Necesită periere zilnică pentru a preveni încâlcirea părului și formarea ghemotoacelor. Atenție specială la zonele critice.'
                       : breed.grooming === 'medium'
-                      ? 'Periere de 2-3 ori pe săptămână pentru menținerea blănii sănătoase.'
-                      : 'Periere săptămânală suficientă pentru menținerea aspectului.'}
+                      ? 'Periere de 2-3 ori pe săptămână pentru menținerea blănii sănătoase și strălucitoare.'
+                      : 'Periere săptămânală suficientă pentru menținerea aspectului. Mângâiere cu mână umedă poate înlocui perierea.'}
                   </p>
                 </div>
 
