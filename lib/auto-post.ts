@@ -7,6 +7,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 import { getOpenAIClient, CONTENT_CONFIG } from './ai-config';
 
 // ============================================================================
@@ -475,6 +476,95 @@ function logArticleGeneration(slug: string, title: string): void {
 }
 
 // ============================================================================
+// GIT AUTO-COMMIT AND PUSH
+// ============================================================================
+
+/**
+ * Automatically commit and push changes to GitHub.
+ * This enables the auto-post system to work fully automatically without manual intervention.
+ */
+async function gitCommitAndPush(slug: string, title: string): Promise<void> {
+  try {
+    console.log('[Git] Starting auto-commit and push...');
+
+    // Configure git user (needed for Vercel environment)
+    try {
+      execSync('git config user.name "Pisicopedia Auto-Post"', { 
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      });
+      execSync('git config user.email "auto-post@pisicopedia.ro"', { 
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      });
+    } catch (configError) {
+      // Git config might already be set, ignore errors
+      console.log('[Git] Git config already set or not needed');
+    }
+
+    // Check if there are changes to commit
+    let hasChanges = false;
+    try {
+      const status = execSync('git status --porcelain', { 
+        encoding: 'utf-8',
+        stdio: 'pipe'
+      });
+      hasChanges = status.trim().length > 0;
+    } catch (error) {
+      console.log('[Git] Could not check git status, assuming changes exist');
+      hasChanges = true;
+    }
+
+    if (!hasChanges) {
+      console.log('[Git] No changes to commit');
+      return;
+    }
+
+    // Stage all changes
+    execSync('git add -A', { 
+      encoding: 'utf-8',
+      stdio: 'pipe'
+    });
+    console.log('[Git] Staged all changes');
+
+    // Commit with descriptive message
+    const commitMessage = `Auto-post: ${title} (${slug})`;
+    execSync(`git commit -m "${commitMessage}"`, { 
+      encoding: 'utf-8',
+      stdio: 'pipe'
+    });
+    console.log(`[Git] Committed: ${commitMessage}`);
+
+    // Push to GitHub
+    // Note: In Vercel, this will use the GitHub App authentication automatically
+    // No need for personal access tokens
+    execSync('git push origin main', { 
+      encoding: 'utf-8',
+      stdio: 'pipe',
+      timeout: 30000 // 30 second timeout
+    });
+    console.log('[Git] Successfully pushed to GitHub');
+    console.log('[Git] Vercel will automatically deploy the changes');
+
+  } catch (error: any) {
+    console.error('[Git] Error during commit/push:', error.message);
+    
+    // Log more details for debugging
+    if (error.stdout) {
+      console.error('[Git] stdout:', error.stdout.toString());
+    }
+    if (error.stderr) {
+      console.error('[Git] stderr:', error.stderr.toString());
+    }
+
+    // Don't throw - we don't want to fail the entire auto-post process
+    // The article is still saved locally and will be pushed on next deployment
+    console.warn('[Git] Auto-push failed, but article is saved locally');
+    console.warn('[Git] Changes will be deployed on next manual push or successful auto-post');
+  }
+}
+
+// ============================================================================
 // MAIN FUNCTION
 // ============================================================================
 
@@ -547,6 +637,9 @@ export async function runAutoPostOnce(): Promise<AutoPostResult> {
     logArticleGeneration(topic.slug, topic.title);
 
     console.log(`[Auto-Post] SUCCESS: ${topic.slug}`);
+
+    // Auto-commit and push to GitHub (enables fully automatic publishing)
+    await gitCommitAndPush(topic.slug, topic.title);
 
     return {
       status: 'created',
