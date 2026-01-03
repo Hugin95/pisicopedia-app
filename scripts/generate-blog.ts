@@ -67,9 +67,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/posts/${filename}`);
+    console.log(`✅ Imagine salvată: public/images/articles/${filename}`);
     
-    return `/images/posts/${filename}`;
+    return `/images/articles/${filename}`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
     return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
@@ -135,6 +135,40 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
   });
 }
 
+async function updateDataFile(topic: QueueItem, imageUrl: string) {
+  const dataPath = path.join(process.cwd(), 'lib', 'data.ts');
+  if (!fs.existsSync(dataPath)) {
+    console.warn("⚠️ Nu am găsit lib/data.ts, articolul nu va apărea în liste automat.");
+    return;
+  }
+
+  let content = fs.readFileSync(dataPath, 'utf-8');
+  const today = new Date().toISOString().split('T')[0];
+
+  const newEntry = `
+  {
+    slug: '${topic.slug}',
+    title: '${topic.title.replace(/'/g, "\\'")}',
+    description: 'Ghid complet despre ${topic.title}. Află totul despre ${topic.focusKeyword} de la experți.',
+    category: '${topic.category}',
+    image: '${imageUrl}',
+    readingTime: 5,
+    date: '${today}',
+    author: 'Dr. Veterinar Pisicopedia',
+    tags: ['${topic.category}', 'blog'],
+  },`;
+
+  // Inserăm la începutul listei de articole (suportă ambele variante de nume de variabilă)
+  if (content.includes('export const articles = [')) {
+    content = content.replace(/export const articles = \[/, `export const articles = [${newEntry}`);
+  } else if (content.includes('export const sampleArticles = [')) {
+    content = content.replace(/export const sampleArticles = \[/, `export const sampleArticles = [${newEntry}`);
+  }
+
+  fs.writeFileSync(dataPath, content, 'utf-8');
+  console.log('✅ lib/data.ts actualizat cu noul articol.');
+}
+
 async function main() {
   try {
     // 1. Citire Coada
@@ -168,7 +202,10 @@ async function main() {
     const filePath = path.join(POSTS_DIR, fileName);
     
     fs.writeFileSync(filePath, fileContent, 'utf-8');
-    console.log(`✅ Articol salvat: content/posts/${fileName}`);
+    console.log(`✅ Articol salvat: content/articles/${fileName}`);
+
+    // 6. Actualizare data.ts pentru a apărea pe site
+    await updateDataFile(topic, imageUrl);
 
     // 5. Actualizare JSON
     queue[index].status = 'published';
