@@ -28,7 +28,7 @@ export default async function HomePage() {
             </h1>
             <p className="text-lg md:text-xl text-warmgray-600 mb-8">
               Informații medicale verificate și ghiduri complete pentru îngrijirea optimă a pisicii tale.
-              Descoperă peste 150 de rase și sute de articole specializate.
+              Descoperă 30 de rase și sute de articole specializate.
             </p>
             <SearchBar className="mb-8" />
             <div className="flex flex-wrap gap-4 justify-center">
@@ -66,7 +66,7 @@ export default async function HomePage() {
 
           <div className="text-center">
             <Button href="/rase" size="lg" variant="outline">
-              Vezi Toate Rasele (150+)
+              Vezi Toate Rasele (30)
             </Button>
           </div>
         </Container>
@@ -166,7 +166,7 @@ export default async function HomePage() {
                   </span>
                 </summary>
                 <p className="mt-4 text-warmgray-600">
-                  Pisicopedia oferă informații complete despre peste 150 de rase de pisici,
+                  Pisicopedia oferă informații complete despre 30 de rase de pisici,
                   articole medicale verificate despre boli și simptome, ghiduri de îngrijire,
                   și sfaturi de prevenție pentru sănătatea pisicii tale.
                 </p>
