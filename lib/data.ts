@@ -579,6 +579,17 @@ export const breeds: Breed[] = [
 // All articles
 export const articles: Article[] = [
   {
+    slug: 'pisica-mananca-iarba-si-vomita',
+    title: 'Pisica mănâncă iarbă și apoi vomită',
+    description: 'Ghid complet despre Pisica mănâncă iarbă și apoi vomită. Află totul despre pisica mananca iarba si vomita de la experți.',
+    category: 'ingrijire',
+    image: '/images/posts/pisica-mananca-iarba-si-vomita.jpg',
+    readingTime: 5,
+    date: '2026-01-03',
+    author: 'Dr. Veterinar Pisicopedia',
+    tags: ['ingrijire', 'blog'],
+  },
+  {
     slug: 'ghid-pisici-interior',
     title: 'Ghid complet pentru pisicile de interior',
     description: 'Ghid complet despre Ghid complet pentru pisicile de interior. Află totul despre pisici de interior ghid de la experți.',
