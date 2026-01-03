@@ -548,7 +548,7 @@ async function gitCommitAndPush(slug: string, title: string): Promise<void> {
     // Push to GitHub
     // Note: In Vercel, this will use the GitHub App authentication automatically
     // No need for personal access tokens
-    execSync('git push origin main', { 
+    execSync('git push origin master', { 
       encoding: 'utf-8',
       stdio: 'pipe',
       timeout: 30000 // 30 second timeout
