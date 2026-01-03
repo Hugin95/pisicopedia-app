@@ -36,9 +36,9 @@ export default function InternalLinks({
 
     // Add related articles
     const relatedArticles = sampleArticles
-      .filter(a => a.slug !== currentSlug)
+      .filter((a: any) => a.slug !== currentSlug)
       .slice(0, 2)
-      .map(article => ({
+      .map((article: any) => ({
         text: article.title,
         href: `/sanatate/${article.slug}`,
         title: article.description,
