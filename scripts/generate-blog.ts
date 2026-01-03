@@ -4,6 +4,10 @@ import path from 'path';
 // @ts-ignore
 import matter from 'gray-matter';
 import OpenAI from 'openai';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 // Initializare OpenAI cu cheia din .env
 // Fix: Asiguram ca apiKey este string (chiar daca e gol, pentru a multumi TypeScript)
@@ -67,9 +71,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/articles/${filename}`);
+    console.log(`✅ Imagine salvată: public/images/posts/${filename}`);
     
-    return `/images/articles/${filename}`;
+    return `/images/posts/${filename}`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
     return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
@@ -158,15 +162,16 @@ async function updateDataFile(topic: QueueItem, imageUrl: string) {
     tags: ['${topic.category}', 'blog'],
   },`;
 
-  // Inserăm la începutul listei de articole (suportă ambele variante de nume de variabilă)
-  if (content.includes('export const articles = [')) {
-    content = content.replace(/export const articles = \[/, `export const articles = [${newEntry}`);
-  } else if (content.includes('export const sampleArticles = [')) {
-    content = content.replace(/export const sampleArticles = \[/, `export const sampleArticles = [${newEntry}`);
+  // Regex care găsește începutul listei de articole, indiferent dacă are tipul specificat sau nu
+  const articlesRegex = /(export const articles(?:\s*:\s*[^=]+)?\s*=\s*\[)/;
+  
+  if (articlesRegex.test(content)) {
+    content = content.replace(articlesRegex, `$1${newEntry}`);
+    fs.writeFileSync(dataPath, content, 'utf-8');
+    console.log('✅ lib/data.ts actualizat cu noul articol.');
+  } else {
+    console.error("❌ Nu am putut găsi 'export const articles' în lib/data.ts pentru a adăuga articolul.");
   }
-
-  fs.writeFileSync(dataPath, content, 'utf-8');
-  console.log('✅ lib/data.ts actualizat cu noul articol.');
 }
 
 async function main() {
@@ -213,6 +218,17 @@ async function main() {
     
     fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2), 'utf-8');
     console.log(`✅ Coada actualizată.`);
+
+    // 7. Git Commit & Push automat
+    console.log("☁️  Sincronizez automat cu GitHub...");
+    try {
+      await execAsync('git add .');
+      await execAsync(`git commit -m "Bot: Published article ${topic.slug}"`);
+      await execAsync('git push');
+      console.log("🎉 Modificările au fost urcate pe GitHub cu succes! Site-ul se va actualiza în câteva minute.");
+    } catch (error) {
+      console.error("⚠️  Nu am putut face push automat (verifică dacă ești logat în git):", error);
+    }
 
   } catch (error) {
     console.error("❌ Eroare:", error);
