@@ -25,9 +25,9 @@ export default function InternalLinks({
 
     // Add popular breeds
     const popularBreeds = sampleBreeds
-      .filter(b => b.slug !== currentSlug)
+      .filter((b: any) => b.slug !== currentSlug)
       .slice(0, 3)
-      .map(breed => ({
+      .map((breed: any) => ({
         text: breed.title,
         href: `/rase/${breed.slug}`,
         title: `Descoperă rasa ${breed.title}`,
@@ -101,7 +101,7 @@ export function autoLinkContent(content: string, currentSlug?: string): string {
   let linkedContent = content;
 
   // Link breed names
-  sampleBreeds.forEach(breed => {
+  sampleBreeds.forEach((breed: any) => {
     if (breed.slug === currentSlug) return;
 
     const regex = new RegExp(`\\b(${breed.title})\\b`, 'gi');
@@ -109,7 +109,7 @@ export function autoLinkContent(content: string, currentSlug?: string): string {
 
     // Only link first occurrence
     let count = 0;
-    linkedContent = linkedContent.replace(regex, (match) => {
+    linkedContent = linkedContent.replace(regex, (match: string) => {
       if (count === 0) {
         count++;
         return replacement.replace('$1', match);
@@ -131,7 +131,7 @@ export function autoLinkContent(content: string, currentSlug?: string): string {
   medicalTerms.forEach(({ term, slug }) => {
     if (slug === currentSlug) return;
 
-    const article = sampleArticles.find(a => a.slug === slug);
+    const article = sampleArticles.find((a: any) => a.slug === slug);
     if (!article) return;
 
     const regex = new RegExp(`\\b(${term})\\b`, 'gi');
@@ -139,7 +139,7 @@ export function autoLinkContent(content: string, currentSlug?: string): string {
 
     // Only link first occurrence
     let count = 0;
-    linkedContent = linkedContent.replace(regex, (match) => {
+    linkedContent = linkedContent.replace(regex, (match: string) => {
       if (count === 0) {
         count++;
         return replacement.replace('$1', match);
@@ -195,13 +195,13 @@ export function RelatedContent({
   const getRelated = () => {
     if (type === 'breed') {
       return sampleBreeds
-        .filter(b => b.slug !== currentSlug)
-        .filter(b => !category || b.category === category)
+        .filter((b: any) => b.slug !== currentSlug)
+        .filter((b: any) => !category || b.category === category)
         .slice(0, limit);
     } else {
       return sampleArticles
-        .filter(a => a.slug !== currentSlug)
-        .filter(a => !category || a.category === category)
+        .filter((a: any) => a.slug !== currentSlug)
+        .filter((a: any) => !category || a.category === category)
         .slice(0, limit);
     }
   };
