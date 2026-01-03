@@ -879,19 +879,24 @@ export function getTopBreeds(count: number = 6) {
 }
 
 export function getAllArticles() {
-  return articles;
+  // Use content-lists.ts which is updated automatically by auto-post
+  const { allArticles } = require('./content-lists');
+  return allArticles;
 }
 
 export function getArticleBySlug(slug: string) {
-  return articles.find(article => article.slug === slug);
+  const { allArticles } = require('./content-lists');
+  return allArticles.find((article: any) => article.slug === slug);
 }
 
 export function getLatestArticles(count: number = 6) {
-  return articles.slice(0, count);
+  const { allArticles } = require('./content-lists');
+  return allArticles.slice(0, count);
 }
 
 export function getArticlesByCategory(category: string) {
-  return articles.filter(article => article.category === category);
+  const { allArticles } = require('./content-lists');
+  return allArticles.filter((article: any) => article.category === category);
 }
 
 export function getAllGuides() {
