@@ -574,6 +574,10 @@ export const breeds: Breed[] = [
     size: 'medium',
     tags: ["low-maintenance"],
   },
+];
+
+// Articles
+export const articles: Article[] = [
   {
     slug: 'pisica-mananca-iarba-si-vomita',
     title: 'Pisica mănâncă iarbă și apoi vomită',
