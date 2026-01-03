@@ -1,0 +1,45 @@
+name: Auto-Post Articles
+
+on:
+  schedule:
+    # Run every 10 minutes for testing (change to */120 for production = every 2 hours)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate article
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LEONARDO_API_KEY: ${{ secrets.LEONARDO_API_KEY }}
+        run: npm run auto:post-simple
+      
+      - name: Commit and push if changes
+        run: |
+          git config --local user.email "auto-post@pisicopedia.ro"
+          git config --local user.name "Pisicopedia Auto-Post"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-post: New article generated"
+            git push
+          fi
+
