@@ -579,6 +579,17 @@ export const breeds: Breed[] = [
 // All articles
 export const articles: Article[] = [
   {
+    slug: 'pisica-vomita-spuma-alba-dimineata',
+    title: 'Pisica vomită spumă albă dimineața',
+    description: 'Ghid complet despre Pisica vomită spumă albă dimineața.',
+    category: 'ingrijire',
+    image: '/images/articles/pisica-vomita-spuma-alba-dimineata.jpg',
+    readingTime: 5,
+    date: '2026-01-03',
+    author: 'Dr. Veterinar Pisicopedia',
+    tags: ['ingrijire', 'blog'],
+  },
+  {
     slug: 'pisica-mananca-iarba-si-vomita',
     title: 'Pisica mănâncă iarbă și apoi vomită',
     description: 'Ghid complet despre Pisica mănâncă iarbă și apoi vomită. Află totul despre pisica mananca iarba si vomita de la experți.',
