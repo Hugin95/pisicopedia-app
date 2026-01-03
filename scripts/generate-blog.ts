@@ -127,11 +127,16 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
   const aiContent = completion.choices[0].message.content || "";
   
   // Curatam eventualele markere markdown de la inceput/sfarsit daca AI-ul le pune
-  const cleanContent = aiContent
+  let cleanContent = aiContent
     .replace(/^```markdown\s*/, '')
     .replace(/^```\s*/, '')
     .replace(/\s*```$/, '')
     .trim();
+
+  // Fix critic: Dacă AI-ul a pus deja frontmatter (--- ... ---), îl scoatem pentru a nu-l dubla
+  if (cleanContent.startsWith('---')) {
+    cleanContent = cleanContent.replace(/^---[\s\S]*?---\s*/, '').trim();
+  }
 
   if (cleanContent.length < 200) {
     throw new Error(`Eroare: Conținutul generat este prea scurt sau gol (${cleanContent.length} caractere).`);
