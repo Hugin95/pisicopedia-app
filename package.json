@@ -15,7 +15,7 @@
     "generate:article": "tsx scripts/generate-article.ts",
     "generate:blog": "tsx scripts/generate-blog.ts",
     "generate:breed": "tsx scripts/generate-breed-content.ts",
-    "generate:auto-post": "tsx scripts/auto-generate-post.ts",
+    "generate:auto-post": "tsx scripts/auto-generate-post-simple.ts",
     "generate:all-content": "npm run generate:remaining-breeds && npm run generate:remaining-articles && npm run audit:all",
     "generate:remaining-breeds": "tsx scripts/generate-remaining-breeds.ts --only-missing",
     "generate:remaining-articles": "tsx scripts/generate-remaining-articles.ts --only-missing",
