@@ -71,9 +71,9 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/posts/`);
+    console.log(`✅ Imagine salvată: public/images/posts/${filename}`);
     
-    return `/images/posts/`;
+    return `/images/posts/${filename}`;
   } catch (error) {
     console.error("⚠️ Eroare la generarea imaginii (folosim placeholder):", error);
     return "/images/placeholder-cat.jpg"; // Fallback in caz de eroare
@@ -172,7 +172,7 @@ async function main() {
     const filePath = path.join(POSTS_DIR, fileName);
     
     fs.writeFileSync(filePath, fileContent, 'utf-8');
-    console.log(`✅ Articol salvat: content/posts/`);
+    console.log(`✅ Articol salvat: content/posts/${fileName}`);
 
     // 5. Actualizare JSON
     queue[index].status = 'published';

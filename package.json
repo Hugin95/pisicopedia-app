@@ -13,6 +13,7 @@
     "leonardo:brand": "tsx scripts/generate-brand-images.ts",
     "leonardo:all": "npm run leonardo:breeds && npm run leonardo:articles && npm run leonardo:brand",
     "generate:article": "tsx scripts/generate-article.ts",
+    "generate:blog": "tsx scripts/generate-blog.ts",
     "generate:breed": "tsx scripts/generate-breed-content.ts",
     "generate:auto-post": "tsx scripts/auto-generate-post.ts",
     "generate:all-content": "npm run generate:remaining-breeds && npm run generate:remaining-articles && npm run audit:all",
