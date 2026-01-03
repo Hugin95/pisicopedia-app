@@ -75,8 +75,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Create a set of existing content slugs for priority adjustment
-  const existingBreedSlugs = new Set(sampleBreeds.map(b => b.slug));
-  const existingArticleSlugs = new Set(sampleArticles.map(a => a.slug));
+  const existingBreedSlugs = new Set(sampleBreeds.map((b: any) => b.slug));
+  const existingArticleSlugs = new Set(sampleArticles.map((a: any) => a.slug));
 
   // All breed pages with priority based on content existence
   const breedPages: MetadataRoute.Sitemap = allBreeds.map((breed: any) => {
