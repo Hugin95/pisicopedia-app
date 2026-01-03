@@ -82,26 +82,26 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
     - Ton: Empatic, autoritar (medical), dar accesibil.
     
     STRUCTURA OBLIGATORIE (Markdown):
-    1. **Introducere**: 2-3 paragrafe captivante care răspund la întrebarea principală.
-    2. **Cuprins**: Folosește titluri H2 (##) și H3 (###).
-    3. **Conținut**: Detaliază cauze, simptome, soluții. Folosește liste cu puncte.
-    4. **Când să mergi la veterinar**: Secțiune obligatorie.
-    5. **FAQ**: 3-5 întrebări frecvente la final.
-    6. **Concluzie**: Rezumat scurt.
+    1. Introducere: 2-3 paragrafe captivante care răspund la întrebarea principală.
+    2. Cuprins Detaliat: Folosește titluri H2 (##) pentru secțiunile principale.
+    3. Conținut: Detaliază cauze, simptome, soluții. Folosește liste cu puncte.
+    4. Când să mergi la veterinar: Secțiune obligatorie (folosește ##).
+    5. FAQ: 3-5 întrebări frecvente (folosește ##).
+    6. Concluzie: Rezumat scurt (folosește ##).
 
     REGULI CRITICE:
+    - Folosește ## pentru titlurile secțiunilor (NU **Bold**).
     - Returnează DOAR conținutul articolului (corpul textului).
     - NU include frontmatter (liniile cu ---).
     - NU include titlul H1 la început (îl adaug eu).
-    - NU include texte de conversație ("Sigur, iată articolul...").
-    - Scrie un articol LUNG și DETALIAT (minim 1000 de cuvinte). Nu te opri la introducere.
+    - Scrie un articol LUNG și DETALIAT (minim 1200 de cuvinte).
   `;
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
     model: "gpt-4o",
     temperature: 0.7,
-    max_tokens: 4000, // Asigurăm spațiu suficient pentru un articol lung
+    max_tokens: 4000,
   });
 
   let content = completion.choices[0].message.content || "";
@@ -113,24 +113,20 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
     .replace(/\s*```$/, '')
     .trim();
 
-  // Eliminăm frontmatter dacă AI-ul l-a pus totuși
   if (content.startsWith('---')) {
     content = content.replace(/^---[\s\S]*?---\s*/, '').trim();
   }
 
-  // Eliminăm introduceri conversaționale
-  content = content.replace(/^(Sigur|Iată|Here is|Desigur).*?(\n|$)/i, '').trim();
-
   if (content.length < 500) {
-    throw new Error(`Eroare: Conținutul generat este prea scurt (${content.length} caractere). AI-ul nu a generat tot articolul.`);
+    throw new Error(`Eroare: Conținutul generat este prea scurt (${content.length} caractere).`);
   }
 
-  console.log(`📝 Preview text generat:\n${content.substring(0, 150)}...\n`);
+  // Afișăm mai mult din preview pentru a confirma că e ok
+  console.log(`📝 Preview text generat (primele 300 caractere):\n${content.substring(0, 300)}...\n`);
 
   const today = new Date().toISOString().split('T')[0];
   const category = getValidCategory(topic.category);
 
-  // Construim manual fișierul MDX pentru a fi siguri de format
   const fileContent = `---
 title: "${topic.title}"
 date: "${today}"
@@ -151,13 +147,15 @@ ${content}`;
 
 async function updateDataFile(topic: QueueItem, imageUrl: string) {
   const dataPath = path.join(process.cwd(), 'lib', 'data.ts');
-  if (!fs.existsSync(dataPath)) return;
+  if (!fs.existsSync(dataPath)) {
+    console.error("❌ Eroare: Nu am găsit lib/data.ts!");
+    return;
+  }
 
   let content = fs.readFileSync(dataPath, 'utf-8');
   const today = new Date().toISOString().split('T')[0];
   const category = getValidCategory(topic.category);
 
-  // Verificăm dacă există deja
   if (content.includes(`slug: '${topic.slug}'`) || content.includes(`slug: "${topic.slug}"`)) {
     console.log('ℹ️  Articolul există deja în data.ts, nu îl mai adaug.');
     return;
@@ -176,15 +174,15 @@ async function updateDataFile(topic: QueueItem, imageUrl: string) {
     tags: ['${category}', 'blog'],
   },`;
 
-  // Căutăm array-ul de articole (suportă și tipul explicit Article[])
+  // Căutăm array-ul de articole
   const articlesRegex = /(export const articles(?:\s*:\s*[^=]+)?\s*=\s*\[)/;
   
   if (articlesRegex.test(content)) {
     content = content.replace(articlesRegex, `$1${newEntry}`);
     fs.writeFileSync(dataPath, content, 'utf-8');
-    console.log('✅ lib/data.ts actualizat.');
+    console.log('✅ lib/data.ts actualizat cu succes.');
   } else {
-    console.warn("⚠️ Nu am putut găsi 'export const articles' în lib/data.ts");
+    console.warn("⚠️ Nu am putut găsi 'export const articles' în lib/data.ts. Verifică structura fișierului.");
   }
 }
 
@@ -198,7 +196,6 @@ async function main() {
     const rawData = fs.readFileSync(QUEUE_PATH, 'utf-8');
     const queue: QueueItem[] = JSON.parse(rawData);
 
-    // Găsim primul articol pending
     const index = queue.findIndex((item) => item.status === 'pending');
 
     if (index === -1) {
@@ -209,11 +206,9 @@ async function main() {
     const topic = queue[index];
     console.log(`🚀 Procesez: [${topic.id}] ${topic.title}`);
 
-    // Generare
     const imageUrl = await generateBlogImage(topic);
     const fileContent = await generateArticleContent(topic, imageUrl);
 
-    // Salvare
     const fileName = `${topic.slug}.mdx`;
     const filePath = path.join(ARTICLES_DIR, fileName);
     
@@ -222,7 +217,6 @@ async function main() {
 
     await updateDataFile(topic, imageUrl);
 
-    // Actualizare coadă
     queue[index].status = 'published';
     queue[index].publishedAt = new Date().toISOString();
     fs.writeFileSync(QUEUE_PATH, JSON.stringify(queue, null, 2), 'utf-8');
