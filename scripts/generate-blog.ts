@@ -42,9 +42,10 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
   console.log(`[AI Images] Generez imaginea pentru: "${topic.title}"...`);
 
   try {
+    // Prompt modificat pentru a NU avea text
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `A professional, photorealistic blog post cover image for an article titled "${topic.title}". The image should feature a cat and relate to the topic: ${topic.focusKeyword}. Warm, cozy, veterinary clinic or home style. High quality, 4k, natural lighting.`,
+      prompt: `A professional, photorealistic blog post cover image featuring a cat related to the topic: ${topic.focusKeyword}. Warm, cozy, veterinary clinic or home style. High quality, 4k, natural lighting. NO TEXT, NO WRITING, NO TYPOGRAPHY on the image. Just the visual scene.`,
       n: 1,
       size: "1024x1024",
       quality: "standard",
@@ -60,7 +61,7 @@ async function generateBlogImage(topic: QueueItem): Promise<string> {
     const filepath = path.join(IMAGES_DIR, filename);
     
     fs.writeFileSync(filepath, buffer);
-    console.log(`✅ Imagine salvată: public/images/articles/${filename}`);
+    console.log(`✅ Imagine salvată (fără text): public/images/articles/${filename}`);
     
     return `/images/articles/${filename}`;
   } catch (error) {
@@ -94,7 +95,7 @@ async function generateArticleContent(topic: QueueItem, imageUrl: string): Promi
     - Returnează DOAR conținutul articolului (corpul textului).
     - NU include frontmatter (liniile cu ---).
     - NU include titlul H1 la început (îl adaug eu).
-    - Scrie un articol LUNG și DETALIAT (minim 1200 de cuvinte).
+    - Scrie un articol LUNG și DETALIAT (minim 1000 de cuvinte).
   `;
 
   const completion = await openai.chat.completions.create({
