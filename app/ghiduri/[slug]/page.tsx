@@ -6,6 +6,7 @@ import { getGuideBySlug, getAllGuides } from '@/lib/data';
 import { seoConfig } from '@/lib/seo-advanced';
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo-advanced';
 import Image from 'next/image';
+import { getGuideMDXContent } from '@/lib/mdx';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -83,6 +84,9 @@ export default async function GuidePage({ params }: Props) {
   if (!guide) {
     notFound();
   }
+
+  // Try to load MDX content
+  const mdxData = await getGuideMDXContent(slug);
 
   // Generate breadcrumb schema
   const breadcrumbSchema = generateBreadcrumbSchema([
@@ -191,27 +195,35 @@ export default async function GuidePage({ params }: Props) {
 
                 {/* Main Content */}
                 <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-                  <div className="space-y-6">
-                    <section>
-                      <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
-                        Informații esențiale
-                      </h2>
-                      <p className="text-warmgray-700 leading-relaxed">
-                        {guide.description}
-                      </p>
-                    </section>
-
-                    {/* Info Box */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
-                      <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                        💡 Sfat Important
-                      </h3>
-                      <p className="text-blue-800">
-                        Informațiile din acest ghid sunt orientative. Pentru situații specifice sau urgențe,
-                        consultați întotdeauna medicul veterinar.
-                      </p>
+                  {mdxData ? (
+                    // Render actual MDX content
+                    <div className="prose prose-lg max-w-none prose-headings:text-warmgray-900 prose-p:text-warmgray-700 prose-a:text-lavender-600 prose-strong:text-warmgray-900 prose-ul:text-warmgray-700 prose-ol:text-warmgray-700">
+                      {mdxData.content}
                     </div>
-                  </div>
+                  ) : (
+                    // Fallback if MDX file doesn't exist
+                    <div className="space-y-6">
+                      <section>
+                        <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
+                          Informații esențiale
+                        </h2>
+                        <p className="text-warmgray-700 leading-relaxed">
+                          {guide.description}
+                        </p>
+                      </section>
+
+                      {/* Info Box */}
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
+                        <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                          💡 Sfat Important
+                        </h3>
+                        <p className="text-blue-800">
+                          Informațiile din acest ghid sunt orientative. Pentru situații specifice sau urgențe,
+                          consultați întotdeauna medicul veterinar.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

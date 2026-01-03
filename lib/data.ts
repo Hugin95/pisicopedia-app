@@ -934,17 +934,34 @@ export function getArticlesByCategory(category: string) {
 }
 
 export function getAllGuides() {
-  return guides;
+  // Use content-lists.ts which has all 24 guides
+  const { allGuides } = require('./content-lists');
+  return allGuides.map((guide: any) => ({
+    ...guide,
+    description: guide.title,
+    image: `/images/guides/${guide.slug}.jpg`,
+    readingTime: 10,
+  }));
 }
 
 export function getGuideBySlug(slug: string) {
-  return guides.find(guide => guide.slug === slug);
+  const { allGuides } = require('./content-lists');
+  const guide = allGuides.find((g: any) => g.slug === slug);
+  if (!guide) return undefined;
+  return {
+    ...guide,
+    description: guide.title,
+    image: `/images/guides/${guide.slug}.jpg`,
+    readingTime: 10,
+  };
 }
 
 export function getTopGuides(count: number = 3) {
-  return guides.slice(0, count);
+  const allGuides = getAllGuides();
+  return allGuides.slice(0, count);
 }
 
 export function getGuidesByCategory(category: string) {
-  return guides.filter(guide => guide.category === category);
+  const allGuides = getAllGuides();
+  return allGuides.filter((guide: any) => guide.category === category);
 }
