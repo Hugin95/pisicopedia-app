@@ -38,8 +38,81 @@ function getValidCategory(category: string): string {
   return mapping[category] || category;
 }
 
+async function generateLeonardoImage(topic: QueueItem): Promise<string> {
+  console.log(`[Leonardo AI] Generez imaginea pentru: "${topic.title}"...`);
+  const apiKey = process.env.LEONARDO_API_KEY;
+
+  try {
+    const prompt = `A professional, photorealistic blog post cover image featuring a cat related to the topic: ${topic.focusKeyword}. Warm, cozy, veterinary clinic or home style. High quality, 4k, natural lighting. NO TEXT, NO WRITING, NO TYPOGRAPHY on the image. Just the visual scene.`;
+
+    // 1. Inițiere generare
+    const initResp = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        height: 1024,
+        width: 1024,
+        prompt: prompt,
+        modelId: '6b645e3a-d64f-4341-a6d8-7a3690fbf042', // Leonardo Phoenix
+        num_images: 1,
+        alchemy: true,
+        presetStyle: 'CINEMATIC'
+      })
+    });
+
+    const initData: any = await initResp.json();
+    const generationId = initData.sdGenerationJob?.generationId;
+
+    if (!generationId) {
+      throw new Error(`Eroare Leonardo Init: ${JSON.stringify(initData)}`);
+    }
+
+    // 2. Polling pentru rezultat (asteptam sa fie gata)
+    let imageUrl = "";
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000)); // Asteapta 2 secunde
+      const pollResp = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
+        headers: { 'authorization': `Bearer ${apiKey}` }
+      });
+      const pollData: any = await pollResp.json();
+      const gen = pollData.generations_by_pk;
+
+      if (gen?.status === 'COMPLETE') {
+        imageUrl = gen.generated_images?.[0]?.url;
+        break;
+      } else if (gen?.status === 'FAILED') {
+        throw new Error("Generarea Leonardo a eșuat.");
+      }
+    }
+
+    if (!imageUrl) throw new Error("Timeout Leonardo AI.");
+
+    // 3. Download si salvare
+    const imgRes = await fetch(imageUrl);
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
+    const filename = `${topic.slug}.jpg`;
+    const filepath = path.join(IMAGES_DIR, filename);
+    
+    fs.writeFileSync(filepath, buffer);
+    console.log(`✅ Imagine salvată (Leonardo): public/images/articles/${filename}`);
+    return `/images/articles/${filename}`;
+
+  } catch (error) {
+    console.error("⚠️ Eroare Leonardo (fallback la placeholder):", error);
+    return "/images/placeholder-cat.jpg";
+  }
+}
+
 async function generateBlogImage(topic: QueueItem): Promise<string> {
-  console.log(`[AI Images] Generez imaginea pentru: "${topic.title}"...`);
+  if (process.env.LEONARDO_API_KEY) {
+    return generateLeonardoImage(topic);
+  }
+
+  console.log(`[AI Images] Generez imaginea (DALL-E) pentru: "${topic.title}"...`);
 
   try {
     // Prompt modificat pentru a NU avea text
