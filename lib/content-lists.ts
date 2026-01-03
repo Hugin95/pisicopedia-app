@@ -63,6 +63,7 @@ export const allBreeds: BreedInfo[] = [
 
 // Complete list of health articles - will be populated automatically by auto-post system
 export const allArticles: ArticleInfo[] = [
+  { slug: 'pisica-burta-tare-umflata', title: 'Pisica are burta tare și umflată - semne de alarmă', category: 'sanatate', subcategory: 'simptome' },
   { slug: 'pisica-vomita-spuma-alba-dimineata', title: 'Pisica vomită spumă albă dimineața - cauze și soluții', category: 'sanatate', subcategory: 'simptome' },
   { slug: 'pisica-nu-a-mancat-24-ore', title: 'Pisica nu a mâncat de 24 de ore - când devine urgență', category: 'sanatate', subcategory: 'simptome' },];
 
