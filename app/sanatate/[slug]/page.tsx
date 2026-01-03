@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Generate static params for SSG
 export async function generateStaticParams() {
   const articles = await getAllArticles();
-  return articles.map((article) => ({
+  return articles.map((article: any) => ({
     slug: article.slug,
   }));
 }
@@ -252,7 +252,7 @@ export default async function ArticlePage({ params }: Props) {
                 {/* Tags */}
                 {article.tags && article.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-8">
-                    {article.tags.map((tag) => (
+                    {article.tags.map((tag: string) => (
                       <span
                         key={tag}
                         className="px-3 py-1 bg-lavender-100 text-lavender-700 rounded-full text-sm"

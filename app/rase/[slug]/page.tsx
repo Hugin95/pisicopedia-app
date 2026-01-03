@@ -17,7 +17,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
   const breeds = await getAllBreeds();
-  return breeds.map((breed) => ({
+  return breeds.map((breed: any) => ({
     slug: breed.slug,
   }));
 }

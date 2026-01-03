@@ -8,6 +8,7 @@ import GuideCard from '@/components/guides/GuideCard';
 import WhyPisicopedia from '@/components/common/WhyPisicopedia';
 import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getTopBreeds, getLatestArticles, getTopGuides } from '@/lib/data';
+import { Article, Breed, Guide } from '@/types';
 
 export default async function HomePage() {
   const popularBreeds = await getTopBreeds(6);
@@ -58,7 +59,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {popularBreeds.map((breed) => (
+            {popularBreeds.map((breed: Breed) => (
               <BreedCard key={breed.slug} breed={breed} featured />
             ))}
           </div>
@@ -84,7 +85,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {recentArticles.map((article) => (
+            {recentArticles.map((article: Article) => (
               <ArticleCard key={article.slug} article={article} />
             ))}
           </div>
@@ -110,7 +111,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {topGuides.map((guide) => (
+            {topGuides.map((guide: Guide) => (
               <GuideCard key={guide.slug} guide={guide} />
             ))}
           </div>

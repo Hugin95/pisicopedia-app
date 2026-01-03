@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Generate static params for SSG
 export async function generateStaticParams() {
   const guides = await getAllGuides();
-  return guides.map((guide) => ({
+  return guides.map((guide: any) => ({
     slug: guide.slug,
   }));
 }

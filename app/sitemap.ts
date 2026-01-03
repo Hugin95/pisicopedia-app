@@ -79,7 +79,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const existingArticleSlugs = new Set(sampleArticles.map(a => a.slug));
 
   // All breed pages with priority based on content existence
-  const breedPages: MetadataRoute.Sitemap = allBreeds.map((breed) => {
+  const breedPages: MetadataRoute.Sitemap = allBreeds.map((breed: any) => {
     const hasContent = existingBreedSlugs.has(breed.slug);
     const isPopular = ['maine-coon', 'british-shorthair', 'pisica-persana', 'ragdoll', 'scottish-fold'].includes(breed.slug);
 
@@ -92,7 +92,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
 
   // All article pages with priority based on content existence
-  const articlePages: MetadataRoute.Sitemap = allArticles.map((article) => {
+  const articlePages: MetadataRoute.Sitemap = allArticles.map((article: any) => {
     const hasContent = existingArticleSlugs.has(article.slug);
     const existingArticle = sampleArticles.find(a => a.slug === article.slug);
     const isImportant = article.category === 'simptome' || article.category === 'boli';
