@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
 import { getOpenAIClient, CONTENT_CONFIG } from './ai-config';
+import { createGitHubFile } from './github-api';
 
 // ============================================================================
 // TYPES
@@ -372,16 +373,43 @@ async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
 // FILE OPERATIONS
 // ============================================================================
 
-function saveMDXFile(topic: Topic, content: string): void {
+async function saveMDXFile(topic: Topic, content: string): Promise<void> {
   const folder = topic.category === 'sanatate' ? 'articles' : 'guides';
-  const mdxPath = path.join(process.cwd(), 'content', folder, `${topic.slug}.mdx`);
-
-  fs.writeFileSync(mdxPath, content, 'utf-8');
+  
+  // Check if we're in Vercel (read-only filesystem)
+  const isVercel = process.env.VERCEL === '1';
+  
+  if (isVercel && process.env.GITHUB_TOKEN) {
+    // Use GitHub API in Vercel
+    console.log('[Auto-Post] Using GitHub API (Vercel environment)');
+    await createGitHubFile({
+      owner: 'Hugin95', // Your GitHub username
+      repo: 'pisicopedia-app',
+      path: `content/${folder}/${topic.slug}.mdx`,
+      content: content,
+      message: `Auto-post: Add ${topic.title}`,
+    });
+  } else {
+    // Use local filesystem (development)
+    const mdxPath = path.join(process.cwd(), 'content', folder, `${topic.slug}.mdx`);
+    fs.writeFileSync(mdxPath, content, 'utf-8');
+  }
 }
 
-function updateContentLists(topic: Topic): void {
+async function updateContentLists(topic: Topic): Promise<void> {
+  // Check if we're in Vercel (read-only filesystem)
+  const isVercel = process.env.VERCEL === '1';
+  
   const listsPath = path.join(process.cwd(), 'lib', 'content-lists.ts');
-  let listsContent = fs.readFileSync(listsPath, 'utf-8');
+  let listsContent: string;
+  
+  if (isVercel && process.env.GITHUB_TOKEN) {
+    // Fetch from GitHub
+    const response = await fetch(`https://raw.githubusercontent.com/Hugin95/pisicopedia-app/master/lib/content-lists.ts`);
+    listsContent = await response.text();
+  } else {
+    listsContent = fs.readFileSync(listsPath, 'utf-8');
+  }
 
   if (topic.category === 'sanatate') {
     const newArticle: ArticleInfo = {
@@ -420,7 +448,18 @@ function updateContentLists(topic: Topic): void {
     }
   }
 
-  fs.writeFileSync(listsPath, listsContent, 'utf-8');
+  if (isVercel && process.env.GITHUB_TOKEN) {
+    // Save via GitHub API
+    await createGitHubFile({
+      owner: 'Hugin95',
+      repo: 'pisicopedia-app',
+      path: 'lib/content-lists.ts',
+      content: listsContent,
+      message: `Auto-post: Update content list for ${topic.slug}`,
+    });
+  } else {
+    fs.writeFileSync(listsPath, listsContent, 'utf-8');
+  }
 }
 
 // ============================================================================
@@ -635,10 +674,10 @@ export async function runAutoPostOnce(): Promise<AutoPostResult> {
     }
 
     // Save MDX file
-    saveMDXFile(topic, finalContent);
+    await saveMDXFile(topic, finalContent);
 
     // Update content-lists.ts
-    updateContentLists(topic);
+    await updateContentLists(topic);
 
     // Mark as done in queue
     topic.status = 'done';
