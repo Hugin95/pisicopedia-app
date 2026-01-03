@@ -170,7 +170,8 @@ async function autoGeneratePost() {
 
     // Step 4: Update content with image path
     console.log(`\n${colors.cyan}5️⃣ Updating content with image path...${colors.reset}`);
-    const finalContent = updateFrontmatterWithImage(articleContent, imagePath);
+    const finalImagePath = imagePath || `/images/articles/${slug}.jpg`;
+    const finalContent = updateFrontmatterWithImage(articleContent, finalImagePath);
 
     // Step 5: Save article
     console.log(`\n${colors.cyan}6️⃣ Saving article...${colors.reset}`);

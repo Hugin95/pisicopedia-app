@@ -118,3 +118,203 @@ body {
     box-shadow: 0 4px 20px rgba(177, 156, 217, 0.15);
   }
 }
+
+/* Enhanced Prose Styling for Articles and Guides */
+.prose {
+  color: var(--warmgray-800);
+  font-size: 1.0625rem; /* 17px - optimal reading size */
+  line-height: 1.75; /* Generous line height */
+  max-width: 75ch; /* Optimal line length */
+}
+
+/* Headings */
+.prose h2 {
+  color: var(--warmgray-900);
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.prose h3 {
+  color: var(--warmgray-900);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.prose h4 {
+  color: var(--warmgray-800);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Paragraphs */
+.prose p {
+  color: var(--warmgray-700);
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.prose p:first-of-type {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--warmgray-800);
+}
+
+/* Lists */
+.prose ul,
+.prose ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose li {
+  color: var(--warmgray-700);
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  padding-left: 0.5rem;
+}
+
+.prose ul > li {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.prose ul > li::before {
+  content: "🐾";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+/* Links */
+.prose a {
+  color: var(--lavender-600);
+  text-decoration: underline;
+  text-decoration-color: var(--lavender-300);
+  text-underline-offset: 3px;
+  transition: all 0.2s;
+}
+
+.prose a:hover {
+  color: var(--lavender-700);
+  text-decoration-color: var(--lavender-500);
+}
+
+/* Strong/Bold */
+.prose strong {
+  color: var(--warmgray-900);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.prose em {
+  color: var(--warmgray-800);
+  font-style: italic;
+}
+
+/* Blockquotes */
+.prose blockquote {
+  border-left: 4px solid var(--lavender-400);
+  background: var(--lavender-50);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+}
+
+.prose blockquote p {
+  color: var(--lavender-900);
+  margin-bottom: 0;
+}
+
+/* Code */
+.prose code {
+  background: var(--warmgray-100);
+  color: var(--warmgray-800);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+}
+
+.prose pre {
+  background: var(--warmgray-900);
+  color: var(--warmgray-100);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+}
+
+.prose thead {
+  background: var(--lavender-100);
+}
+
+.prose th {
+  border: 1px solid var(--lavender-200);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--warmgray-900);
+}
+
+.prose td {
+  border: 1px solid var(--warmgray-200);
+  padding: 0.75rem 1rem;
+  color: var(--warmgray-700);
+}
+
+.prose tbody tr:hover {
+  background: var(--warmgray-50);
+  transition: background 0.2s;
+}
+
+/* Horizontal Rule */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--warmgray-300);
+  margin: 3rem 0;
+}
+
+/* Images */
+.prose img {
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--lavender-500);
+  outline-offset: 2px;
+}

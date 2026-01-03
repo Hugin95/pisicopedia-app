@@ -63,12 +63,12 @@ export function getArticleNegativePrompt(): string {
 // Main function to generate and save article image
 export async function generateArticleImage(
   slug: string,
-  title: string,
-  category: string,
+  titleOrPrompt: string,
+  categoryOrFolder: string = 'articles',
   subcategory?: string,
   outputDir?: string
-): Promise<string> {
-  console.log(`\n🎨 Generating image for article: ${slug}`);
+): Promise<string | null> {
+  console.log(`\n🎨 Generating image for: ${slug}`);
 
   // Check API key
   if (!process.env.LEONARDO_API_KEY) {
@@ -78,8 +78,12 @@ export async function generateArticleImage(
   const client = getLeonardoClient();
   const config = getLeonardoConfig();
 
+  // Determine if categoryOrFolder is actually a folder name (guides, articles, breeds)
+  const isFolder = ['guides', 'articles', 'breeds'].includes(categoryOrFolder);
+  const folder = isFolder ? categoryOrFolder : 'articles';
+
   // Set output directory
-  const articlesDir = outputDir || path.join(process.cwd(), 'public', 'images', 'articles');
+  const articlesDir = outputDir || path.join(process.cwd(), 'public', 'images', folder);
 
   // Ensure directory exists
   if (!fs.existsSync(articlesDir)) {
@@ -87,17 +91,19 @@ export async function generateArticleImage(
   }
 
   const outputPath = path.join(articlesDir, `${slug}.jpg`);
-  const imagePath = `/images/articles/${slug}.jpg`;
+  const imagePath = `/images/${folder}/${slug}.jpg`;
 
   // Check if image already exists
   if (fs.existsSync(outputPath)) {
     console.log(`⚠️  Image already exists: ${imagePath}`);
-    return imagePath;
+    return null; // Return null to indicate skip
   }
 
   try {
-    // Generate prompts
-    const prompt = generateArticlePrompt(title, category, subcategory);
+    // Generate prompts - if it looks like a full prompt, use it directly, otherwise generate
+    const prompt = titleOrPrompt.length > 100 || titleOrPrompt.includes('professional') || titleOrPrompt.includes('photography')
+      ? titleOrPrompt
+      : generateArticlePrompt(titleOrPrompt, categoryOrFolder, subcategory);
     const negativePrompt = getArticleNegativePrompt();
 
     console.log('📝 Prompt:', prompt.substring(0, 100) + '...');
@@ -149,7 +155,9 @@ export async function generateBatchArticleImages(
         article.subcategory
       );
 
-      results.set(article.slug, imagePath);
+      if (imagePath) {
+        results.set(article.slug, imagePath);
+      }
 
       // Add delay between requests
       if (i < articles.length - 1) {
