@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Container from '@/components/common/Container';
 import ArticleCard from '@/components/articles/ArticleCard';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase-client';
 import { Article } from '@/types';
 
 // Article categories for filtering

@@ -5,7 +5,7 @@ import { useParams, notFound } from 'next/navigation';
 import Container from '@/components/common/Container';
 import Badge from '@/components/common/Badge';
 import { RelatedArticles } from '@/components/common/RelatedContent';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase-client';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 

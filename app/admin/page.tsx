@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Container from '@/components/common/Container';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase-client';
 import Image from 'next/image';
 
 interface Article {
