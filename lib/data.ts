@@ -896,16 +896,39 @@ export function getArticleBySlug(slug: string) {
   };
 }
 
-export function getLatestArticles(count: number = 6) {
-  const { allArticles } = require('./content-lists');
-  return allArticles.slice(0, count).map((article: any) => ({
-    ...article,
-    description: article.title,
-    image: `/images/articles/${article.slug}.jpg`,
-    readingTime: 5,
-    date: new Date().toISOString().split('T')[0],
-    author: 'Dr. Veterinar Pisicopedia',
-  }));
+export async function getLatestArticles(count: number = 6) {
+  // Import Supabase client
+  const { supabaseAdmin } = await import('./supabase');
+  
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('articles')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(count);
+
+    if (error) {
+      console.error('Error fetching articles:', error);
+      return [];
+    }
+
+    // Transform to Article type
+    return (data || []).map((article: any) => ({
+      slug: article.slug,
+      title: article.title,
+      description: article.description || article.title,
+      category: article.category || 'simptome',
+      image: article.image_url || `/images/articles/${article.slug}.jpg`,
+      readingTime: Math.ceil(article.content.split(' ').length / 200),
+      date: new Date(article.created_at).toISOString().split('T')[0],
+      author: 'Dr. Maria Popescu',
+      tags: article.keywords || [],
+    }));
+  } catch (err) {
+    console.error('Error:', err);
+    return [];
+  }
 }
 
 export function getArticlesByCategory(category: string) {
