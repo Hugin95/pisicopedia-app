@@ -41,23 +41,17 @@ export default function SanateatePage() {
         }
 
         // Transform Supabase data to Article type
-        const transformedArticles: Article[] = (data || []).map((article: any) => {
-          // Debug: log image URL from database
-          console.log('[Sanatate] Article:', article.slug);
-          console.log('[Sanatate] image_url from DB:', article.image_url);
-          
-          return {
-            slug: article.slug,
-            title: article.title,
-            description: article.description || article.title,
-            category: article.category || 'simptome',
-            image: article.image_url || `/images/articles/${article.slug}.jpg`,
-            readingTime: Math.ceil(article.content.split(' ').length / 200), // Estimate reading time
-            date: new Date(article.created_at).toISOString().split('T')[0],
-            author: 'Dr. Maria Popescu',
-            tags: article.keywords || [],
-          };
-        });
+        const transformedArticles: Article[] = (data || []).map((article: any) => ({
+          slug: article.slug,
+          title: article.title,
+          description: article.description || article.title,
+          category: article.category || 'simptome',
+          image: article.image_url || `/images/articles/${article.slug}.jpg`,
+          readingTime: Math.ceil(article.content.split(' ').length / 200), // Estimate reading time
+          date: new Date(article.created_at).toISOString().split('T')[0],
+          author: 'Dr. Maria Popescu',
+          tags: article.keywords || [],
+        }));
 
         setArticles(transformedArticles);
       } catch (err) {
