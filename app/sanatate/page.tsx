@@ -86,7 +86,7 @@ export default function SanateatePage() {
     // Sort
     filtered.sort((a, b) => {
       if (sortBy === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
       }
       return a.title.localeCompare(b.title);
     });
