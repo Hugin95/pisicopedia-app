@@ -220,7 +220,7 @@ export default async function ArticlePage({ params }: Props) {
             {/* Tags */}
             {article.tags && article.tags.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
+                {article.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-1 bg-warmgray-100 text-warmgray-700 rounded-full text-sm"
