@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/generate-article?secret=$CRON_SECRET",
+      "path": "/api/generate-article?secret=pisicopedia-local-dev-secret-2024",
       "schedule": "*/5 * * * *"
     }
   ]
