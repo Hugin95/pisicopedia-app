@@ -133,12 +133,8 @@ export default async function ArticlePage({ params }: Props) {
 
   // Generate schemas
   const articleSchema = generateArticleSchemaEnhanced({
-    title: article.title,
-    description: article.description,
+    ...article,
     image: imageUrl,
-    author: article.author,
-    datePublished: article.date,
-    url: articleUrl,
     keywords: article.keywords,
   });
 
