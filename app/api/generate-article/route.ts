@@ -59,7 +59,7 @@ Asigură-te că:
 NU include frontmatter YAML, doar conținut Markdown.`,
 };
 
-// Funcție pentru generare imagine (placeholder)
+// Funcție pentru generare imagine cu Leonardo
 async function generateImage(slug: string, title: string): Promise<string | null> {
   const leonardoKey = process.env.LEONARDO_API_KEY;
   
@@ -69,9 +69,18 @@ async function generateImage(slug: string, title: string): Promise<string | null
   }
 
   try {
-    // TODO: Implementează generarea de imagini cu Leonardo.ai
-    // Pentru moment, returnăm un placeholder
-    return `/images/articles/${slug}.jpg`;
+    // Import Leonardo image generator
+    const { generateArticleImage } = await import('@/lib/leonardo-images');
+    
+    // Generate image
+    const imagePath = await generateArticleImage(slug, title, 'articles');
+    
+    if (imagePath) {
+      // Return full URL
+      return `https://www.pisicopedia.ro${imagePath}`;
+    }
+    
+    return null;
   } catch (error) {
     console.error('[Generate] Error generating image:', error);
     return null;
