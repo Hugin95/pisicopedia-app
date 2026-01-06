@@ -127,7 +127,7 @@ export class LeonardoClient {
   /**
    * Download image from URL
    */
-  async downloadImage(imageUrl: string, outputPath: string): Promise<void> {
+  async downloadImage(imageUrl: string, outputPath: string): Promise<string> {
     const response = await fetch(imageUrl);
 
     if (!response.ok) {
@@ -136,20 +136,38 @@ export class LeonardoClient {
 
     const buffer = await response.arrayBuffer();
 
-    // Ensure directory exists
-    const dir = path.dirname(outputPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    // Upload to Supabase Storage instead of local filesystem
+    try {
+      const { supabaseAdmin } = await import('./supabase');
+      
+      // Extract filename from outputPath
+      const filename = path.basename(outputPath).replace('.webp', '.jpg');
+      
+      const { data: uploadData, error: uploadError } = await supabaseAdmin
+        .storage
+        .from('articles-images')
+        .upload(filename, Buffer.from(buffer), {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabaseAdmin
+        .storage
+        .from('articles-images')
+        .getPublicUrl(filename);
+
+      console.log(`✅ Image uploaded to Supabase Storage: ${publicUrl}`);
+
+      return publicUrl;
+    } catch (storageError) {
+      console.error('❌ Failed to upload to Supabase Storage:', storageError);
+      throw storageError;
     }
-
-    // Save as JPEG first (Leonardo returns JPEG)
-    const jpegPath = outputPath.replace('.webp', '.jpg');
-    fs.writeFileSync(jpegPath, Buffer.from(buffer));
-
-    console.log(`✅ Image saved: ${jpegPath}`);
-
-    // Note: For WebP conversion, you'd need to install and use sharp again
-    // For now, we'll use JPEG format which is web-friendly
   }
 
   /**
