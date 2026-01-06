@@ -14,8 +14,8 @@ export const supabaseAdmin = createClient(
 
 // Supabase client pentru client-side operations (folosește anon key)
 export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://wvyeuudaerurvpvljmgq.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_G41w_OvYDvb2vt1jx7hexw_WUKjR0X7'
 );
 
 // TypeScript types pentru articole
