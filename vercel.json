@@ -1,3 +1,8 @@
 {
-  "crons": []
+  "crons": [
+    {
+      "path": "/api/generate-article?secret=$CRON_SECRET",
+      "schedule": "0 * * * *"
+    }
+  ]
 }

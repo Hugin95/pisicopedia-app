@@ -3,20 +3,49 @@ import { notFound } from 'next/navigation';
 import Container from '@/components/common/Container';
 import Badge from '@/components/common/Badge';
 import { RelatedArticles } from '@/components/common/RelatedContent';
-import { getArticleBySlug, getAllArticles } from '@/lib/data';
+import { supabaseAdmin } from '@/lib/supabase';
 import { generateArticleSchemaEnhanced, generateBreadcrumbSchema, generateFAQSchema, seoConfig } from '@/lib/seo-advanced';
-import { generateArticleSchema } from '@/lib/seo';
 import Image from 'next/image';
-import { getArticleMDXContent } from '@/lib/mdx';
+import ReactMarkdown from 'react-markdown';
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
+// Helper function to get article from Supabase
+async function getArticle(slug: string) {
+  const { data, error } = await supabaseAdmin
+    .from('articles')
+    .select('*')
+    .eq('slug', slug)
+    .eq('published', true)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return {
+    id: data.id,
+    slug: data.slug,
+    title: data.title,
+    content: data.content,
+    description: data.description || data.title,
+    image: data.image_url || `/images/articles/${data.slug}.jpg`,
+    category: data.category || 'simptome',
+    keywords: data.keywords || [],
+    created_at: data.created_at,
+    readingTime: Math.ceil(data.content.split(' ').length / 200),
+    date: new Date(data.created_at).toISOString().split('T')[0],
+    author: 'Dr. Maria Popescu',
+    tags: data.keywords || [],
+  };
+}
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     return {
@@ -27,14 +56,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const articleUrl = `${seoConfig.siteUrl}/sanatate/${article.slug}`;
   const imageUrl = article.image && article.image.startsWith('http')
     ? article.image
-    : `${seoConfig.siteUrl}${article.image || '/images/articles/default-article.svg'}`;
+    : `${seoConfig.siteUrl}${article.image}`;
 
   return {
     title: `${article.title} | Ghid Complet 2024`,
     description: `${article.description} ✅ Informații verificate medical ✅ Sfaturi practice ✅ Recomandări experți veterinari`,
     keywords: `${article.title.toLowerCase()}, ${article.category}, pisici ${article.category}${article.tags ? ', ' + article.tags.join(', ') : ''}`,
-    authors: article.author ? [{ name: article.author }] : [],
-    creator: article.author || 'Dr. Veterinar Pisicopedia',
+    authors: [{ name: article.author }],
+    creator: article.author,
     publisher: 'Pisicopedia Romania',
     alternates: {
       canonical: articleUrl,
@@ -54,11 +83,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         }
       ],
       locale: 'ro_RO',
-      publishedTime: article.date || undefined,
-      modifiedTime: article.date || undefined,
-      authors: article.author ? [article.author] : undefined,
+      publishedTime: article.date,
+      modifiedTime: article.date,
+      authors: [article.author],
       section: article.category,
-      tags: article.tags || undefined,
+      tags: article.tags,
     },
     twitter: {
       card: 'summary_large_image',
@@ -78,235 +107,147 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Generate static params for SSG
 export async function generateStaticParams() {
-  const articles = await getAllArticles();
-  return articles.map((article: any) => ({
+  const { data: articles } = await supabaseAdmin
+    .from('articles')
+    .select('slug')
+    .eq('published', true);
+
+  return (articles || []).map((article) => ({
     slug: article.slug,
   }));
 }
 
+// Main page component
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticle(slug);
 
   if (!article) {
     notFound();
   }
 
-  // Try to load MDX content
-  const mdxData = await getArticleMDXContent(slug);
+  const articleUrl = `${seoConfig.siteUrl}/sanatate/${article.slug}`;
+  const imageUrl = article.image && article.image.startsWith('http')
+    ? article.image
+    : `${seoConfig.siteUrl}${article.image}`;
 
-  // Generate enhanced structured data
-  const articleSchemaEnhanced = generateArticleSchemaEnhanced({
-    ...article,
-    keywords: [...(article.tags || []), article.category, 'pisici'],
+  // Generate schemas
+  const articleSchema = generateArticleSchemaEnhanced({
+    title: article.title,
+    description: article.description,
+    image: imageUrl,
+    author: article.author,
+    datePublished: article.date,
+    url: articleUrl,
+    keywords: article.keywords,
   });
 
-  // Generate breadcrumb schema
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Acasă', url: '/' },
-    { name: 'Sănătate', url: '/sanatate' },
-    { name: article.title, url: `/sanatate/${article.slug}` },
+    { name: 'Acasă', url: seoConfig.siteUrl },
+    { name: 'Sănătate', url: `${seoConfig.siteUrl}/sanatate` },
+    { name: article.title, url: articleUrl },
   ]);
-
-  // Generate FAQ schema (example FAQs - in production, extract from content)
-  const faqSchema = generateFAQSchema([
-    {
-      question: `Ce este ${article.title.toLowerCase()}?`,
-      answer: article.description,
-    },
-    {
-      question: 'Când trebuie să merg la veterinar?',
-      answer: 'Consultați imediat un medic veterinar dacă observați simptome severe sau persistente. Nu amânați vizita dacă pisica prezintă durere, letargie sau refuză mâncarea.',
-    },
-    {
-      question: 'Cum pot preveni această problemă?',
-      answer: 'Prevenția include controale regulate la veterinar, o dietă echilibrată, exercițiu fizic adecvat și menținerea unui mediu curat și sigur pentru pisica dumneavoastră.',
-    },
-  ]);
-
-  // Category label mapping
-  const categoryLabels: Record<string, string> = {
-    symptoms: 'Simptome',
-    diseases: 'Boli',
-    prevention: 'Prevenție',
-    procedures: 'Proceduri',
-    nutrition: 'Nutriție',
-    behavior: 'Comportament',
-  };
 
   return (
     <>
+      {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(articleSchemaEnhanced),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqSchema),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <article className="min-h-screen bg-gradient-to-br from-warmgray-50 via-white to-lavender-50">
-        <Container>
-          <div className="py-12 lg:py-16">
-            {/* Breadcrumbs */}
-            <nav className="mb-8">
-              <ol className="flex items-center space-x-2 text-sm text-warmgray-600">
-                <li>
-                  <a href="/" className="hover:text-lavender-600 transition-colors">
-                    Acasă
-                  </a>
-                </li>
-                <li className="text-warmgray-400">/</li>
-                <li>
-                  <a href="/sanatate" className="hover:text-lavender-600 transition-colors">
-                    Sănătate
-                  </a>
-                </li>
-                <li className="text-warmgray-400">/</li>
-                <li className="text-warmgray-900 font-medium">{article.title}</li>
-              </ol>
-            </nav>
+      <main className="min-h-screen bg-warmgray-50">
+        {/* Article Header */}
+        <article className="bg-white border-b border-warmgray-200">
+          <Container className="py-12">
+            {/* Category Badge */}
+            <div className="mb-4">
+              <Badge variant="primary">{article.category}</Badge>
+            </div>
 
-            {/* Article Header */}
-            <div className="max-w-4xl mx-auto mb-12">
-              <div className="text-center mb-8">
-                <Badge variant="secondary" className="mb-4">
-                  {categoryLabels[article.category] || article.category}
-                </Badge>
-                <h1 className="text-3xl lg:text-5xl font-bold text-warmgray-900 mb-4">
-                  {article.title}
-                </h1>
-                <div className="flex items-center justify-center space-x-4 text-warmgray-600">
-                  {article.author && (
-                    <>
-                      <span>{article.author}</span>
-                      <span>•</span>
-                    </>
-                  )}
-                  {article.date && (
-                    <>
-                      <time>{new Date(article.date).toLocaleDateString('ro-RO', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}</time>
-                      <span>•</span>
-                    </>
-                  )}
-                  <span>{article.readingTime} min citire</span>
-                </div>
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-bold text-warmgray-900 mb-6 leading-tight">
+              {article.title}
+            </h1>
+
+            {/* Meta Info */}
+            <div className="flex flex-wrap gap-4 text-sm text-warmgray-600 mb-8">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-lavender-600">{article.author}</span>
               </div>
+              <div>•</div>
+              <div>{article.date}</div>
+              <div>•</div>
+              <div>{article.readingTime} min citire</div>
+            </div>
 
-              {/* Featured Image */}
-              {article.image && (
-                <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
-
-              {/* Article Content */}
-              <div className="prose prose-lg max-w-none">
-                {/* Excerpt */}
-                <div className="text-xl text-warmgray-700 mb-8 font-medium leading-relaxed">
-                  {article.excerpt}
-                </div>
-
-                {/* Main Content */}
-                <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-                  {mdxData ? (
-                    // Render actual MDX content
-                    <div className="prose prose-lg max-w-none prose-headings:text-warmgray-900 prose-p:text-warmgray-700 prose-a:text-lavender-600 prose-strong:text-warmgray-900 prose-ul:text-warmgray-700 prose-ol:text-warmgray-700">
-                      {mdxData.content}
-                    </div>
-                  ) : (
-                    // Fallback if MDX file doesn't exist
-                    <div className="space-y-6">
-                      <section>
-                        <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
-                          Informații principale
-                        </h2>
-                        <p className="text-warmgray-700 leading-relaxed">
-                          {article.description}
-                        </p>
-                      </section>
-
-                      {/* Medical Disclaimer */}
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mt-8">
-                        <h3 className="text-lg font-semibold text-amber-900 mb-2">
-                          ⚠️ Disclaimer Medical
-                        </h3>
-                        <p className="text-amber-800">
-                          Acest articol are scop informativ și nu înlocuiește consultația veterinară.
-                          Pentru orice problemă de sănătate a pisicii tale, consultă întotdeauna medicul veterinar.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tags */}
-                {article.tags && article.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {article.tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-lavender-100 text-lavender-700 rounded-full text-sm"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+            {/* Featured Image */}
+            {article.image && (
+              <div className="relative w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden mb-8">
+                <Image
+                  src={article.image}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
+            )}
 
-              {/* CTA Section */}
-              <div className="bg-gradient-to-r from-lavender-100 to-rose-100 rounded-2xl p-8 text-center">
-                <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
-                  Ai întrebări despre sănătatea pisicii tale?
-                </h2>
-                <p className="text-warmgray-600 mb-6">
-                  Consultă mereu un medic veterinar pentru un diagnostic corect și tratament adecvat.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a
-                    href="/contact"
-                    className="inline-flex items-center px-6 py-3 bg-lavender-500 text-white rounded-lg hover:bg-lavender-600 transition-colors"
-                  >
-                    Contactează-ne
-                  </a>
-                  <a
-                    href="/sanatate"
-                    className="inline-flex items-center px-6 py-3 bg-white text-warmgray-900 rounded-lg hover:shadow-md transition-shadow"
-                  >
-                    Vezi toate articolele
-                  </a>
+            {/* Article Content */}
+            <div className="prose prose-lg max-w-none">
+              <ReactMarkdown>{article.content}</ReactMarkdown>
+            </div>
+
+            {/* Author Bio */}
+            <div className="mt-12 p-6 bg-lavender-50 rounded-lg border border-lavender-100">
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 bg-lavender-200 rounded-full flex items-center justify-center text-2xl">
+                  👩‍⚕️
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg text-warmgray-900 mb-2">
+                    {article.author}
+                  </h3>
+                  <p className="text-warmgray-600">
+                    Medic veterinar cu 15 ani de experiență, specializat în medicina felină.
+                    Pasionat de educația proprietarilor de pisici și de promovarea bunăstării animalelor.
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Related Articles */}
-            <div className="mt-16">
-              <RelatedArticles currentSlug={article.slug} category={article.category} />
-            </div>
-          </div>
-        </Container>
-      </article>
+            {/* Tags */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-2">
+                {article.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-warmgray-100 text-warmgray-700 rounded-full text-sm"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </Container>
+        </article>
+
+        {/* Related Articles */}
+        <section className="py-12 bg-warmgray-50">
+          <Container>
+            <RelatedArticles
+              currentSlug={article.slug}
+              category={article.category}
+              tags={article.tags}
+            />
+          </Container>
+        </section>
+      </main>
     </>
   );
 }

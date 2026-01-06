@@ -1,33 +1,66 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Container from '@/components/common/Container';
 import ArticleCard from '@/components/articles/ArticleCard';
-import { getAllArticles } from '@/lib/data';
+import { supabase } from '@/lib/supabase';
 import { Article } from '@/types';
 
 // Article categories for filtering
 const articleCategories = [
   { value: 'all', label: 'Toate Articolele' },
-  { value: 'symptoms', label: 'Simptome' },
-  { value: 'diseases', label: 'Boli' },
-  { value: 'prevention', label: 'Prevenție' },
-  { value: 'procedures', label: 'Proceduri' },
-  { value: 'nutrition', label: 'Nutriție' },
-  { value: 'behavior', label: 'Comportament' },
+  { value: 'simptome', label: 'Simptome' },
+  { value: 'boli', label: 'Boli' },
+  { value: 'preventie', label: 'Prevenție' },
+  { value: 'proceduri', label: 'Proceduri' },
+  { value: 'nutritie', label: 'Nutriție' },
+  { value: 'comportament', label: 'Comportament' },
+  { value: 'ingrijire', label: 'Îngrijire' },
 ];
 
 export default function SanateatePage() {
-  const [articles, setArticles] = React.useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'title'>('date');
 
-  React.useEffect(() => {
+  // Load articles from Supabase
+  useEffect(() => {
     async function loadArticles() {
-      const data = await getAllArticles();
-      setArticles(data);
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('published', true)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading articles:', error);
+          return;
+        }
+
+        // Transform Supabase data to Article type
+        const transformedArticles: Article[] = (data || []).map((article: any) => ({
+          slug: article.slug,
+          title: article.title,
+          description: article.description || article.title,
+          category: article.category || 'simptome',
+          image: article.image_url || `/images/articles/${article.slug}.jpg`,
+          readingTime: Math.ceil(article.content.split(' ').length / 200), // Estimate reading time
+          date: new Date(article.created_at).toISOString().split('T')[0],
+          author: 'Dr. Maria Popescu',
+          tags: article.keywords || [],
+        }));
+
+        setArticles(transformedArticles);
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
+
     loadArticles();
   }, []);
 
@@ -39,8 +72,7 @@ export default function SanateatePage() {
       filtered = filtered.filter(
         (article) =>
           article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+          article.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -54,142 +86,113 @@ export default function SanateatePage() {
     // Sort
     filtered.sort((a, b) => {
       if (sortBy === 'date') {
-        const dateA = a.date ? new Date(a.date).getTime() : 0;
-        const dateB = b.date ? new Date(b.date).getTime() : 0;
-        return dateB - dateA;
-      } else {
-        return a.title.localeCompare(b.title, 'ro');
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
+      return a.title.localeCompare(b.title);
     });
 
     return filtered;
   }, [articles, searchQuery, selectedCategory, sortBy]);
 
+  if (loading) {
+    return (
+      <Container className="py-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lavender-600 mx-auto"></div>
+          <p className="mt-4 text-warmgray-600">Se încarcă articolele...</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-warmgray-50 via-white to-lavender-50">
-      <Container>
-        <div className="py-12 lg:py-16">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl lg:text-5xl font-bold text-warmgray-900 mb-4">
-              Sănătatea Pisicii Tale
+    <main className="min-h-screen">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-lavender-50 to-white py-16 border-b border-lavender-100">
+        <Container>
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-warmgray-900 mb-4">
+              📚 Sănătate Pisici
             </h1>
-            <p className="text-lg text-warmgray-600 max-w-3xl mx-auto">
-              Ghiduri complete despre sănătatea, îngrijirea și bunăstarea pisicilor.
-              Informații medicale verificate de medici veterinari.
+            <p className="text-xl text-warmgray-600 leading-relaxed">
+              Articole medicale verificate de veterinari specializați în sănătatea
+              felină. Informații esențiale pentru proprietarii responsabili de pisici.
             </p>
           </div>
+        </Container>
+      </section>
 
-          {/* Filters */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Search */}
-              <div>
-                <label className="block text-sm font-medium text-warmgray-700 mb-2">
-                  Caută articole
-                </label>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Ex: vaccinare, diaree, stres..."
-                  className="w-full px-4 py-2 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-warmgray-700 mb-2">
-                  Categorie
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500"
-                >
-                  {articleCategories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Sort */}
-              <div>
-                <label className="block text-sm font-medium text-warmgray-700 mb-2">
-                  Sortare
-                </label>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as 'date' | 'title')}
-                  className="w-full px-4 py-2 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500"
-                >
-                  <option value="date">Cele mai recente</option>
-                  <option value="title">Alfabetic</option>
-                </select>
-              </div>
+      {/* Filters and Search */}
+      <section className="bg-white border-b border-warmgray-200 sticky top-0 z-10 shadow-sm">
+        <Container className="py-6">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            {/* Search */}
+            <div className="w-full md:w-96">
+              <input
+                type="text"
+                placeholder="🔍 Caută articole..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500"
+              />
             </div>
+
+            {/* Category Filter */}
+            <div className="flex gap-2 flex-wrap">
+              {articleCategories.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => setSelectedCategory(cat.value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedCategory === cat.value
+                      ? 'bg-lavender-600 text-white'
+                      : 'bg-warmgray-100 text-warmgray-700 hover:bg-warmgray-200'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'date' | 'title')}
+              className="px-4 py-2 border border-warmgray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender-500"
+            >
+              <option value="date">Cele mai recente</option>
+              <option value="title">Alfabetic</option>
+            </select>
           </div>
 
           {/* Results count */}
-          <div className="mb-6">
-            <p className="text-warmgray-600">
-              {filteredArticles.length}
-              {filteredArticles.length === 1 ? ' articol găsit' : ' articole găsite'}
-            </p>
+          <div className="mt-4 text-sm text-warmgray-600">
+            {filteredArticles.length} {filteredArticles.length === 1 ? 'articol' : 'articole'}
+            {selectedCategory !== 'all' && ` în categoria "${articleCategories.find(c => c.value === selectedCategory)?.label}"`}
           </div>
+        </Container>
+      </section>
 
-          {/* Articles Grid */}
+      {/* Articles Grid */}
+      <section className="py-12">
+        <Container>
           {filteredArticles.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-warmgray-600 mb-4">
-                Nu am găsit articole care să corespundă criteriilor tale.
+            <div className="text-center py-16">
+              <p className="text-xl text-warmgray-600">
+                {searchQuery || selectedCategory !== 'all'
+                  ? 'Nu au fost găsite articole. Încearcă alt criteriu de căutare.'
+                  : 'Nu există încă articole publicate.'}
               </p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                }}
-                className="inline-flex items-center px-6 py-3 bg-lavender-500 text-white rounded-lg hover:bg-lavender-600 transition-colors"
-              >
-                Resetează filtrele
-              </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArticles.map((article) => (
                 <ArticleCard key={article.slug} article={article} />
               ))}
             </div>
           )}
-
-          {/* CTA Section */}
-          <div className="mt-16 bg-gradient-to-r from-lavender-100 to-rose-100 rounded-2xl p-8 text-center">
-            <h2 className="text-2xl font-bold text-warmgray-900 mb-4">
-              Îngrijește-ți pisica cu încredere
-            </h2>
-            <p className="text-warmgray-600 mb-6 max-w-2xl mx-auto">
-              Toate articolele noastre sunt revizuite de medici veterinari pentru a-ți oferi
-              informații corecte și actualizate despre sănătatea pisicii tale.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/ghiduri"
-                className="inline-flex items-center px-6 py-3 bg-white text-warmgray-900 rounded-lg hover:shadow-md transition-shadow"
-              >
-                Vezi ghidurile complete
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center px-6 py-3 bg-lavender-500 text-white rounded-lg hover:bg-lavender-600 transition-colors"
-              >
-                Întreabă un specialist
-              </a>
-            </div>
-          </div>
-        </div>
-      </Container>
-    </div>
+        </Container>
+      </section>
+    </main>
   );
 }
