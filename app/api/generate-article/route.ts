@@ -72,15 +72,11 @@ async function generateImage(slug: string, title: string): Promise<string | null
     // Import Leonardo image generator
     const { generateArticleImage } = await import('@/lib/leonardo-images');
     
-    // Generate image
-    const imagePath = await generateArticleImage(slug, title, 'articles');
+    // Generate image - returns full Supabase URL
+    const imageUrl = await generateArticleImage(slug, title, 'articles');
     
-    if (imagePath) {
-      // Return full URL
-      return `https://www.pisicopedia.ro${imagePath}`;
-    }
-    
-    return null;
+    // Return the URL directly (already full URL from Supabase)
+    return imageUrl;
   } catch (error) {
     console.error('[Generate] Error generating image:', error);
     return null;
