@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getLeonardoClient } from './leonardo-client';
 import { getNegativePrompt, getLeonardoConfig } from './leonardo-prompts';
+import { supabaseAdmin } from './supabase';
 
 // Generate prompt based on article topic
 export function generateArticlePrompt(title: string, category: string, subcategory?: string): string {
@@ -82,51 +83,154 @@ export async function generateArticleImage(
   const isFolder = ['guides', 'articles', 'breeds'].includes(categoryOrFolder);
   const folder = isFolder ? categoryOrFolder : 'articles';
 
-  // Set output directory
-  const articlesDir = outputDir || path.join(process.cwd(), 'public', 'images', folder);
+  // Check if running in Vercel (read-only filesystem)
+  const isVercel = process.env.VERCEL === '1';
 
-  // Ensure directory exists
-  if (!fs.existsSync(articlesDir)) {
-    fs.mkdirSync(articlesDir, { recursive: true });
-  }
+  if (isVercel) {
+    // Use Supabase Storage for Vercel environment
+    console.log('🔄 Using Supabase Storage (Vercel environment)');
 
-  const outputPath = path.join(articlesDir, `${slug}.jpg`);
-  const imagePath = `/images/${folder}/${slug}.jpg`;
+    try {
+      // Generate prompts
+      const prompt = titleOrPrompt.length > 100 || titleOrPrompt.includes('professional') || titleOrPrompt.includes('photography')
+        ? titleOrPrompt
+        : generateArticlePrompt(titleOrPrompt, categoryOrFolder, subcategory);
+      const negativePrompt = getArticleNegativePrompt();
 
-  // Check if image already exists
-  if (fs.existsSync(outputPath)) {
-    console.log(`⚠️  Image already exists: ${imagePath}`);
-    return null; // Return null to indicate skip
-  }
+      console.log('📝 Prompt:', prompt.substring(0, 100) + '...');
 
-  try {
-    // Generate prompts - if it looks like a full prompt, use it directly, otherwise generate
-    const prompt = titleOrPrompt.length > 100 || titleOrPrompt.includes('professional') || titleOrPrompt.includes('photography')
-      ? titleOrPrompt
-      : generateArticlePrompt(titleOrPrompt, categoryOrFolder, subcategory);
-    const negativePrompt = getArticleNegativePrompt();
+      // Step 1: Generate image with Leonardo
+      const generateResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.LEONARDO_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          negative_prompt: negativePrompt,
+          modelId: config.modelId || 'b24e16ff-06e3-43eb-8d33-4416c2d75876',
+          width: 1024,
+          height: 576,
+          num_images: 1,
+          guidance_scale: config.guidance_scale || 7,
+          sd_version: 'SDXL_1_0',
+        }),
+      });
 
-    console.log('📝 Prompt:', prompt.substring(0, 100) + '...');
+      const generateData: any = await generateResponse.json();
 
-    // Generate and download image
-    await client.generateAndDownload(prompt, outputPath, {
-      negative_prompt: negativePrompt,
-      ...config,
-      width: 1024,
-      height: 576, // 16:9 aspect ratio for article cards
-      num_images: 1
-    });
+      if (!generateData.sdGenerationJob?.generationId) {
+        throw new Error('Leonardo generation failed');
+      }
 
-    console.log(`✅ Image generated successfully: ${imagePath}`);
-    return imagePath;
+      const generationId = generateData.sdGenerationJob.generationId;
 
-  } catch (error: any) {
-    console.error(`❌ Failed to generate image for ${slug}:`, error.message || error);
+      // Step 2: Poll for completion
+      let attempts = 0;
+      const maxAttempts = 30;
+      let imageUrl: string | null = null;
 
-    // Return fallback image path
-    const fallbackPath = '/images/placeholders/article-placeholder.svg';
-    console.log(`⚠️  Using fallback image: ${fallbackPath}`);
-    return fallbackPath;
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const statusResponse = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
+          headers: {
+            'Authorization': `Bearer ${process.env.LEONARDO_API_KEY}`,
+          },
+        });
+
+        const statusData: any = await statusResponse.json();
+
+        if (statusData.generations_by_pk?.status === 'COMPLETE') {
+          imageUrl = statusData.generations_by_pk.generated_images[0]?.url;
+          break;
+        }
+
+        attempts++;
+      }
+
+      if (!imageUrl) {
+        throw new Error('Image generation timeout');
+      }
+
+      // Step 3: Download image
+      const imageResponse = await fetch(imageUrl);
+      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+      // Step 4: Upload to Supabase Storage
+      const fileName = `${slug}.jpg`;
+      const filePath = `${folder}/${fileName}`;
+
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from('article-images')
+        .upload(filePath, imageBuffer, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw new Error(`Supabase upload failed: ${uploadError.message}`);
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabaseAdmin.storage
+        .from('article-images')
+        .getPublicUrl(filePath);
+
+      console.log(`✅ Image uploaded to Supabase: ${publicUrl}`);
+      return publicUrl;
+
+    } catch (error: any) {
+      console.error(`❌ Failed to generate image for ${slug}:`, error.message || error);
+      return null; // Return null instead of fallback
+    }
+
+  } else {
+    // Use local filesystem for development
+    console.log('🔄 Using local filesystem (development)');
+
+    const articlesDir = outputDir || path.join(process.cwd(), 'public', 'images', folder);
+
+    // Ensure directory exists
+    if (!fs.existsSync(articlesDir)) {
+      fs.mkdirSync(articlesDir, { recursive: true });
+    }
+
+    const outputPath = path.join(articlesDir, `${slug}.jpg`);
+    const imagePath = `/images/${folder}/${slug}.jpg`;
+
+    // Check if image already exists
+    if (fs.existsSync(outputPath)) {
+      console.log(`⚠️  Image already exists: ${imagePath}`);
+      return null; // Return null to indicate skip
+    }
+
+    try {
+      // Generate prompts
+      const prompt = titleOrPrompt.length > 100 || titleOrPrompt.includes('professional') || titleOrPrompt.includes('photography')
+        ? titleOrPrompt
+        : generateArticlePrompt(titleOrPrompt, categoryOrFolder, subcategory);
+      const negativePrompt = getArticleNegativePrompt();
+
+      console.log('📝 Prompt:', prompt.substring(0, 100) + '...');
+
+      // Generate and download image
+      await client.generateAndDownload(prompt, outputPath, {
+        negative_prompt: negativePrompt,
+        ...config,
+        width: 1024,
+        height: 576,
+        num_images: 1
+      });
+
+      console.log(`✅ Image generated successfully: ${imagePath}`);
+      return imagePath;
+
+    } catch (error: any) {
+      console.error(`❌ Failed to generate image for ${slug}:`, error.message || error);
+      return null;
+    }
   }
 }
 
