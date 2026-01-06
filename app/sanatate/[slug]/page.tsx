@@ -172,6 +172,5 @@ export default function ArticlePage() {
           </Container>
         </section>
       </main>
-    </>
   );
 }
