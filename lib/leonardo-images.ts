@@ -52,13 +52,13 @@ export function generateArticlePrompt(title: string, category: string, subcatego
       contextElements.push('in comfortable indoor setting');
   }
 
-  // Build the prompt
-  return `Professional illustration of a SINGLE healthy domestic cat ${contextElements.join(', ')}, related to topic: "${cleanTitle}", soft pastel background in lavender and rose tones, high detail, sharp focus, centered composition, medical and cozy style, no text, no watermark, no humans, realistic proportions`;
+  // Build the prompt - PHOTO-REALISTIC style
+  return `Professional studio photograph of a SINGLE healthy domestic cat ${contextElements.join(', ')}, related to topic: "${cleanTitle}", soft pastel background in lavender and rose tones, high-resolution DSLR photography, 8K ultra-sharp focus, natural lighting, photorealistic, detailed fur texture, realistic cat anatomy, veterinary photography style, no text, no watermark, no humans, no illustrations, no drawings, real photograph`;
 }
 
 // Generate enhanced negative prompt for articles
 export function getArticleNegativePrompt(): string {
-  return getNegativePrompt() + ', two cats, multiple cats, two heads, extra heads, extra faces, extra eyes, multiple bodies, mutated, deformed, distorted anatomy, broken legs, twisted body, blurry, out of focus, low quality, sketch, cartoon, text, watermark, logo, cut off, cropped, extreme perspective, wide angle, humans, people, hands';
+  return getNegativePrompt() + ', two cats, multiple cats, two heads, extra heads, extra faces, extra eyes, multiple bodies, mutated, deformed, distorted anatomy, broken legs, twisted body, blurry, out of focus, low quality, sketch, cartoon, illustration, drawing, painting, artwork, artistic rendering, 3D render, CGI, text, watermark, logo, cut off, cropped, extreme perspective, wide angle, humans, people, hands, animated, anime';
 }
 
 // Main function to generate and save article image
@@ -109,12 +109,17 @@ export async function generateArticleImage(
         body: JSON.stringify({
           prompt: prompt,
           negative_prompt: negativePrompt,
-          modelId: config.modelId || 'b24e16ff-06e3-43eb-8d33-4416c2d75876',
-          width: 1024,
-          height: 576,
+          // Leonardo Kino XL - Best photorealistic model
+          modelId: 'aa77f04e-3eec-4034-9c07-d0f619684628',
+          width: 1344,  // Higher resolution for clarity
+          height: 768,  // 16:9 aspect ratio
           num_images: 1,
-          guidance_scale: config.guidance_scale || 7,
-          sd_version: 'SDXL_1_0',
+          // PhotoReal v2 settings for ultra-realistic images
+          alchemy: true,
+          photoReal: true,
+          photoRealVersion: 'v2',
+          presetStyle: 'CINEMATIC',
+          guidance_scale: 7,
         }),
       });
 
