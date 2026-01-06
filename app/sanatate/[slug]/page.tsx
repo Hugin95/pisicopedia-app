@@ -239,7 +239,6 @@ export default async function ArticlePage({ params }: Props) {
             <RelatedArticles
               currentSlug={article.slug}
               category={article.category}
-              tags={article.tags}
             />
           </Container>
         </section>
