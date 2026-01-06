@@ -10,6 +10,10 @@ import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getTopBreeds, getLatestArticles, getTopGuides } from '@/lib/data';
 import { Article, Breed, Guide } from '@/types';
 
+// Disable static generation for this page to always fetch fresh data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage() {
   const popularBreeds = await getTopBreeds(6);
   const recentArticles = await getLatestArticles(3);
