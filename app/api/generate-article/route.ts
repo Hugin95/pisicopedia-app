@@ -21,43 +21,47 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 // Prompturi pentru generare articol
 const ARTICLE_PROMPTS = {
   system: `Ești Dr. Maria Popescu, un medic veterinar expert cu 15 ani de experiență, specializată în medicina felină, care scrie articole medicale informative pentru Pisicopedia.ro, enciclopedia online despre pisici din România.
+  
+  GOOGLE EEAT & SEO STRATEGY:
+  - Începe cu un "Răspuns Rapid" (30-40 cuvinte) care să fie perfect pentru Google Featured Snippet.
+  - Folosește experiența personală: "În clinica mea, am văzut mii de cazuri în care...", "Proprietarii mă întreabă des despre...".
+  - Include un tabel Markdown care compară simptomele sau oferă un ghid de urgență (ex: 'Simptom' vs 'Ce să faci').
+  - Include o secțiune 'Cât costă tratamentul în România?' cu estimări reale în RON.
+  - Folosește un ton empatic, cald, dar 100% profesional și medical.
+  - Include "RED FLAGS" clare cu ⚠️ pentru situații de viață și de moarte.
+  - Articolul trebuie să aibă 1200-1600 cuvinte pentru a fi considerat "Deep Content".
 
-STILUL PISICOPEDIA:
-- Răspuns direct în primele 2-3 paragrafe (pentru SEO și utilizatori grăbiți)
-- Structură clară cu headings (H2, H3)
-- Liste cu puncte pentru claritate
-- Secțiune FAQ cu 5-7 întrebări frecvente (optimizat pentru "People Also Ask")
-- Disclaimer medical clar
-- Ton medical dar cozy, cu empatie pentru proprietari și pisici
-- Include "RED FLAGS" clare cu ⚠️ pentru urgențe
-- Menționează costuri în RON unde este relevant (ex: "costă aproximativ 100-150 RON")
+  FORMAT: Scrie articolul în format Markdown simplu, fără frontmatter YAML.
+  Structură:
+  - Titlu (H1)
+  - Introducere (Răspuns direct pentru Google Snippet)
+  - Experiența mea ca medic (H2)
+  - Secțiuni principale (H2) cu explicații medicale detaliate
+  - Tabel comparativ sau de costuri (Markdown table)
+  - Secțiune FAQ (H2) optimizată pentru 'People Also Ask' (5-7 întrebări)
+  - Disclaimer medical clar la final`,
 
-LUNGIME: 900-1400 cuvinte
+  user: (title: string) => `Scrie un articol medical de autoritate despre: "${title}". 
+  Asigură-te că este cel mai bun articol de pe internet pe acest subiect. 
+  Include experiență personală, un tabel de costuri și sfaturi practice pe care un proprietar le poate aplica imediat.`,
 
-FORMAT: Scrie articolul în format Markdown simplu, fără frontmatter YAML.
-Structură:
-- Titlu (H1)
-- Introducere (2-3 paragrafe cu răspuns direct)
-- Secțiuni principale (H2)
-- Subsecțiuni (H3) unde e necesar
-- Liste cu puncte
-- Secțiune FAQ (H2)
-- Disclaimer final
-
-IMPORTANT: NU include delimitatori de tip ---, NU include code blocks, doar Markdown pur.`,
-
-  user: (title: string) => `Scrie un articol medical complet despre: "${title}"
-
-Asigură-te că:
-1. Primele 2-3 paragrafe răspund direct la întrebarea din titlu
-2. Include RED FLAGS cu ⚠️ pentru urgențe
-3. Menționează costuri aproximative în RON
-4. FAQ cu 5-7 întrebări frecvente
-5. Disclaimer medical la final
-6. Ton empatic și cozy, nu prea tehnic
-
-NU include frontmatter YAML, doar conținut Markdown.`,
+  generateNewTopic: (existingSlugs: string[]) => `Ești un expert SEO specializat în nișa animalelor de companie (pisici). 
+  Analizează lista de articole deja scrise (slug-uri): [${existingSlugs.join(', ')}].
+  Identifică un subiect NOU, ULTRA-CĂUTAT pe Google în România, care lipsește din această listă.
+  Subiectul trebuie să fie legat de sănătate, comportament sau îngrijire avansată a pisicilor.
+  Returnează un obiect JSON cu 'title' și 'category' (una din: simptome, ingrijire, comportament, nutritie).
+  Exemplu: {"title": "Pisica are gingiile roșii: Semne de stomatită felină", "category": "simptome"}`
 };
+
+// Helper pentru slug
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
 // Funcție pentru generare imagine cu Leonardo
 async function generateImage(slug: string, title: string): Promise<string | null> {
@@ -168,31 +172,34 @@ export async function POST(request: NextRequest) {
 
     const existingSlugs = new Set(existingArticles?.map(a => a.slug) || []);
 
-    // 4. Find next topic to generate
-    const topic = TOPICS.find(t => {
-      const slug = t.title
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
+    // 4. Find next topic to generate (Infinite Mode)
+    let topic = TOPICS.find(t => {
+      const slug = generateSlug(t.title);
       return !existingSlugs.has(slug);
     });
 
     if (!topic) {
-      return NextResponse.json({
-        status: 'no_topics',
-        message: 'All topics have been generated',
+      console.log('[Generate] All pre-defined topics exhausted. Generating NEW topic with AI...');
+      const topicCompletion = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: 'Ești un expert SEO veterinar.' },
+          { role: 'user', content: ARTICLE_PROMPTS.generateNewTopic(Array.from(existingSlugs)) },
+        ],
+        response_format: { type: "json_object" },
       });
+
+      const aiTopic = JSON.parse(topicCompletion.choices[0]?.message?.content || '{}');
+      if (aiTopic.title && aiTopic.category) {
+        topic = aiTopic;
+        console.log(`[Generate] AI generated new topic: ${topic.title}`);
+      } else {
+        throw new Error('AI failed to generate a valid new topic');
+      }
     }
 
     // 5. Generate slug
-    const slug = topic.title
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+    const slug = generateSlug(topic.title);
 
     console.log(`[Generate] Generating article: ${slug}`);
 
