@@ -279,38 +279,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET method pentru status
+// GET method - Vercel Cron folosește GET, deci tratăm GET la fel ca POST!
 export async function GET(request: NextRequest) {
-  try {
-    const cronSecret = process.env.CRON_SECRET;
-    const providedSecret = request.nextUrl.searchParams.get('secret');
-
-    if (!cronSecret || !providedSecret || providedSecret !== cronSecret) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { data: articles, error } = await supabaseAdmin
-      .from('articles')
-      .select('slug, title, created_at')
-      .order('created_at', { ascending: false })
-      .limit(10);
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return NextResponse.json({
-      status: 'ready',
-      total_articles: articles?.length || 0,
-      recent_articles: articles,
-      config: {
-        openai: !!process.env.OPENAI_API_KEY,
-        leonardo: !!process.env.LEONARDO_API_KEY,
-        supabase: !!process.env.SUPABASE_URL,
-      },
-    });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  console.log('[Generate API] GET request received - treating as POST for Vercel Cron');
+  return POST(request);
 }
 
