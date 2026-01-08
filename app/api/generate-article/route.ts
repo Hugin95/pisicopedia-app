@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
     const existingSlugs = new Set(existingArticles?.map(a => a.slug) || []);
 
     // 4. Find next topic to generate (Infinite Mode)
-    let topic = TOPICS.find(t => {
+    let topic: { title: string; category: string } | undefined = TOPICS.find(t => {
       const slug = generateSlug(t.title);
       return !existingSlugs.has(slug);
     });
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
 
       const aiTopic = JSON.parse(topicCompletion.choices[0]?.message?.content || '{}');
       if (aiTopic.title && aiTopic.category) {
-        topic = aiTopic;
+        topic = { title: aiTopic.title, category: aiTopic.category };
         console.log(`[Generate] AI generated new topic: ${topic.title}`);
       } else {
         throw new Error('AI failed to generate a valid new topic');
