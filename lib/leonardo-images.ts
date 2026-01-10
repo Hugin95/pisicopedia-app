@@ -178,13 +178,16 @@ export async function generateArticleImage(
         throw new Error(`Supabase upload failed: ${uploadError.message}`);
       }
 
-      // Get public URL
+      // Get public URL with cache busting
       const { data: { publicUrl } } = supabaseAdmin.storage
         .from('article-images')
         .getPublicUrl(filePath);
 
-      console.log(`✅ Image uploaded to Supabase: ${publicUrl}`);
-      return publicUrl;
+      // Add timestamp for cache busting (forces browsers to reload new images)
+      const cacheBustedUrl = `${publicUrl}?v=${Date.now()}`;
+
+      console.log(`✅ Image uploaded to Supabase: ${cacheBustedUrl}`);
+      return cacheBustedUrl;
 
     } catch (error: any) {
       console.error(`❌ Failed to generate image for ${slug}:`, error.message || error);
