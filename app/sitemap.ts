@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
-import { sampleBreeds, sampleArticles } from '@/lib/data';
-import { allBreeds, allArticles } from '@/lib/content-lists';
+import { sampleBreeds } from '@/lib/data';
+import { allBreeds } from '@/lib/content-lists';
+import { supabaseAdmin } from '@/lib/supabase';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://pisicopedia.ro';
 
   // Get current date for dynamic content
@@ -74,9 +75,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Create a set of existing content slugs for priority adjustment
+  // Create a set of existing breed slugs for priority adjustment
   const existingBreedSlugs = new Set(sampleBreeds.map((b: any) => b.slug));
-  const existingArticleSlugs = new Set(sampleArticles.map((a: any) => a.slug));
+
+  // Fetch all articles from Supabase
+  const { data: supabaseArticles } = await supabaseAdmin
+    .from('articles')
+    .select('slug, created_at, updated_at, category')
+    .eq('published', true);
 
   // All breed pages with priority based on content existence
   const breedPages: MetadataRoute.Sitemap = allBreeds.map((breed: any) => {
@@ -91,17 +97,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  // All article pages with priority based on content existence
-  const articlePages: MetadataRoute.Sitemap = allArticles.map((article: any) => {
-    const hasContent = existingArticleSlugs.has(article.slug);
-    const existingArticle = sampleArticles.find((a: any) => a.slug === article.slug);
+  // All article pages from Supabase (DYNAMIC!)
+  const articlePages: MetadataRoute.Sitemap = (supabaseArticles || []).map((article: any) => {
     const isImportant = article.category === 'simptome' || article.category === 'boli';
+    const lastMod = article.updated_at || article.created_at || new Date().toISOString();
 
     return {
       url: `${baseUrl}/sanatate/${article.slug}`,
-      lastModified: existingArticle?.date ? new Date(existingArticle.date) : lastMonth,
+      lastModified: new Date(lastMod),
       changeFrequency: isImportant ? 'weekly' : 'monthly',
-      priority: isImportant ? 0.75 : hasContent ? 0.7 : 0.55,
+      priority: isImportant ? 0.85 : 0.75,
     };
   });
 

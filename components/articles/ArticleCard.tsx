@@ -53,7 +53,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         <div className="relative aspect-[16/9] -m-6 mb-4 overflow-hidden rounded-t-xl">
           <Image
             src={getImageSource(article.image, 'article')}
-            alt={article.title}
+            alt={`${article.title} - Ilustrație medicală despre sănătatea pisicilor`}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

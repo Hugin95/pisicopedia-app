@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Container from '@/components/common/Container';
 import Badge from '@/components/common/Badge';
 import { RelatedArticles } from '@/components/common/RelatedContent';
@@ -115,7 +115,7 @@ export default function ArticlePage() {
               <div className="relative w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden mb-8">
                 <Image
                   src={article.image}
-                  alt={article.title}
+                  alt={`${article.title} - Fotografie medicală veterinară profesională despre sănătatea pisicilor de Dr. Maria Popescu`}
                   fill
                   className="object-cover"
                   priority

@@ -18,7 +18,7 @@ export default function BreedCard({ breed, featured = false }: BreedCardProps) {
         <div className="relative aspect-[4/3] -m-6 mb-4 overflow-hidden rounded-t-xl">
           <Image
             src={getImageSource(breed.image, 'breed')}
-            alt={breed.title}
+            alt={`Pisică de rasă ${breed.title} - Fotografie profesională cu caracteristici specifice rasei`}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
