@@ -10,6 +10,7 @@ import * as path from 'path';
 import { execSync } from 'child_process';
 import { getOpenAIClient, CONTENT_CONFIG } from './ai-config';
 import { createGitHubFile } from './github-api';
+import { generateArticleImage } from './leonardo-images';
 
 // ============================================================================
 // TYPES
@@ -321,77 +322,28 @@ async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
     return null;
   }
 
-  const prompt = `A REAL DOMESTIC CAT ONLY, no humans, no dogs, no other animals. Professional veterinary photo of a cat related to: ${topic.title}. The cat must be clearly visible and be the main subject. Realistic photography, soft natural lighting, neutral veterinary clinic background, high quality, 4k. IMPORTANT: ONLY A CAT in the image, nothing else.`;
-
   try {
-    // Step 1: Create generation
-    const generateResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        modelId: 'b24e16ff-06e3-43eb-8d33-4416c2d75876',
-        width: 1200,
-        height: 800,
-        num_images: 1,
-        guidance_scale: 7,
-        sd_version: 'SDXL_1_0',
-      }),
-    });
+    // Use the optimized image generation function with high-quality settings
+    // This function handles both Vercel (Supabase Storage) and local filesystem
+    const folder = topic.category === 'sanatate' ? 'articles' : 'guides';
+    const subcategory = topic.category === 'sanatate' ? 'simptome' : 'ingrijire';
+    
+    console.log(`[Auto-Post] Generating high-quality image for: ${topic.title}`);
+    
+    const imageUrl = await generateArticleImage(
+      topic.slug,
+      topic.title,
+      folder,
+      subcategory
+    );
 
-    const generateData: any = await generateResponse.json();
-
-    if (!generateData.sdGenerationJob?.generationId) {
-      console.log('[Auto-Post] Leonardo generation failed - using fallback');
+    if (imageUrl) {
+      console.log(`[Auto-Post] Image generated successfully: ${imageUrl.substring(0, 60)}...`);
+      return imageUrl;
+    } else {
+      console.log('[Auto-Post] Image generation returned null - using fallback');
       return null;
     }
-
-    const generationId = generateData.sdGenerationJob.generationId;
-
-    // Step 2: Poll for completion
-    let attempts = 0;
-    const maxAttempts = 30;
-    let imageUrl: string | null = null;
-
-    while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const statusResponse = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-        },
-      });
-
-      const statusData: any = await statusResponse.json();
-
-      if (statusData.generations_by_pk?.status === 'COMPLETE') {
-        imageUrl = statusData.generations_by_pk.generated_images[0]?.url;
-        break;
-      }
-
-      attempts++;
-    }
-
-    if (!imageUrl) {
-      console.log('[Auto-Post] Image generation timeout - using fallback');
-      return null;
-    }
-
-    // Step 3: Download image
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-
-    // Step 4: Save image
-    const imagePath = topic.category === 'sanatate'
-      ? path.join(process.cwd(), 'public', 'images', 'articles', `${topic.slug}.jpg`)
-      : path.join(process.cwd(), 'public', 'images', 'guides', `${topic.slug}.jpg`);
-
-    fs.writeFileSync(imagePath, imageBuffer);
-
-    return `/images/${topic.category === 'sanatate' ? 'articles' : 'guides'}/${topic.slug}.jpg`;
   } catch (error: any) {
     console.error('[Auto-Post] Leonardo error:', error.message);
     return null;
