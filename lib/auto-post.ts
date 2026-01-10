@@ -321,7 +321,7 @@ async function generateImageWithLeonardo(topic: Topic): Promise<string | null> {
     return null;
   }
 
-  const prompt = `Professional veterinary medical illustration of a domestic cat, related to: ${topic.title}. Soft studio lighting, neutral background, realistic, high quality, 4k, for a Romanian website about cat health. Medical illustration style.`;
+  const prompt = `A REAL DOMESTIC CAT ONLY, no humans, no dogs, no other animals. Professional veterinary photo of a cat related to: ${topic.title}. The cat must be clearly visible and be the main subject. Realistic photography, soft natural lighting, neutral veterinary clinic background, high quality, 4k. IMPORTANT: ONLY A CAT in the image, nothing else.`;
 
   try {
     // Step 1: Create generation
