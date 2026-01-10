@@ -79,10 +79,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const existingBreedSlugs = new Set(sampleBreeds.map((b: any) => b.slug));
 
   // Fetch all articles from Supabase
-  const { data: supabaseArticles } = await supabaseAdmin
+  const { data: supabaseArticles, error } = await supabaseAdmin
     .from('articles')
-    .select('slug, created_at, updated_at, category')
+    .select('slug, created_at, category')
     .eq('published', true);
+
+  // Log pentru debugging (va apărea în Vercel logs)
+  console.log(`[SITEMAP] Articole găsite: ${supabaseArticles?.length || 0}`);
+  if (error) console.error('[SITEMAP] Eroare:', error);
 
   // All breed pages with priority based on content existence
   const breedPages: MetadataRoute.Sitemap = allBreeds.map((breed: any) => {
@@ -100,7 +104,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // All article pages from Supabase (DYNAMIC!)
   const articlePages: MetadataRoute.Sitemap = (supabaseArticles || []).map((article: any) => {
     const isImportant = article.category === 'simptome' || article.category === 'boli';
-    const lastMod = article.updated_at || article.created_at || new Date().toISOString();
+    const lastMod = article.created_at || new Date().toISOString();
 
     return {
       url: `${baseUrl}/sanatate/${article.slug}`,
