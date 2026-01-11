@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Container from '@/components/common/Container';
 import Button from '@/components/common/Button';
@@ -9,6 +10,42 @@ import WhyPisicopedia from '@/components/common/WhyPisicopedia';
 import BannerPlaceholder from '@/components/layout/BannerPlaceholder';
 import { getTopBreeds, getLatestArticles, getTopGuides } from '@/lib/data';
 import { Article, Breed, Guide } from '@/types';
+
+export const metadata: Metadata = {
+  title: 'Pisicopedia.ro - Enciclopedia Completă a Raselor și Sănătății Pisicilor',
+  description: 'Descoperă toate rasele de pisici, ghiduri complete de sănătate, articole medicale verificate și sfaturi de la experți veterinari. Tot ce trebuie să știi despre pisici într-un singur loc!',
+  keywords: 'pisici, rase pisici, sănătate pisici, ghiduri pisici, îngrijire pisici, veterinar pisici, boli pisici',
+  openGraph: {
+    title: 'Pisicopedia.ro - Enciclopedia Completă a Pisicilor',
+    description: 'Descoperă toate rasele de pisici, ghiduri complete de sănătate și articole medicale verificate de experți veterinari.',
+    url: 'https://pisicopedia.ro',
+    siteName: 'Pisicopedia.ro',
+    locale: 'ro_RO',
+    type: 'website',
+    images: [
+      {
+        url: 'https://pisicopedia.ro/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Pisicopedia.ro - Enciclopedia Completă a Pisicilor',
+      },
+    ],
+  },
+  alternates: {
+    canonical: 'https://pisicopedia.ro',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
 
 // Disable static generation for this page to always fetch fresh data
 export const dynamic = 'force-dynamic';
