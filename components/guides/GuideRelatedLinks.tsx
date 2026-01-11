@@ -73,6 +73,17 @@ const categoryLinks: Record<string, RelatedLink[]> = {
     { title: 'Controale veterinare regulate', href: '/ghiduri/controale-veterinare', type: 'guide' },
     { title: 'Pisica doarme tot timpul', href: '/sanatate/pisica-doarme-tot-timpul-letargie', type: 'article' },
   ],
+
+  // Ghiduri speciale practice
+  'ghid-special': [
+    { title: 'Călătorie cu pisica - transport sigur', href: '/ghiduri/calatorie-cu-pisica', type: 'guide' },
+    { title: 'Pisică pierdută: acționează URGENT', href: '/ghiduri/pisica-pierduta-ghid-urgent', type: 'guide' },
+    { title: 'Mutare/relocare fără stres', href: '/ghiduri/mutare-relocare-pisica', type: 'guide' },
+    { title: 'Pregătirea casei pentru pisică', href: '/ghiduri/pregatire-casa-pisica', type: 'guide' },
+    { title: 'Introducere pisică nouă', href: '/ghiduri/introducere-pisica-noua', type: 'guide' },
+    { title: 'Îngrijire blană completă', href: '/ghiduri/ingrijire-blana-pisica', type: 'guide' },
+    { title: 'Calendar de vaccinare', href: '/ghiduri/calendar-vaccinare', type: 'guide' },
+  ],
 };
 
 const typeIcons = {

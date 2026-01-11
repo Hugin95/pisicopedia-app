@@ -104,7 +104,14 @@ export const allGuides: GuideInfo[] = [
   { slug: 'ingrijire-senior', title: 'Îngrijirea pisicilor senior: ghid complet', category: 'ghid-senior', description: 'Îngrijire specială pentru pisica senior! 👴 Nevoile după 7 ani ✅ Ajustări în rutină ✅ Suplimente recomandate ✅ Calitate vieții îmbunătățită!' },
   { slug: 'probleme-senior', title: 'Probleme comune la pisicile senior', category: 'ghid-senior', description: 'Problemele senior depistează și previne! 🔍 Boli comune după 7 ani ✅ Simptome de urmărit ✅ Tratamente disponibile ✅ Monitorizare eficientă!' },
   { slug: 'adaptare-casa-senior', title: 'Adaptarea casei pentru pisici în vârstă', category: 'ghid-senior', description: 'Adaptează casa pentru confortul pisicii senior! 🏠 Modificări necesare ✅ Acces ușor litieră și hrană ✅ Siguranță maximă ✅ Mobilitate îmbunătățită!' },
-  { slug: 'nutritie-senior', title: 'Nutriția pisicilor senior: ce să știi', category: 'ghid-senior', description: 'Nutriție optimă pentru pisica senior! 🥘 Diete adaptate după 7 ani ✅ Suplimente esențiale ✅ Previne boli ✅ Energie și vitalitate la bătrânețe!' }
+  { slug: 'nutritie-senior', title: 'Nutriția pisicilor senior: ce să știi', category: 'ghid-senior', description: 'Nutriție optimă pentru pisica senior! 🥘 Diete adaptate după 7 ani ✅ Suplimente esențiale ✅ Previne boli ✅ Energie și vitalitate la bătrânețe!' },
+
+  // Ghiduri speciale practice (5 ghiduri NOI)
+  { slug: 'calatorie-cu-pisica', title: 'Cum să călătorești cu pisica: ghid complet', category: 'ghid-special', description: 'Călătorește cu pisica fără stres! 🚗 Transport sigur ✅ Pregătire avion ✅ Documente necesare ✅ Reducere anxietate ✅ Checklist complet!' },
+  { slug: 'pisica-pierduta-ghid-urgent', title: 'Pisică pierdută: ce să faci URGENT', category: 'ghid-special', description: 'Pisică pierdută? Acționează ACUM! 🔍 Primele 24h sunt CRITICE ✅ Strategii căutare eficiente ✅ Anunțuri și alertare ✅ Prevenție viitoare!' },
+  { slug: 'mutare-relocare-pisica', title: 'Mutarea cu pisica: ghid adaptare și relocare', category: 'ghid-special', description: 'Mutare fără stres pentru pisică! 📦 Pregătire transport ✅ Adaptare casă nouă ✅ Reducere anxietate ✅ Timeline complet ✅ Erori de evitat!' },
+  { slug: 'introducere-pisica-noua', title: 'Introducerea unei pisici noi în casă', category: 'ghid-ingrijire', description: 'Integrează pisica nouă perfect! 🏠 Protocol pas cu pas ✅ Pisici multiple ✅ Socializare corectă ✅ Evită conflictele ✅ Armonie garantată!' },
+  { slug: 'ingrijire-blana-pisica', title: 'Îngrijirea blănii: periaj, baie, tunsoare', category: 'ghid-ingrijire', description: 'Blană strălucitoare și sănătoasă! ✨ Tehnici de periaj ✅ Când și cum să faci baie ✅ Produse recomandate ✅ Prevenție ghemotoace ✅ Program complet!' }
 ];
 
 // Helper function to get similar breeds

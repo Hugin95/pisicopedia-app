@@ -248,5 +248,125 @@ export const guideFAQs: Record<string, GuideFAQ[]> = {
       answer: 'Transport obligatoriu în CUȘCĂ! Nu în brațe! Cușcă rigidă, lenjerie moale, jucărie familiară pentru confort. Mașină: fixează cușca, ventilație, fără AC direct. Primul transport = impresie durabilă - fă-l plăcut!',
     },
   ],
+
+  // 11. Călătorie cu pisica
+  'calatorie-cu-pisica': [
+    {
+      question: 'Cât de des pot călători cu pisica mea?',
+      answer: 'Depinde de temperamentul pisicii. Pentru majoritatea, călătoriile frecvente (săptămânale) sunt prea stresante. Călătorii ocazionale (câteva pe an) sunt mai acceptabile. Evaluează nivelul de stres al pisicii și ia în considerare alternative (pet-sitter) pentru vacanțe scurte.',
+    },
+    {
+      question: 'Ce documente sunt necesare pentru călătorii internaționale cu pisica?',
+      answer: 'Documente obligatorii: microchip ISO compatibil, certificat de sănătate (valabil 10 zile), certificat de vaccinare antirabică (valabil 1-3 ani), pașaport european pentru animale (pentru UE), test titrare anticorpi antirabici (pentru anumite țări). Verifică reglementările specifice țării de destinație!',
+    },
+    {
+      question: 'Pisica mea miaună constant în mașină. Ce pot face?',
+      answer: 'Este normal, mai ales la început. Soluții: vorbește calm și liniștitor, pune muzică relaxantă pe volum redus, acoperă parțial cușca pentru a reduce stimulii vizuali, folosește spray cu feromoni (Feliway). Dacă persistă, consultă veterinarul pentru suplimente calmante naturale sau pe bază de prescripție.',
+    },
+    {
+      question: 'Pot să-mi iau pisica în vacanță la mare sau munte?',
+      answer: 'Da, dar evaluează dacă stresul călătoriei merită. Pentru vacanțe scurte (3-4 zile), este adesea mai puțin stresant pentru pisică să rămână acasă cu un pet-sitter de încredere. Pentru vacanțe mai lungi, călătoria poate fi justificată dacă pisica se adaptează bine la transport.',
+    },
+    {
+      question: 'Ce fac dacă pisica refuză să mănânce în călătorie?',
+      answer: 'Normal pentru primele 12-24 ore din cauza stresului. Oferă hrană preferată, încălzită ușor pentru miros mai atrăgător. Asigură-te că are acces constant la apă proaspătă. Dacă refuză să mănânce peste 48 ore sau arată semne de letargie severă, consultă un veterinar urgent.',
+    },
+  ],
+
+  // 12. Pisică pierdută - ghid urgent
+  'pisica-pierduta-ghid-urgent': [
+    {
+      question: 'Care sunt șansele de a găsi o pisică pierdută?',
+      answer: '75% din pisicile pierdute sunt găsite în primele 24 de ore dacă proprietarii acționează imediat și corect. După 7 zile fără acțiune, șansele scad sub 20%. După 30 de zile, sub 5%. ACȚIONAREA IMEDIATĂ în primele ore este CRITICĂ pentru succes!',
+    },
+    {
+      question: 'Unde se ascund pisicile pierdute de obicei?',
+      answer: '50% din pisicile pierdute nu se depărtează cu mai mult de 50 metri de casă în primele 3 zile. Locuri comune: sub mașini parcate (cel mai frecvent!), în tufișuri și garduri vii, sub gard, în garajele veccinilor deschise, în spațiile dintre case, în cutii de carton, pe acoperișuri joase. Pisicile speritate se ascund în locuri mici, întunecate și greu accesibile.',
+    },
+    {
+      question: 'De ce pisica mea nu vine când o strig dacă e pierdută?',
+      answer: 'Pisicile pierdute intră rapid într-o stare de panică și frică extremă. NU vor răspunde la strigarea numelui lor, chiar dacă te recunosc și te aud - frica este prea puternică și instinctul le spune să rămână tăcute și nemișcate pentru a evita "prada torii". De aceea căutarea trebuie făcută ÎN TĂCERE, cu lanternă și ascultare atentă.',
+    },
+    {
+      question: 'Ce trebuie să fac în primele 3 ore după ce realizez că pisica a dispărut?',
+      answer: 'ACȚIUNE IMEDIATĂ: 1) Verifică întreaga casă (sub paturi, dulapuri, spații ascunse). 2) Caută perimetrul imediat (0-20m): sub toate mașinile, în tufișuri, garajele veccinilor. 3) Anunță TOȚI vecinii și cere-le să verifice garajele și pivnițele. 4) Postează pe Facebook în grupurile locale de animale pierdute. 5) Contactează adăposturile și clinicile veterinare din zonă. NU aștepta - fiecare oră contează!',
+    },
+    {
+      question: 'Ce informații trebuie să conțină flyerul pentru pisică pierdută?',
+      answer: 'Flyerul trebuie să includă: fotografie COLOR, CLARĂ, RECENTĂ (2-3 poze din unghiuri diferite), nume pisică, rasă/descriere detaliată, vârstă, zona pierderii, data pierderii, semne distinctive clare (pete, cicatrici, zgardă), AVERTISMENT că pisica este speriată și să nu încerce nimeni să o prindă, număr de contact MARE și vizibil. Opțional: oferă recompensă - crește semnificativ șansele!',
+    },
+  ],
+
+  // 13. Mutare/relocare cu pisica
+  'mutare-relocare-pisica': [
+    {
+      question: 'Cât timp durează până când pisica se adaptează la o casă nouă?',
+      answer: 'Cu pregătire corespunzătoare, majoritatea pisicilor se adaptează în 1-2 săptămâni. Fără pregătire, procesul poate dura 1-3 luni sau mai mult. Pisicile senior sau foarte anxioase pot avea nevoie de 4-6 săptămâni chiar cu protocol corect. Fiecare pisică este unică - respectă ritmul ei individual și nu compara cu alte cazuri.',
+    },
+    {
+      question: 'Ce este "camera sigură" și de ce este esențială?',
+      answer: 'Camera sigură este o cameră mică, liniștită unde pisica stă COMPLET IZOLATĂ primele 3-5 zile în casa nouă. Conține toate resursele: litieră, hrană, apă, pat, jucării. Este esențială pentru că permite pisicii să se adapteze treptat la mirosurile și sunetele noii case fără a fi copleșită de spațiul mare. Extinderea graduală a teritoriului reduce dramatic stresul și problemele de comportament.',
+    },
+    {
+      question: 'Pot să las pisica liberă în casa nouă din prima zi?',
+      answer: 'NU! Aceasta este greșeala nr. 1 și cauza majorității problemelor de adaptare. Pisica copleșită de un spațiu mare necunoscut va: 1) Se ascunde timp îndelungat și refuză să iasă. 2) Dezvolta probleme de eliminare (urină în afara litierei). 3) Refuza hrana. 4) Încerca să fugă. Camera sigură pentru 3-5 zile, urmată de extindere graduală = succes garantat!',
+    },
+    {
+      question: 'Ce fac dacă pisica refuză să mănânce după mutare?',
+      answer: 'Refuzul hranei pentru 12-24 ore este normal din cauza stresului. Soluții: oferă hrana preferată (nu introduce alimente noi!), încălzește ușor hrana umedă pentru miros mai puternic, petrece timp în camera sigură cu pisica pentru a o liniști, folosește Feliway spray/difuzor. Dacă refuză să mănânce peste 48 ore sau nu bea apă 24h, contactează URGENT veterinarul - risc deshidratare și lipidoză hepatică.',
+    },
+    {
+      question: 'Cum previn ca pisica să fugă în ziua mutării?',
+      answer: 'IZOLARE OBLIGATORIE! Cu 2 ore înainte ca mutatorii să vină, închide pisica într-o cameră sigură (baie sau dormitor mic) cu litieră, apă, hrană și cușca de transport. Lipește un SEMN MARE pe ușă: "NU DESCHIDEȚI - PISICĂ ÎNĂUNTRU!". Informează TOȚI mutatorii despre pisică. NU scoate pisica până când ultima cutie nu a plecat din casă. Ușile deschise constant = risc URIAȘ de fugă!',
+    },
+  ],
+
+  // 14. Introducere pisică nouă
+  'introducere-pisica-noua': [
+    {
+      question: 'Cât durează procesul de introducere a unei pisici noi?',
+      answer: 'Protocolul complet durează 2-6 săptămâni, în funcție de personalitatea pisicilor. FAZA 1 (separare completă): 7 zile. FAZA 2 (contact vizual prin barieră): 7 zile. FAZA 3 (interacțiune supravegheată): 7 zile. FAZA 4 (integrare completă): 7-21 zile. NU GRĂBI procesul - introducerea prea rapidă este cauza nr. 1 a conflictelor pe termen lung!',
+    },
+    {
+      question: 'Pot să prezint pisicile direct, față în față, din prima zi?',
+      answer: 'NU! Aceasta este cea mai gravă greșeală și cauzează 60% din cazurile de "pisici care nu se suportă niciodată". Contactul direct imediat = traume pentru ambele pisici, agresivitate severă, asocieri negative permanente. Odată creată o relație negativă, este de 10x mai greu să o repari. ÎNTOTDEAUNA începe cu separare completă și introducere graduală pe 2-6 săptămâni!',
+    },
+    {
+      question: 'Ce înseamnă formula "N+1" pentru resurse?',
+      answer: 'Formula de aur pentru pisici multiple: ai nevoie de N+1 din fiecare resursă, unde N=numărul total de pisici. Pentru 2 pisici: 3 litiere, 2+ stații de hrănire, 2+ boluri cu apă, multiple paturi/locuri de odihnă, 2+ posturi de zgâriat. Competiția pentru resurse = conflict garantat. Resursele abundente elimină principala cauză de conflict!',
+    },
+    {
+      question: 'Ce semne arată că pisicile sunt gata pentru următoarea fază?',
+      answer: 'Semne BUNE de progres: ambele mănâncă relaxate lângă ușă/barieră, nu mai șuieră când simt mirosul celeilalte, curiozitate calmă (urechi înainte, coadă ridicată), clipire lentă, apropierea voluntară de barieră. Semne NEGATIVE (nu ești gata): șuierături/mârâit constant, refuzul hranei, blană ridicată, fixare intensă fără clipire, lovitură cu laba spre barieră. Dacă vezi agresivitate, revino la faza anterioară pentru încă 3-5 zile!',
+    },
+    {
+      question: 'Ce fac dacă o pisică devine bully și cealaltă victimă?',
+      answer: 'Intervenție necesară: 1) Amplasează litiere/hrană în MULTIPLE locații - victima trebuie să aibă acces sigur. 2) Joacă SEPARAT cu bully-ul 2x/zi pentru a descărca energia. 3) Creează "trasee de evacuare" - victima poate scăpa ușor din orice cameră. 4) Feroch difuzoare în zonele de conflict. 5) Consultă behaviorist felin certificat dacă situația nu se îmbunătățește în 2 săptămâni. NU ignora problema - se agravează!',
+    },
+  ],
+
+  // 15. Îngrijire blană
+  'ingrijire-blana-pisica': [
+    {
+      question: 'Cât de des trebuie să periez pisica cu păr scurt vs. păr lung?',
+      answer: 'Păr scurt: 2-3x/săptămână în condiții normale, ZILNIC în perioada de năpârlire (primăvară, toamnă). Timp necesar: 5-10 minute. Păr lung: ZILNIC OBLIGATORIU, 10-15 minute minim, indiferent de sezon! 2x/zi dacă este năpârlire intensă. Pisicile cu păr lung care nu sunt periaje zilnic dezvoltă încâlciri (mats) severe care trag pielea și provoacă durere - necesită tunsoare profesională sub sedare.',
+    },
+    {
+      question: 'Cât de des trebuie să fac baie pisicii?',
+      answer: 'Majoritatea pisicilor NU au nevoie de baie regulată! Pisici păr scurt sănătoase: 1-2x/AN sau deloc - se curăță singure eficient. Pisici păr lung periată zilnic: 2-4x/AN, doar când foarte murdară. Pisici fără blană (Sfinx): la 1-2 SĂPTĂMÂNI (sebum vizibil pe piele). Baia frecventă elimină uleiurile naturale protective și cauzează stres inutil. Excepție: pisici obeze/senior care nu se mai pot curăță - baie lunară.',
+    },
+    {
+      question: 'Pot folosi șampon pentru oameni sau câini?',
+      answer: 'NU! Șampoanele pentru oameni au pH diferit și irită pielea pisicii. Șampoanele pentru CÂINI pot conține PERMETRIN - TOXIC pentru pisici, poate cauza convulsii și deces! Folosește DOAR șampoane specifice pentru pisici: pH echilibrat pentru piele felină, fără substanțe toxice, fără parfumuri puternice. Cost: 30-80 lei - investiție mică pentru siguranța pisicii!',
+    },
+    {
+      question: 'Ce sunt ghemotoace de păr (hairballs) și cum le previn?',
+      answer: 'Ghemotoace = acumulări de păr în stomac din toaletare. Simptome: vărsături cu ghem de păr, tuse "secă", constipație, pierdere apetit. PREVENȚIE (eficientă 90%): 1) Periaj ZILNIC (reduce părul înghițit cu 70%!). 2) Paste pentru hairball (Malt-Soft) - 40-60 lei. 3) Hrană specială hairball control. 4) Creștere fibre în dietă. Dacă pisica nu mănâncă 24h + vărsături constante = URGENȚĂ veterinară (risc obstrucție intestinală)!',
+    },
+    {
+      question: 'Când este necesară tunsoarea profesională?',
+      answer: 'Tunsoare necesară când: 1) Încâlciri severe (mats) care nu pot fi demix - trag pielea, provoacă durere. 2) Pisică senior/bolnavă care nu se mai poate curăța. 3) Vară foarte caldă + pisică longhair (confort termic). 4) Probleme dermatologice - acces mai ușor la piele pentru tratament. Cost: Groomer 150-300 lei, Clinică veterinară cu sedare 300-600 lei. NU tunde acasă - risc mare de rănire (pielea pisicii este extrem de fină)!',
+    },
+  ],
 };
 
