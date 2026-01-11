@@ -70,8 +70,8 @@ export default function BreedsPage() {
               Catalog Complet de Rase de Pisici
             </h1>
             <p className="text-lg text-warmgray-600">
-              Explorează peste 150 de rase de pisici cu informații detaliate despre temperament,
-              îngrijire și probleme de sănătate specifice.
+              Explorează 30 de rase de pisici cu informații detaliate despre temperament,
+              îngrijire și probleme de sănătate specifice fiecărei rase.
             </p>
           </div>
         </Container>
