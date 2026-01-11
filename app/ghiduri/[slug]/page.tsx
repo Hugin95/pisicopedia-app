@@ -5,6 +5,7 @@ import Badge from '@/components/common/Badge';
 import { getGuideBySlug, getAllGuides } from '@/lib/data';
 import { seoConfig } from '@/lib/seo-advanced';
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo-advanced';
+import { guideFAQs } from '@/lib/guide-faqs';
 import Image from 'next/image';
 import { getGuideMDXContent } from '@/lib/mdx';
 import GuideRelatedLinks from '@/components/guides/GuideRelatedLinks';
@@ -30,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : `${seoConfig.siteUrl}${guide.image || '/images/guides/default.jpg'}`;
 
   return {
-    title: `${guide.title} | Ghid Complet Pisici 2024`,
-    description: `${guide.description} ✅ Ghid detaliat ✅ Sfaturi practice ✅ Recomandări experți`,
+    title: `${guide.title} | Ghid Complet Pisici 2026`,
+    description: guide.description, // Already optimized with emojis and CTR focus
     keywords: `${guide.title.toLowerCase()}, ghid pisici, ${guide.category}, îngrijire pisici`,
     creator: 'Pisicopedia Romania',
     publisher: 'Pisicopedia Romania',
@@ -96,21 +97,24 @@ export default async function GuidePage({ params }: Props) {
     { name: guide.title, url: `/ghiduri/${guide.slug}` },
   ]);
 
-  // Generate FAQ schema
-  const faqSchema = generateFAQSchema([
-    {
-      question: `Despre ce este ghidul ${guide.title.toLowerCase()}?`,
-      answer: guide.description,
-    },
-    {
-      question: 'Pentru cine este acest ghid?',
-      answer: 'Acest ghid este destinat proprietarilor de pisici care doresc să ofere îngrijire de calitate și să înțeleagă mai bine nevoile felinelor lor.',
-    },
-    {
-      question: 'Cum pot folosi informațiile din acest ghid?',
-      answer: 'Informațiile din ghid sunt practice și aplicabile imediat. Urmați pașii recomandați și consultați medicul veterinar pentru situații specifice.',
-    },
-  ]);
+  // Generate FAQ schema - use custom FAQs if available, otherwise generic
+  const customFAQs = guideFAQs[guide.slug];
+  const faqSchema = generateFAQSchema(
+    customFAQs || [
+      {
+        question: `Despre ce este ghidul ${guide.title.toLowerCase()}?`,
+        answer: guide.description,
+      },
+      {
+        question: 'Pentru cine este acest ghid?',
+        answer: 'Acest ghid este destinat proprietarilor de pisici care doresc să ofere îngrijire de calitate și să înțeleagă mai bine nevoile felinelor lor.',
+      },
+      {
+        question: 'Cum pot folosi informațiile din acest ghid?',
+        answer: 'Informațiile din ghid sunt practice și aplicabile imediat. Urmați pașii recomandați și consultați medicul veterinar pentru situații specifice.',
+      },
+    ]
+  );
 
   // Generate Article schema for Google Rich Results
   const guideUrl = `${seoConfig.siteUrl}/ghiduri/${guide.slug}`;

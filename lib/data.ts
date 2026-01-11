@@ -950,7 +950,7 @@ export function getAllGuides() {
   const { allGuides } = require('./content-lists');
   return allGuides.map((guide: any) => ({
     ...guide,
-    description: guide.title,
+    description: guide.description || guide.title, // Use custom description or fallback to title
     image: `/images/guides/${guide.slug}.jpg`,
     readingTime: 10,
   }));
@@ -962,7 +962,7 @@ export function getGuideBySlug(slug: string) {
   if (!guide) return undefined;
   return {
     ...guide,
-    description: guide.title,
+    description: guide.description || guide.title, // Use custom description or fallback to title
     image: `/images/guides/${guide.slug}.jpg`,
     readingTime: 10,
   };

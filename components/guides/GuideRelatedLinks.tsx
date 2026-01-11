@@ -11,7 +11,7 @@ interface Props {
   currentSlug: string;
 }
 
-// Mapping of guide categories to related content
+// Comprehensive mapping of guide categories to related content (SEO optimized with 6+ links per category)
 const categoryLinks: Record<string, RelatedLink[]> = {
   'ghid-cumparare': [
     { title: 'Maine Coon', href: '/rase/maine-coon', type: 'breed' },
@@ -21,43 +21,57 @@ const categoryLinks: Record<string, RelatedLink[]> = {
     { title: 'Prima vizită la veterinar', href: '/ghiduri/prima-vizita-veterinar', type: 'guide' },
   ],
   'ghid-ingrijire': [
-    { title: 'Igienă zilnică pentru pisici', href: '/ghiduri/igiena-zilnica', type: 'guide' },
-    { title: 'Alegerea litierelor pentru pisici', href: '/ghiduri/alegere-litiera', type: 'guide' },
-    { title: 'Jucării și îmbogățire pentru pisici', href: '/ghiduri/jucarii-imbogatire', type: 'guide' },
-    { title: 'Amenajarea spațiului pentru pisici', href: '/ghiduri/amenajare-spatiu', type: 'guide' },
-  ],
-  'sanatate': [
-    { title: 'Pisica vomită spumă albă dimineața', href: '/sanatate/pisica-vomita-spuma-alba-dimineata-cauze-si-solutii', type: 'article' },
-    { title: 'Pisica nu a mâncat de 24 de ore', href: '/sanatate/pisica-nu-a-mancat-de-24-de-ore-cand-sa-te-ingrijorezi-si-ce-sa-faci', type: 'article' },
-    { title: 'Calendar de vaccinare pentru pisici', href: '/ghiduri/calendar-vaccinare', type: 'guide' },
-    { title: 'Ghid deparazitare pisici', href: '/ghiduri/ghid-deparazitare', type: 'guide' },
-    { title: 'Controale veterinare regulate', href: '/ghiduri/controale-veterinare', type: 'guide' },
-  ],
-  'nutritie': [
-    { title: 'Hrană uscată vs hrană umedă', href: '/ghiduri/hrana-uscata-vs-umeda', type: 'guide' },
-    { title: 'Calcularea porțiilor pentru pisici', href: '/ghiduri/calculare-portii', type: 'guide' },
-    { title: 'Alimente periculoase pentru pisici', href: '/ghiduri/alimente-periculoase', type: 'guide' },
-    { title: 'Diete speciale pentru pisici', href: '/ghiduri/diete-speciale', type: 'guide' },
-    { title: 'Nutriție pentru pisici seniori', href: '/ghiduri/nutritie-senior', type: 'guide' },
-  ],
-  'comportament': [
-    { title: 'Limbajul corporal al pisicilor', href: '/ghiduri/limbaj-pisica', type: 'guide' },
-    { title: 'Dresajul pisicilor', href: '/ghiduri/dresaj-pisica', type: 'guide' },
-    { title: 'Probleme de comportament', href: '/ghiduri/probleme-comportament', type: 'guide' },
-    { title: 'Socializarea puilor de pisică', href: '/ghiduri/socializare-pui', type: 'guide' },
-  ],
-  'pui': [
-    { title: 'Pui de pisică nou-născuți', href: '/ghiduri/pui-nou-nascuti', type: 'guide' },
-    { title: 'Întărcare pui de pisică', href: '/ghiduri/intarcare-pui', type: 'guide' },
-    { title: 'Socializarea puilor', href: '/ghiduri/socializare-pui', type: 'guide' },
+    { title: 'Alegerea litierelor perfecte', href: '/ghiduri/alegere-litiera', type: 'guide' },
     { title: 'Pregătirea casei pentru pisică', href: '/ghiduri/pregatire-casa-pisica', type: 'guide' },
-    { title: 'Prima vizită la veterinar', href: '/ghiduri/prima-vizita-veterinar', type: 'guide' },
+    { title: 'Amenajarea spațiului optim', href: '/ghiduri/amenajare-spatiu', type: 'guide' },
+    { title: 'Igienă zilnică completă', href: '/ghiduri/igiena-zilnica', type: 'guide' },
+    { title: 'Calendar de vaccinare', href: '/ghiduri/calendar-vaccinare', type: 'guide' },
+    { title: 'Ghid deparazitare complet', href: '/ghiduri/ghid-deparazitare', type: 'guide' },
   ],
-  'senior': [
-    { title: 'Îngrijirea pisicilor seniori', href: '/ghiduri/ingrijire-senior', type: 'guide' },
-    { title: 'Nutriție pentru pisici seniori', href: '/ghiduri/nutritie-senior', type: 'guide' },
-    { title: 'Probleme de sănătate la pisici seniori', href: '/ghiduri/probleme-senior', type: 'guide' },
-    { title: 'Adaptarea casei pentru pisici în vârstă', href: '/ghiduri/adaptare-casa-senior', type: 'guide' },
+  'ghid-sanatate': [
+    { title: 'Calendar de vaccinare complet', href: '/ghiduri/calendar-vaccinare', type: 'guide' },
+    { title: 'Ghid deparazitare internă și externă', href: '/ghiduri/ghid-deparazitare', type: 'guide' },
+    { title: 'Sterilizare: pro și contra', href: '/ghiduri/sterilizare-pro-contra', type: 'guide' },
+    { title: 'Controale veterinare regulate', href: '/ghiduri/controale-veterinare', type: 'guide' },
+    { title: 'Prima vizită la veterinar', href: '/ghiduri/prima-vizita-veterinar', type: 'guide' },
+    { title: 'Pisica nu a mâncat de 24 ore', href: '/sanatate/pisica-nu-a-mancat-de-24-de-ore-cand-sa-te-ingrijorezi-si-ce-sa-faci', type: 'article' },
+    { title: 'Pisica vomită spumă albă', href: '/sanatate/pisica-vomita-spuma-alba-dimineata-cauze-si-solutii', type: 'article' },
+  ],
+  'ghid-nutritie': [
+    { title: 'Hrană uscată vs umedă: compară', href: '/ghiduri/hrana-uscata-vs-umeda', type: 'guide' },
+    { title: 'Calcularea porțiilor corecte', href: '/ghiduri/calculare-portii', type: 'guide' },
+    { title: 'Alimente TOXICE pentru pisici', href: '/ghiduri/alimente-periculoase', type: 'guide' },
+    { title: 'Diete speciale medicale', href: '/ghiduri/diete-speciale', type: 'guide' },
+    { title: 'Nutriție pisici seniori', href: '/ghiduri/nutritie-senior', type: 'guide' },
+    { title: 'Înțărcarea puilor pas cu pas', href: '/ghiduri/intarcare-pui', type: 'guide' },
+    { title: 'Pisica nu bea apă - urgent', href: '/sanatate/pisica-nu-bea-apa-ce-sa-faci-urgent', type: 'article' },
+  ],
+  'ghid-comportament': [
+    { title: 'Limbajul corporal complet', href: '/ghiduri/limbaj-pisica', type: 'guide' },
+    { title: 'Dresajul pisicilor - tehnici', href: '/ghiduri/dresaj-pisica', type: 'guide' },
+    { title: 'Probleme de comportament', href: '/ghiduri/probleme-comportament', type: 'guide' },
+    { title: 'Jucării și îmbogățire mediu', href: '/ghiduri/jucarii-imbogatire', type: 'guide' },
+    { title: 'Socializarea puilor corect', href: '/ghiduri/socializare-pui', type: 'guide' },
+    { title: 'Pisica miaună excesiv noaptea', href: '/sanatate/pisica-miauna-excesiv-noaptea', type: 'article' },
+    { title: 'Pisica se linge excesiv', href: '/sanatate/pisica-se-linge-excesiv-pana-se-jupuieste', type: 'article' },
+  ],
+  'ghid-pui': [
+    { title: 'Pui nou-născuți - îngrijire 24/7', href: '/ghiduri/pui-nou-nascuti', type: 'guide' },
+    { title: 'Înțărcarea puilor pas cu pas', href: '/ghiduri/intarcare-pui', type: 'guide' },
+    { title: 'Socializarea corectă', href: '/ghiduri/socializare-pui', type: 'guide' },
+    { title: 'Prima vizită la veterinar', href: '/ghiduri/prima-vizita-veterinar', type: 'guide' },
+    { title: 'Pregătirea casei pentru pui', href: '/ghiduri/pregatire-casa-pisica', type: 'guide' },
+    { title: 'Calendar vaccinare complet', href: '/ghiduri/calendar-vaccinare', type: 'guide' },
+    { title: 'Hrană umedă pentru pui', href: '/ghiduri/hrana-uscata-vs-umeda', type: 'guide' },
+  ],
+  'ghid-senior': [
+    { title: 'Îngrijirea pisicii senior', href: '/ghiduri/ingrijire-senior', type: 'guide' },
+    { title: 'Probleme comune la seniori', href: '/ghiduri/probleme-senior', type: 'guide' },
+    { title: 'Adaptarea casei pentru senior', href: '/ghiduri/adaptare-casa-senior', type: 'guide' },
+    { title: 'Nutriție optimă pentru seniori', href: '/ghiduri/nutritie-senior', type: 'guide' },
+    { title: 'Diete speciale medicale', href: '/ghiduri/diete-speciale', type: 'guide' },
+    { title: 'Controale veterinare regulate', href: '/ghiduri/controale-veterinare', type: 'guide' },
+    { title: 'Pisica doarme tot timpul', href: '/sanatate/pisica-doarme-tot-timpul-letargie', type: 'article' },
   ],
 };
 
@@ -152,4 +166,3 @@ export default function GuideRelatedLinks({ category, currentSlug }: Props) {
     </div>
   );
 }
-
