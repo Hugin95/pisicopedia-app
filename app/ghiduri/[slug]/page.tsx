@@ -7,6 +7,7 @@ import { seoConfig } from '@/lib/seo-advanced';
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo-advanced';
 import Image from 'next/image';
 import { getGuideMDXContent } from '@/lib/mdx';
+import GuideRelatedLinks from '@/components/guides/GuideRelatedLinks';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -271,6 +272,9 @@ export default async function GuidePage({ params }: Props) {
                   )}
                 </div>
               </div>
+
+              {/* Related Links Section */}
+              <GuideRelatedLinks category={guide.category} currentSlug={guide.slug} />
 
               {/* CTA Section */}
               <div className="bg-gradient-to-r from-lavender-100 to-rose-100 rounded-2xl p-8 text-center">
