@@ -111,6 +111,45 @@ export default async function GuidePage({ params }: Props) {
     },
   ]);
 
+  // Generate Article schema for Google Rich Results
+  const guideUrl = `${seoConfig.siteUrl}/ghiduri/${guide.slug}`;
+  const imageUrl = guide.image?.startsWith('http')
+    ? guide.image
+    : `${seoConfig.siteUrl}${guide.image || '/images/guides/default.jpg'}`;
+
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: guide.title,
+    description: guide.description,
+    image: imageUrl,
+    datePublished: guide.date || new Date().toISOString(),
+    dateModified: guide.date || new Date().toISOString(),
+    author: {
+      '@type': 'Organization',
+      name: 'Pisicopedia Romania',
+      url: seoConfig.siteUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Pisicopedia Romania',
+      url: seoConfig.siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${seoConfig.siteUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': guideUrl,
+    },
+    articleSection: 'Ghiduri pentru proprietarii de pisici',
+    wordCount: guide.readingTime ? guide.readingTime * 180 : 1500,
+    inLanguage: 'ro-RO',
+    isAccessibleForFree: 'True',
+    keywords: `${guide.title.toLowerCase()}, ghid pisici, îngrijire pisici, ${guide.category}`,
+  };
+
   // Category label mapping
   const categoryLabels: Record<string, string> = {
     'ghid-cumparare': 'Ghid Cumpărare',
@@ -134,6 +173,12 @@ export default async function GuidePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(faqSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleSchema),
         }}
       />
 
