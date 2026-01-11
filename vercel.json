@@ -1,12 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "https://www.pisicopedia.ro/:path*",
-      "destination": "https://pisicopedia.ro/:path*",
-      "permanent": true,
-      "statusCode": 301
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
