@@ -69,6 +69,17 @@ const guideCategories = [
       { title: 'Nutriția pisicilor vârstnice', slug: 'nutritie-senior' },
     ]
   },
+  {
+    title: 'Ghiduri practice speciale',
+    icon: '🚀',
+    guides: [
+      { title: 'Călătorie cu pisica: Transport fără stres', slug: 'calatorie-cu-pisica' },
+      { title: 'Pisică pierdută: Ghid urgent de căutare', slug: 'pisica-pierduta-ghid-urgent' },
+      { title: 'Mutare/relocare: Adaptare fără stres', slug: 'mutare-relocare-pisica' },
+      { title: 'Introducere pisică nouă: Protocol complet', slug: 'introducere-pisica-noua' },
+      { title: 'Îngrijire blană: Periaj, baie, tunsoare', slug: 'ingrijire-blana-pisica' },
+    ]
+  },
 ];
 
 export default function GhiduriPage() {
