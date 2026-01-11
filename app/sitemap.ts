@@ -38,6 +38,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/tools`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/tools/calculator-varsta`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/tools/calculator-hrana`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/nume-pisici`,
       lastModified: lastMonth,
       changeFrequency: 'monthly',

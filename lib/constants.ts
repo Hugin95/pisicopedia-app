@@ -40,6 +40,17 @@ export const mainNavigation: NavItem[] = [
     href: '/ghiduri',
   },
   {
+    label: 'Tools',
+    href: '/tools',
+    children: [
+      { label: 'Toate Tools-urile', href: '/tools' },
+      { label: '🧮 Calculator Vârstă Pisică', href: '/tools/calculator-varsta' },
+      { label: '🍽️ Calculator Hrană Pisică', href: '/tools/calculator-hrana' },
+      { label: '⚖️ Calculator Greutate Ideală', href: '/tools/calculator-greutate' },
+      { label: '🎯 Găsește Rasa Potrivită', href: '/tools/rasa-potrivita' },
+    ],
+  },
+  {
     label: 'Nume Pisici',
     href: '/nume-pisici',
   },
