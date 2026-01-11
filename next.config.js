@@ -18,18 +18,6 @@ const nextConfig = {
     ],
   },
 
-  // Ensure clean URLs and proper redirects
-  async redirects() {
-    return [
-      // Redirect trailing slashes to clean URLs
-      {
-        source: '/:path((?!.*\\.).*)*/',
-        destination: '/:path*',
-        permanent: true,
-      },
-    ];
-  },
-
   // Ensure proper headers for SEO
   async headers() {
     return [
