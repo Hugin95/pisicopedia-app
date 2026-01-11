@@ -1,109 +1,328 @@
-#!/usr/bin/env tsx
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
+import dotenv from 'dotenv';
 
-/**
- * Generate Images for All Guides using Leonardo.ai
- */
-
-import * as dotenv from 'dotenv';
-import { allGuides } from '../lib/content-lists';
-import { generateArticleImage } from '../lib/leonardo-images';
-
+// Load environment variables
 dotenv.config({ path: '.env.local' });
 
-const colors = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  blue: '\x1b[36m',
-  yellow: '\x1b[33m',
-};
+const LEONARDO_API_KEY = process.env.LEONARDO_API_KEY;
+const GUIDES_DIR = path.join(process.cwd(), 'content', 'guides');
+const IMAGES_DIR = path.join(process.cwd(), 'public', 'images', 'guides');
 
-// Generate appropriate prompts for each guide category
-function getPromptForGuide(guide: any): string {
-  const baseStyle = "professional photography, clean modern aesthetic, warm lighting, high quality, 8k";
-  
-  const prompts: Record<string, string> = {
-    // Îngrijire de bază
-    'pregatire-casa-pisica': `Modern home interior prepared for a new cat, with cozy cat bed, scratching post, food bowls, and toys neatly arranged, ${baseStyle}`,
-    'alegere-litiera': `Various types of modern cat litter boxes displayed side by side, clean bathroom setting, comparison view, ${baseStyle}`,
-    'amenajare-spatiu': `Beautiful cat-friendly apartment with cat trees, shelves, hiding spots, and play areas, modern interior design, ${baseStyle}`,
-    'igiena-zilnica': `Cute cat being groomed, brushing fur, nail trimming tools, grooming supplies arranged neatly, ${baseStyle}`,
-    
-    // Sănătate preventivă
-    'calendar-vaccinare': `Gentle veterinarian preparing vaccine for a calm cat on examination table, medical office setting, caring atmosphere, ${baseStyle}`,
-    'ghid-deparazitare': `Veterinarian showing deworming medication to cat owner, medical consultation, informative scene, ${baseStyle}`,
-    'sterilizare-pro-contra': `Post-surgery recovery cat resting comfortably in protective cone, veterinary care, compassionate setting, ${baseStyle}`,
-    'controale-veterinare': `Cat getting check-up at modern veterinary clinic, friendly vet examining healthy cat, ${baseStyle}`,
-    
-    // Nutriție
-    'hrana-uscata-vs-umeda': `Split image of dry cat food in one bowl and wet food in another, comparison display, appetizing presentation, ${baseStyle}`,
-    'calculare-portii': `Measuring cup with cat food, kitchen scale, portion control tools, healthy cat watching, ${baseStyle}`,
-    'alimente-periculoase': `Display of dangerous foods for cats (chocolate, onions, grapes) with red X marks, warning visual, ${baseStyle}`,
-    'diete-speciale': `Veterinary prescription diet cat food bags and bowls, medical nutrition concept, ${baseStyle}`,
-    
-    // Comportament
-    'limbaj-pisica': `Cat displaying various body language positions - happy, scared, playful, curious, educational illustration style, ${baseStyle}`,
-    'dresaj-pisica': `Cat being trained with clicker and treats, positive reinforcement training session, ${baseStyle}`,
-    'probleme-comportament': `Cat scratching appropriate scratching post instead of furniture, behavioral training success, ${baseStyle}`,
-    'jucarii-imbogatire': `Collection of interactive cat toys, puzzle feeders, cat trees, enrichment items displayed, ${baseStyle}`,
-    
-    // Creștere pui
-    'pui-nou-nascuti': `Newborn kittens nursing with mother cat, cozy nest, tender moment, ${baseStyle}`,
-    'intarcare-pui': `Tiny kitten eating from small bowl, weaning process, adorable feeding time, ${baseStyle}`,
-    'socializare-pui': `Playful kittens interacting with toys and humans, socialization training, ${baseStyle}`,
-    'prima-vizita-veterinar': `Kitten getting first check-up, gentle vet handling small cat, first visit experience, ${baseStyle}`,
-    
-    // Îngrijire senior
-    'ingrijire-senior': `Elderly cat resting on comfortable orthopedic bed, senior care setup, peaceful scene, ${baseStyle}`,
-    'probleme-senior': `Senior cat at veterinary exam, health check for older cat, compassionate care, ${baseStyle}`,
-    'adaptare-casa-senior': `Home adapted for senior cat with ramps, low-entry litter box, easy-access food bowls, ${baseStyle}`,
-    'nutritie-senior': `Senior cat food specially formulated for older cats, age-appropriate nutrition, ${baseStyle}`,
-  };
-
-  return prompts[guide.slug] || `Beautiful cat in a ${guide.category} setting, ${baseStyle}`;
+// Ensure images directory exists
+if (!fs.existsSync(IMAGES_DIR)) {
+  fs.mkdirSync(IMAGES_DIR, { recursive: true });
 }
 
-async function generateAllGuideImages() {
-  console.log(`${colors.blue}🎨 Starting guide image generation for ${allGuides.length} guides...${colors.reset}\n`);
+interface GuideImagePrompt {
+  slug: string;
+  title: string;
+  prompts: string[];
+}
 
-  let successCount = 0;
-  let skipCount = 0;
-  let errorCount = 0;
+// TOP 10 MOST IMPORTANT GUIDES - Image prompts (2-3 images per guide)
+const guideImagePrompts: GuideImagePrompt[] = [
+  {
+    slug: 'pregatire-casa-pisica',
+    title: 'Pregătirea casei pentru pisica ta',
+    prompts: [
+      'New cat exploring prepared home with all essentials (bed, bowls, litter box), welcome setup',
+      'Cat-proofed living room with safe environment and cat supplies, home preparation',
+      'Person setting up cat corner with all necessary items, welcoming preparation'
+    ]
+  },
+  {
+    slug: 'prima-vizita-veterinar',
+    title: 'Prima vizită la veterinar',
+    prompts: [
+      'Kitten in carrier at veterinary clinic entrance, first vet visit',
+      'Gentle veterinarian examining kitten on table, first checkup scene',
+      'Cat carrier with comfortable bedding prepared for vet visit, transport preparation'
+    ]
+  },
+  {
+    slug: 'calendar-vaccinare',
+    title: 'Calendar de vaccinare pentru pisici',
+    prompts: [
+      'Veterinarian administering vaccine to calm tabby cat in clinic, professional medical photography',
+      'Kitten receiving first vaccination at vet clinic, healthcare scene with gentle hands',
+      'Vaccination record book with cat sitting nearby at vet office, documentation scene'
+    ]
+  },
+  {
+    slug: 'hrana-uscata-vs-umeda',
+    title: 'Hrană uscată vs hrană umedă',
+    prompts: [
+      'Two bowls side by side - one with dry kibble, one with wet food, comparison photography',
+      'Cat choosing between dry and wet food bowls, feeding decision scene',
+      'Quality cat food packages (dry and wet) displayed with nutritional information'
+    ]
+  },
+  {
+    slug: 'igiena-zilnica',
+    title: 'Igienă zilnică pentru pisici',
+    prompts: [
+      'Person brushing fluffy cat with grooming tools, daily care routine',
+      'Cat grooming supplies arranged neatly (brush, nail clipper, toothbrush), hygiene products',
+      'Owner cleaning cat ears gently during grooming session, healthcare routine'
+    ]
+  },
+  {
+    slug: 'alegere-litiera',
+    title: 'Alegerea litierelor pentru pisici',
+    prompts: [
+      'Modern cat litter box with various types displayed, clean home interior, professional product photography',
+      'Cat using covered litter box in bathroom, hygienic home environment, natural lighting',
+      'Different cat litter types in containers side by side, comparison setup, studio lighting'
+    ]
+  },
+  {
+    slug: 'dresaj-pisica',
+    title: 'Dresajul pisicilor',
+    prompts: [
+      'Person training orange cat with clicker and treats, positive reinforcement training',
+      'Cat giving high-five to owner during training session, indoor learning environment',
+      'Playful cat learning tricks with interactive toys, home training setup'
+    ]
+  },
+  {
+    slug: 'ingrijire-senior',
+    title: 'Îngrijirea pisicilor seniori',
+    prompts: [
+      'Elderly cat being gently brushed by caring owner, senior pet care scene',
+      'Senior cat resting comfortably with orthopedic bed, aged pet comfort',
+      'Old cat receiving medication from owner with gentle care, elderly pet health'
+    ]
+  },
+  {
+    slug: 'socializare-pui',
+    title: 'Socializarea puilor de pisică',
+    prompts: [
+      'Playful kittens interacting with person during socialization, early bonding',
+      'Young kittens playing together learning social skills, kitten development',
+      'Person gently handling young kitten for socialization, trust building'
+    ]
+  },
+  {
+    slug: 'sterilizare-pro-contra',
+    title: 'Sterilizare - Pro și Contra',
+    prompts: [
+      'Cat recovering comfortably after spay/neuter surgery with cone, post-op care',
+      'Veterinarian discussing sterilization procedure with cat owner, consultation scene',
+      'Healthy spayed/neutered cat resting at home, successful recovery'
+    ]
+  },
+];
 
-  for (const guide of allGuides) {
-    try {
-      console.log(`${colors.blue}📸 Processing: ${guide.title}${colors.reset}`);
-      
-      const prompt = getPromptForGuide(guide);
-      console.log(`   Prompt: ${prompt.substring(0, 80)}...`);
+// TOP 10 GHIDURI SELECTATE PENTRU IMAGINI MULTIPLE
 
-      const imagePath = await generateArticleImage(guide.slug, prompt, 'guides');
-      
-      if (imagePath) {
-        console.log(`${colors.green}✅ Generated: ${imagePath}${colors.reset}\n`);
-        successCount++;
-      } else {
-        console.log(`${colors.yellow}⏭️  Skipped (already exists)${colors.reset}\n`);
-        skipCount++;
-      }
+async function generateImage(prompt: string): Promise<string | null> {
+  const requestData = JSON.stringify({
+    prompt: `Professional photograph: ${prompt}. 8K resolution, photorealistic, natural lighting, high detail, sharp focus, professional pet photography, clean composition, warm tones`,
+    modelId: 'b24e16ff-06e3-43eb-8d33-4416c2d75876', // PhotoReal v2
+    width: 1024,
+    height: 768,
+    num_images: 1,
+    photoReal: true,
+    photoRealVersion: 'v2',
+    presetStyle: 'CINEMATIC',
+  });
 
-      // Wait 2 seconds between generations to avoid rate limits
-      await new Promise(resolve => setTimeout(resolve, 2000));
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'cloud.leonardo.ai',
+      path: '/api/rest/v1/generations',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LEONARDO_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(requestData),
+      },
+    };
 
-    } catch (error: any) {
-      console.error(`${colors.yellow}❌ Error for ${guide.slug}: ${error.message}${colors.reset}\n`);
-      errorCount++;
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data);
+          if (response.sdGenerationJob?.generationId) {
+            resolve(response.sdGenerationJob.generationId);
+          } else {
+            console.error('No generation ID received');
+            resolve(null);
+          }
+        } catch (error) {
+          console.error('Parse error:', error);
+          resolve(null);
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error('Request error:', error);
+      resolve(null);
+    });
+
+    req.write(requestData);
+    req.end();
+  });
+}
+
+async function waitForGeneration(generationId: string, maxAttempts = 60): Promise<string | null> {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    const result = await new Promise<any>((resolve) => {
+      const options = {
+        hostname: 'cloud.leonardo.ai',
+        path: `/api/rest/v1/generations/${generationId}`,
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${LEONARDO_API_KEY}`,
+        },
+      };
+
+      https.get(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch {
+            resolve(null);
+          }
+        });
+      }).on('error', () => resolve(null));
+    });
+
+    if (result?.generations_by_pk?.status === 'COMPLETE') {
+      return result.generations_by_pk.generated_images?.[0]?.url || null;
     }
   }
 
-  console.log('\n' + '='.repeat(60));
-  console.log(`${colors.green}✅ Successfully generated: ${successCount}${colors.reset}`);
-  console.log(`${colors.yellow}⏭️  Skipped (existed): ${skipCount}${colors.reset}`);
-  console.log(`❌ Errors: ${errorCount}`);
-  console.log('='.repeat(60));
+  return null;
 }
 
-generateAllGuideImages().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+async function downloadImage(url: string, filepath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    https.get(url, (response) => {
+      if (response.statusCode !== 200) {
+        resolve(false);
+        return;
+      }
 
+      const fileStream = fs.createWriteStream(filepath);
+      response.pipe(fileStream);
+
+      fileStream.on('finish', () => {
+        fileStream.close();
+        resolve(true);
+      });
+
+      fileStream.on('error', () => {
+        resolve(false);
+      });
+    }).on('error', () => {
+      resolve(false);
+    });
+  });
+}
+
+async function generateAllGuideImages() {
+  // TOP 10 PRIORITY GUIDES
+  const TOP_10_SLUGS = [
+    'pregatire-casa-pisica',
+    'prima-vizita-veterinar',
+    'calendar-vaccinare',
+    'hrana-uscata-vs-umeda',
+    'igiena-zilnica',
+    'alegere-litiera',
+    'dresaj-pisica',
+    'ingrijire-senior',
+    'socializare-pui',
+    'sterilizare-pro-contra',
+  ];
+
+  // Filter to only TOP 10
+  const priorityGuides = guideImagePrompts.filter(g => TOP_10_SLUGS.includes(g.slug));
+
+  console.log('\n🎨 GENERARE IMAGINI PENTRU TOP 10 GHIDURI\n');
+  console.log('━'.repeat(70));
+  console.log(`📊 Total ghiduri selectate: ${priorityGuides.length}`);
+  console.log(`🖼️  Total imagini de generat: ${priorityGuides.reduce((acc, g) => acc + g.prompts.length, 0)}`);
+  console.log('━'.repeat(70));
+  console.log('');
+
+  let totalGenerated = 0;
+  let totalFailed = 0;
+
+  for (const guide of priorityGuides) {
+    console.log(`\n📖 ${guide.title}`);
+    console.log(`   Slug: ${guide.slug}`);
+    console.log(`   Imagini de generat: ${guide.prompts.length}`);
+
+    for (let i = 0; i < guide.prompts.length; i++) {
+      const imageNumber = i + 1;
+      const filename = i === 0 ? `${guide.slug}.jpg` : `${guide.slug}-${imageNumber}.jpg`;
+      const filepath = path.join(IMAGES_DIR, filename);
+
+      // Skip if image already exists
+      if (fs.existsSync(filepath)) {
+        console.log(`   ⏭️  Imagine ${imageNumber}: Există deja`);
+        continue;
+      }
+
+      console.log(`   🎨 Imagine ${imageNumber}: Generare...`);
+      
+      const generationId = await generateImage(guide.prompts[i]);
+      
+      if (!generationId) {
+        console.log(`   ❌ Imagine ${imageNumber}: Eroare la cerere`);
+        totalFailed++;
+        continue;
+      }
+
+      console.log(`   ⏳ Imagine ${imageNumber}: Așteptare procesare...`);
+      const imageUrl = await waitForGeneration(generationId);
+
+      if (!imageUrl) {
+        console.log(`   ❌ Imagine ${imageNumber}: Timeout`);
+        totalFailed++;
+        continue;
+      }
+
+      console.log(`   💾 Imagine ${imageNumber}: Descărcare...`);
+      const downloaded = await downloadImage(imageUrl, filepath);
+
+      if (downloaded) {
+        console.log(`   ✅ Imagine ${imageNumber}: Salvată ca ${filename}`);
+        totalGenerated++;
+      } else {
+        console.log(`   ❌ Imagine ${imageNumber}: Eroare la descărcare`);
+        totalFailed++;
+      }
+
+      // Wait between images to avoid rate limits
+      if (i < guide.prompts.length - 1 || guide !== guideImagePrompts[guideImagePrompts.length - 1]) {
+        console.log('   ⏸️  Pauză 5 secunde...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+    }
+  }
+
+  console.log('\n' + '━'.repeat(70));
+  console.log('\n📊 REZULTATE FINALE:');
+  console.log(`   ✅ Imagini generate: ${totalGenerated}`);
+  console.log(`   ❌ Eșuări: ${totalFailed}`);
+  console.log(`   📈 Total procesate: ${totalGenerated + totalFailed}\n`);
+}
+
+// Run the script
+if (!LEONARDO_API_KEY) {
+  console.error('❌ LEONARDO_API_KEY nu este setat în .env.local!');
+  process.exit(1);
+}
+
+generateAllGuideImages().catch(console.error);

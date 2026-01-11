@@ -33,6 +33,7 @@
     "complete:maine-coon": "tsx scripts/complete-maine-coon.ts",
     "extend:breeds": "tsx scripts/extend-breeds.ts",
     "extend:guides": "tsx scripts/extend-guides-seo.ts",
+    "leonardo:guides": "tsx scripts/generate-guide-images.ts",
     "qa:audit": "tsx scripts/qa-audit-complete.ts",
     "audit:seo": "tsx scripts/seo-audit.ts",
     "audit:404": "tsx scripts/audit-404.ts",
