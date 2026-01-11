@@ -1,8 +1,29 @@
 {
-  "crons": [
+  "redirects": [
     {
-      "path": "/api/generate-article?secret=pisicopedia-local-dev-secret-2024",
-      "schedule": "0 * * * *"
+      "source": "https://www.pisicopedia.ro/:path*",
+      "destination": "https://pisicopedia.ro/:path*",
+      "permanent": true,
+      "statusCode": 301
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "index, follow"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
     }
   ]
 }
