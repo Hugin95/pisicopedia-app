@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { sampleBreeds } from '@/lib/data';
+import { sampleBreeds, getAllGuides } from '@/lib/data';
 import { allBreeds } from '@/lib/content-lists';
 import { supabaseAdmin } from '@/lib/supabase';
 
@@ -114,6 +114,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  // All guide pages (SEO OPTIMIZED!)
+  const allGuides = await getAllGuides();
+  const guidePages: MetadataRoute.Sitemap = allGuides.map((guide: any) => {
+    return {
+      url: `${baseUrl}/ghiduri/${guide.slug}`,
+      lastModified: now, // Recently optimized with 1800+ words + Article Schema
+      changeFrequency: 'monthly',
+      priority: 0.8, // High priority - comprehensive guides
+    };
+  });
+
+  console.log(`[SITEMAP] Ghiduri găsite: ${allGuides.length}`);
+
   // Category pages for better crawling
   const categoryPages: MetadataRoute.Sitemap = [
     // Breed filter pages
@@ -175,6 +188,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Combine all pages and sort by priority
-  const allPages = [...staticPages, ...breedPages, ...articlePages, ...categoryPages];
+  const allPages = [...staticPages, ...breedPages, ...articlePages, ...guidePages, ...categoryPages];
   return allPages.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 }
